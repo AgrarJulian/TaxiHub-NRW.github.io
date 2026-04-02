@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaxiHub NRW | Dashboard</title>
-    
+    <title>TaxiHub NRW | Leitstelle</title>
     <link rel="icon" type="image/png" href="images/bild.png">
-
     <style>
         :root {
             --taxi-yellow: #e1ff00;
@@ -14,350 +12,270 @@
             --card-bg: #161616;
             --text-gray: #b3b3b3;
             --danger: #ff3e3e;
-            --sidebar-width: 260px;
+            --sidebar-width: 280px;
             --glow: 0 0 15px rgba(225, 255, 0, 0.4);
         }
 
-        .light-mode {
-            --bg-black: #f0f2f5;
-            --card-bg: #ffffff;
-            --text-gray: #444;
-            --taxi-yellow: #d4e600;
-            --glow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg-black);
-            color: white;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            transition: 0.3s;
+            color: white; margin: 0; display: flex; height: 100vh; overflow: hidden;
         }
 
-        /* LOGIN OVERLAY */
-        #login-overlay {
-            position: fixed; inset: 0; background: var(--bg-black);
-            display: flex; align-items: center; justify-content: center; z-index: 1000;
-        }
-
-        .login-card {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 15px;
-            width: 350px;
-            border: 1px solid #333;
-            text-align: center;
-            box-shadow: var(--glow);
-        }
-
-        /* SIDEBAR */
+        /* SIDEBAR & NEWS */
         .sidebar {
-            width: var(--sidebar-width);
-            background: #0d0d0d;
-            border-right: 2px solid var(--taxi-yellow);
-            box-shadow: 5px 0 20px rgba(225, 255, 0, 0.05);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
+            width: var(--sidebar-width); background: #0d0d0d; border-right: 2px solid var(--taxi-yellow);
+            padding: 20px; display: flex; flex-direction: column;
         }
-
-        .sidebar h2 { color: var(--taxi-yellow); text-shadow: var(--glow); margin-bottom: 30px; }
-
-        .nav-item {
-            padding: 12px;
-            color: var(--text-gray);
-            cursor: pointer;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            transition: 0.2s;
+        .news-box {
+            background: #1a1a1a; border: 1px solid #333; padding: 10px; border-radius: 8px;
+            font-size: 13px; margin-top: 20px; color: #eee;
         }
+        .news-box h4 { margin: 0 0 5px 0; color: var(--taxi-yellow); font-size: 11px; text-transform: uppercase; }
 
-        .nav-item:hover, .nav-item.active {
-            background: #1a1a1a;
-            color: var(--taxi-yellow);
+        /* DASHBOARD GRID */
+        .main-content { flex-grow: 1; padding: 25px; overflow-y: auto; }
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+        .card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid #222; position: relative; }
+        
+        /* STATUS DOTS */
+        .status-badge { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .status-ready { background: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
+        .status-busy { background: #f1c40f; box-shadow: 0 0 10px #f1c40f; }
+        .status-off { background: #555; }
+
+        /* RECENT DRIVES FEED */
+        .feed-item {
+            padding: 10px; border-bottom: 1px solid #222; font-size: 13px;
         }
+        .feed-item:last-child { border: none; }
+        .feed-time { color: var(--taxi-yellow); font-size: 11px; display: block; }
 
-        /* MAIN CONTENT */
-        .main-content { flex-grow: 1; padding: 30px; overflow-y: auto; color: var(--text-gray); }
-
-        .card {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 15px;
-            border: 1px solid #222;
-            margin-bottom: 20px;
-        }
-
-        h1 { color: white; }
-
-        /* TIMER & GLOW */
-        .timer-display {
-            font-size: 60px;
-            font-weight: 800;
-            color: var(--taxi-yellow);
-            text-align: center;
-            text-shadow: 0 0 20px rgba(225, 255, 0, 0.5);
-            margin: 20px 0;
-        }
-
-        .on-duty-glow {
-            box-shadow: inset 0 0 50px rgba(255, 204, 0, 0.1);
-            border: 1px solid var(--taxi-yellow);
-        }
-
-        /* PROGRESS BAR */
-        .progress-container {
-            background: #222; border-radius: 10px; height: 20px; width: 100%; margin: 15px 0; overflow: hidden;
-        }
-        .progress-bar {
-            height: 100%; background: var(--taxi-yellow); box-shadow: 0 0 10px var(--taxi-yellow);
-            width: 0%; transition: 1s ease-in-out;
-        }
-
-        /* INPUTS & BUTTONS */
-        input, select {
-            width: 100%; padding: 12px; margin: 10px 0;
-            background: #222; border: 1px solid #444; color: white; border-radius: 5px;
-        }
-
-        .btn {
-            padding: 12px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s;
-        }
-        .btn-yellow { background: var(--taxi-yellow); color: black; box-shadow: var(--glow); width: 100%; }
-        .btn-danger { background: var(--danger); color: white; width: 100%; }
-
-        /* AVATAR */
-        .user-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--taxi-yellow); object-fit: cover; }
-
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px; border-bottom: 1px solid #333; font-size: 12px; }
-        td { padding: 12px; border-bottom: 1px solid #1a1a1a; color: #eee; }
-
+        /* UI ELEMENTS */
+        .nav-item { padding: 12px; color: var(--text-gray); cursor: pointer; border-radius: 8px; transition: 0.2s; }
+        .nav-item:hover, .nav-item.active { background: #1a1a1a; color: var(--taxi-yellow); }
+        .timer-display { font-size: 45px; font-weight: 800; color: var(--taxi-yellow); text-align: center; text-shadow: var(--glow); margin: 10px 0; }
+        
+        input, select { width: 100%; padding: 10px; margin: 8px 0; background: #222; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box;}
+        .btn-yellow { background: var(--taxi-yellow); color: black; border: none; padding: 12px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; }
+        
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--taxi-yellow); }
         .hidden { display: none !important; }
-
-        .theme-switch {
-            position: absolute; top: 20px; right: 20px; cursor: pointer; background: #222; padding: 10px; border-radius: 20px; color: white;
-        }
     </style>
 </head>
-<body id="body-tag">
+<body>
 
-    <div id="login-overlay">
-        <div class="login-card">
-            <h2 style="color: var(--taxi-yellow)">TaxiHub NRW</h2>
-            <p style="font-size: 12px; color: #666;">Bitte Login-Daten eingeben</p>
-            <input type="text" id="l-user" placeholder="Name (z.B. Maverick Stone)">
+    <div id="login-overlay" style="position:fixed; inset:0; background:var(--bg-black); z-index:1000; display:flex; align-items:center; justify-content:center;">
+        <div class="card" style="width:320px; text-align:center;">
+            <h2 style="color:var(--taxi-yellow)">TaxiHub NRW</h2>
+            <input type="text" id="l-user" placeholder="Name">
             <input type="password" id="l-pass" placeholder="Passwort">
-            <button class="btn btn-yellow" onclick="app.login()">EINLOGGEN</button>
-            <p id="error-msg" style="color: red; font-size: 12px; display: none; margin-top: 10px;">Name oder Passwort falsch!</p>
+            <button class="btn-yellow" onclick="app.login()">EINLOGGEN</button>
         </div>
     </div>
 
     <div class="sidebar">
-        <h2>TaxiHub</h2>
+        <h2 style="color:var(--taxi-yellow)">Leitstelle</h2>
         <div class="nav-item active" onclick="app.showPage('dashboard')">🏠 Dashboard</div>
         <div class="nav-item" onclick="app.showPage('fahrtenbuch')">📖 Fahrtenbuch</div>
         <div class="nav-item" onclick="app.showPage('mitarbeiter')">👥 Mitglieder</div>
         <div id="admin-nav" class="nav-item hidden" onclick="app.showPage('admin')">⚙️ Verwaltung</div>
-        
-        <div style="margin-top: auto; display: flex; align-items: center; gap: 12px; padding: 10px; background: #111; border-radius: 10px;">
-            <img id="side-avatar" src="images/Fahrer.jpg" class="user-avatar">
-            <div style="overflow: hidden;">
-                <b id="side-name" style="color: white; font-size: 14px; white-space: nowrap;">Name</b><br>
-                <small id="side-rang" style="color: var(--taxi-yellow);">Rang</small>
-            </div>
+
+        <div class="news-box">
+            <h4>📢 Schwarzes Brett</h4>
+            <div id="news-text">Keine neuen Durchsagen.</div>
+            <button id="edit-news-btn" class="hidden" onclick="app.editNews()" style="font-size:9px; background:none; border:1px solid #444; color:gray; cursor:pointer; margin-top:5px;">Ändern</button>
         </div>
-        <button class="btn" style="margin-top: 15px; background: #222; color: white;" onclick="location.reload()">Abmelden</button>
+
+        <div style="margin-top: auto; display: flex; align-items: center; gap: 10px; background:#111; padding:10px; border-radius:10px;">
+            <img id="side-avatar" src="images/Fahrer.jpg" class="user-avatar">
+            <div><b id="side-name" style="font-size:12px;">Name</b><br><small id="side-rang" style="color:var(--taxi-yellow); font-size:10px;">Rang</small></div>
+        </div>
     </div>
 
     <div class="main-content">
-        <div class="theme-switch" onclick="app.toggleTheme()">🌓 Modus wechseln</div>
-
+        
         <div id="page-dashboard">
-            <h1 id="welcome-msg">Willkommen!</h1>
-            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px;">
-                <div class="card" id="timer-card">
-                    <h3>Stempeluhr</h3>
-                    <div id="timer" class="timer-display">00:00:00</div>
-                    <button id="stempel-btn" class="btn btn-yellow" onclick="app.toggleDuty()">DIENST ANTRETEN</button>
-                </div>
-                <div class="card">
-                    <h3>Dein Wochenziel</h3>
-                    <p id="milestone-text">Lade Daten...</p>
-                    <div class="progress-container">
-                        <div id="progress-bar" class="progress-bar"></div>
+            <h1>Zentrale Dashboard</h1>
+            <div class="dash-grid">
+                
+                <div>
+                    <div class="card">
+                        <h3>Eigene Sitzung</h3>
+                        <div id="timer" class="timer-display">00:00:00</div>
+                        <button id="stempel-btn" class="btn-yellow" onclick="app.toggleDuty()">DIENST ANTRETEN</button>
                     </div>
-                    <small>Fortschritt: <span id="progress-val">0</span>%</small>
+                    <div class="card" style="margin-top:20px;">
+                        <h3>Statusübersicht</h3>
+                        <div id="fleet-status">Lade Flotte...</div>
+                    </div>
                 </div>
+
+                <div class="card">
+                    <h3>🚗 Aktive Einheiten</h3>
+                    <div id="fleet-list"></div>
+                </div>
+
+                <div class="card">
+                    <h3>📜 Letzte Fahrten (Global)</h3>
+                    <div id="drive-feed"></div>
+                </div>
+
             </div>
         </div>
 
         <div id="page-fahrtenbuch" class="hidden">
-            <h1>Fahrt erfassen</h1>
-            <div class="card" style="max-width: 450px;">
+            <h1>Neue Fahrt registrieren</h1>
+            <div class="card" style="max-width: 400px;">
+                <label>Von (Ort/Straße)</label>
+                <input type="text" id="f-von" placeholder="Taxi-Zentrale">
+                <label>Nach (Ziel)</label>
+                <input type="text" id="f-nach" placeholder="Flughafen">
                 <label>Fahrzeug-Typ</label>
                 <select id="f-typ">
-                    <option value="normal">Normale Fahrt (Kostenlos)</option>
-                    <option value="heli">Helikopter (Premium)</option>
-                    <option value="limo">Limosine (Premium)</option>
+                    <option value="Normal">Normale Fahrt</option>
+                    <option value="Heli">Heli (Premium)</option>
+                    <option value="Limo">Limo (Premium)</option>
                 </select>
-                <button class="btn btn-yellow" onclick="app.addDrive()">FAHRT SPEICHERN</button>
+                <button class="btn-yellow" onclick="app.addDrive()">FAHRT ABSCHLIESSEN</button>
             </div>
         </div>
 
         <div id="page-mitarbeiter" class="hidden">
-            <h1>Mitgliederliste</h1>
-            <div class="card">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fahrer</th>
-                            <th>DN</th>
-                            <th>Rang</th>
-                            <th>Fahrten</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="staff-body"></tbody>
-                </table>
-            </div>
+            <h1>Mitarbeiterliste</h1>
+            <div class="card"><table id="staff-table" style="width:100%; text-align:left;"><thead><tr><th>Name</th><th>DN</th><th>Rang</th><th>Fahrten</th></tr></thead><tbody id="staff-body"></tbody></table></div>
         </div>
 
         <div id="page-admin" class="hidden">
-            <h1>Verwaltung</h1>
+            <h1>Admin Verwaltung</h1>
             <div class="card">
-                <h3>Neuen Account erstellen</h3>
-                <input type="text" id="adm-name" placeholder="Vollständiger Name">
+                <h3>Neuen Account anlegen</h3>
+                <input type="text" id="adm-name" placeholder="Name">
                 <input type="text" id="adm-pass" placeholder="Passwort">
-                <input type="text" id="adm-dn" placeholder="Dienstnummer (z.B. 05)">
-                <select id="adm-rang">
-                    <option>Praktikant</option>
-                    <option>Azubi Fahrer</option>
-                    <option>Jr. Fahrer</option>
-                    <option selected>Fahrer</option>
-                    <option>Sr. Fahrer</option>
-                    <option>Stvl. Geschäftsführung</option>
-                    <option>Geschäftsführung</option>
-                </select>
-                <button class="btn btn-yellow" onclick="app.createAcc()">ACCOUNT ANLEGEN</button>
+                <input type="text" id="adm-dn" placeholder="DN">
+                <select id="adm-rang"><option>Praktikant</option><option>Azubi Fahrer</option><option>Fahrer</option><option>Sr. Fahrer</option><option>Stvl. Geschäftsführung</option><option selected>Geschäftsführung</option></select>
+                <button class="btn-yellow" onclick="app.createAcc()">ERSTELLEN</button>
             </div>
         </div>
+
     </div>
 
     <script>
         const app = {
             currentUser: null,
-            users: [],
-            timerInt: null,
-            timerSecs: 0,
+            users: JSON.parse(localStorage.getItem('th_final_v3')) || [{
+                name: "Maverick Stone", pass: "Bka26r", dn: "01", rang: "Geschäftsführung", 
+                isAdmin: true, drives: 0, onDuty: false, status: 'off'
+            }],
+            news: localStorage.getItem('th_news') || "Willkommen im Dienst! Bitte im Funk melden.",
+            drives: JSON.parse(localStorage.getItem('th_drives')) || [],
+            timerInt: null, timerSecs: 0,
 
             init: function() {
-                // Lade User aus Speicher oder erstelle Standard-Admin
-                const saved = localStorage.getItem('th_users_v2');
-                if (saved) {
-                    this.users = JSON.parse(saved);
-                } else {
-                    this.users = [{
-                        name: "Maverick Stone", pass: "Bka26r", dn: "01", 
-                        rang: "Geschäftsführung", isAdmin: true, drives: 0, 
-                        onDuty: false, totalTime: 0
-                    }];
-                    this.save();
-                }
+                this.renderFleet();
+                this.renderFeed();
+                document.getElementById('news-text').innerText = this.news;
             },
 
             login: function() {
                 const u = document.getElementById('l-user').value.trim();
                 const p = document.getElementById('l-pass').value.trim();
                 const found = this.users.find(x => x.name === u && x.pass === p);
-
-                if (found) {
+                if(found) {
                     this.currentUser = found;
                     document.getElementById('login-overlay').classList.add('hidden');
+                    if(found.isAdmin) {
+                        document.getElementById('admin-nav').classList.remove('hidden');
+                        document.getElementById('edit-news-btn').classList.remove('hidden');
+                    }
                     this.updateUI();
-                } else {
-                    document.getElementById('error-msg').style.display = 'block';
                 }
             },
 
             updateUI: function() {
-                document.getElementById('welcome-msg').innerText = "Willkommen, " + this.currentUser.name + "!";
                 document.getElementById('side-name').innerText = this.currentUser.name;
                 document.getElementById('side-rang').innerText = this.currentUser.rang;
-                
-                // Avatar Mapping
-                const imgMap = {
-                    "Praktikant": "Praktikant.jpg", "Azubi Fahrer": "Azubi.jpg",
-                    "Jr. Fahrer": "Jr.jpg", "Fahrer": "Fahrer.jpg",
-                    "Sr. Fahrer": "Sr. Fahrer.jpg", "Stvl. Geschäftsführung": "Stvl.jpg",
-                    "Geschäftsführung": "Inhaber.jpg"
-                };
-                document.getElementById('side-avatar').src = "images/" + (imgMap[this.currentUser.rang] || "Fahrer.jpg");
-
-                if (this.currentUser.isAdmin) document.getElementById('admin-nav').classList.remove('hidden');
-                
-                this.updateMilestone();
+                this.renderFleet();
                 this.renderStaff();
             },
 
             toggleDuty: function() {
-                const btn = document.getElementById('stempel-btn');
-                const card = document.getElementById('timer-card');
                 this.currentUser.onDuty = !this.currentUser.onDuty;
-
-                if (this.currentUser.onDuty) {
-                    btn.innerText = "DIENST BEENDEN";
-                    btn.className = "btn btn-danger";
-                    card.classList.add('on-duty-glow');
+                const btn = document.getElementById('stempel-btn');
+                if(this.currentUser.onDuty) {
+                    this.currentUser.status = 'ready';
+                    btn.innerText = "DIENST BEENDEN"; btn.style.background = "#ff3e3e";
                     this.timerInt = setInterval(() => {
                         this.timerSecs++;
                         document.getElementById('timer').innerText = new Date(this.timerSecs * 1000).toISOString().substr(11, 8);
                     }, 1000);
                 } else {
-                    clearInterval(this.timerInt);
-                    this.timerSecs = 0;
-                    btn.innerText = "DIENST ANTRETEN";
-                    btn.className = "btn btn-yellow";
-                    card.classList.remove('on-duty-glow');
+                    clearInterval(this.timerInt); this.timerSecs = 0;
+                    this.currentUser.status = 'off';
+                    btn.innerText = "DIENST ANTRETEN"; btn.style.background = "var(--taxi-yellow)";
                     document.getElementById('timer').innerText = "00:00:00";
                 }
-                this.renderStaff();
-                this.save();
+                this.save(); this.renderFleet();
             },
 
             addDrive: function() {
+                const von = document.getElementById('f-von').value || "Unbekannt";
+                const nach = document.getElementById('f-nach').value || "Unbekannt";
+                const typ = document.getElementById('f-typ').value;
+                
+                const drive = { fahrer: this.currentUser.name, von, nach, typ, time: new Date().toLocaleTimeString() };
+                this.drives.unshift(drive);
+                if(this.drives.length > 5) this.drives.pop();
+                
                 this.currentUser.drives++;
                 this.save();
-                this.updateMilestone();
-                alert("Fahrt wurde im System für " + this.currentUser.name + " gespeichert!");
+                this.renderFeed();
+                alert("Fahrt registriert!");
                 this.showPage('dashboard');
             },
 
-            updateMilestone: function() {
-                const target = 50;
-                const perc = Math.min((this.currentUser.drives / target) * 100, 100);
-                document.getElementById('progress-bar').style.width = perc + "%";
-                document.getElementById('progress-val').innerText = Math.floor(perc);
-                document.getElementById('milestone-text').innerText = `Noch ${Math.max(target - this.currentUser.drives, 0)} Fahrten bis zum Bonus.`;
+            editNews: function() {
+                const n = prompt("Neue Nachricht für das Schwarze Brett:", this.news);
+                if(n) { this.news = n; localStorage.setItem('th_news', n); document.getElementById('news-text').innerText = n; }
+            },
+
+            renderFleet: function() {
+                const container = document.getElementById('fleet-list');
+                const statusInfo = document.getElementById('fleet-status');
+                container.innerHTML = "";
+                let online = 0;
+
+                this.users.forEach(u => {
+                    if(u.onDuty) online++;
+                    const dotClass = u.onDuty ? 'status-ready' : 'status-off';
+                    container.innerHTML += `
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; padding:8px; background:#111; border-radius:5px;">
+                            <div class="status-badge ${dotClass}"></div>
+                            <div style="font-size:13px;"><b>[${u.dn}] ${u.name}</b><br><small style="color:gray">${u.rang}</small></div>
+                        </div>
+                    `;
+                });
+                statusInfo.innerHTML = `Eingestellt: ${this.users.length} | <b>Aktiv: ${online}</b>`;
+            },
+
+            renderFeed: function() {
+                const container = document.getElementById('drive-feed');
+                container.innerHTML = this.drives.length ? "" : "Noch keine Fahrten heute.";
+                this.drives.forEach(d => {
+                    container.innerHTML += `
+                        <div class="feed-item">
+                            <span class="feed-time">${d.time} Uhr - ${d.typ}</span>
+                            <b>${d.fahrer}</b>: ${d.von} ➔ ${d.nach}
+                        </div>
+                    `;
+                });
             },
 
             renderStaff: function() {
-                const body = document.getElementById('staff-body');
-                body.innerHTML = "";
+                const body = document.getElementById('staff-body'); body.innerHTML = "";
                 this.users.forEach(u => {
-                    const status = u.onDuty ? '<span style="color:var(--taxi-yellow)">● Im Dienst</span>' : '<span style="color:#444">○ Außer Dienst</span>';
-                    body.innerHTML += `
-                        <tr>
-                            <td>${u.name}</td>
-                            <td>#${u.dn}</td>
-                            <td>${u.rang}</td>
-                            <td>${u.drives}</td>
-                            <td>${status}</td>
-                        </tr>
-                    `;
+                    body.innerHTML += `<tr><td>${u.name}</td><td>#${u.dn}</td><td>${u.rang}</td><td>${u.drives}</td></tr>`;
                 });
             },
 
@@ -366,36 +284,24 @@
                 const pass = document.getElementById('adm-pass').value;
                 const dn = document.getElementById('adm-dn').value;
                 const rang = document.getElementById('adm-rang').value;
-
-                if (name && pass) {
-                    this.users.push({
-                        name, pass, dn, rang, isAdmin: false, drives: 0, onDuty: false, totalTime: 0
-                    });
-                    this.save();
-                    this.renderStaff();
-                    alert("Account für " + name + " erstellt!");
+                if(name && pass) {
+                    this.users.push({ name, pass, dn, rang, isAdmin:false, drives:0, onDuty:false, status:'off' });
+                    this.save(); this.renderFleet(); this.renderStaff(); alert("Konto erstellt!");
                 }
             },
 
             showPage: function(id) {
-                const pages = ['dashboard', 'fahrtenbuch', 'mitarbeiter', 'admin'];
-                pages.forEach(p => document.getElementById('page-' + p).classList.add('hidden'));
-                document.getElementById('page-' + id).classList.remove('hidden');
-                
+                ['dashboard', 'fahrtenbuch', 'mitarbeiter', 'admin'].forEach(p => document.getElementById('page-'+p).classList.add('hidden'));
+                document.getElementById('page-'+id).classList.remove('hidden');
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                // Einfacher Weg um Active-Klasse zu setzen
                 event.currentTarget.classList.add('active');
             },
 
-            toggleTheme: function() {
-                document.getElementById('body-tag').classList.toggle('light-mode');
-            },
-
-            save: function() {
-                localStorage.setItem('th_users_v2', JSON.stringify(this.users));
+            save: function() { 
+                localStorage.setItem('th_final_v3', JSON.stringify(this.users));
+                localStorage.setItem('th_drives', JSON.stringify(this.drives));
             }
         };
-
         app.init();
     </script>
 </body>
