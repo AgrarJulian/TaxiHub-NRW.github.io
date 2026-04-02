@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaxiHub NRW | Dashboard</title>
+    
     <link rel="icon" type="image/png" href="images/bild.png">
+
     <style>
         :root {
             --taxi-yellow: #e1ff00;
@@ -25,16 +27,33 @@
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg-black);
-            color: var(--text-gray);
+            color: white;
             margin: 0;
             display: flex;
             height: 100vh;
+            overflow: hidden;
             transition: 0.3s;
         }
 
-        /* SIDEBAR MIT GLOW */
+        /* LOGIN OVERLAY */
+        #login-overlay {
+            position: fixed; inset: 0; background: var(--bg-black);
+            display: flex; align-items: center; justify-content: center; z-index: 1000;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 15px;
+            width: 350px;
+            border: 1px solid #333;
+            text-align: center;
+            box-shadow: var(--glow);
+        }
+
+        /* SIDEBAR */
         .sidebar {
             width: var(--sidebar-width);
             background: #0d0d0d;
@@ -43,7 +62,6 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            z-index: 10;
         }
 
         .sidebar h2 { color: var(--taxi-yellow); text-shadow: var(--glow); margin-bottom: 30px; }
@@ -51,10 +69,6 @@
         .nav-item {
             padding: 12px;
             color: var(--text-gray);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
             cursor: pointer;
             border-radius: 8px;
             margin-bottom: 5px;
@@ -64,139 +78,115 @@
         .nav-item:hover, .nav-item.active {
             background: #1a1a1a;
             color: var(--taxi-yellow);
-            box-shadow: inset 0 0 10px rgba(225, 255, 0, 0.1);
-        }
-
-        /* AVATARE */
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            border: 2px solid var(--taxi-yellow);
-            object-fit: cover;
-            box-shadow: var(--glow);
         }
 
         /* MAIN CONTENT */
-        .main-content { flex-grow: 1; padding: 30px; overflow-y: auto; }
+        .main-content { flex-grow: 1; padding: 30px; overflow-y: auto; color: var(--text-gray); }
 
         .card {
             background: var(--card-bg);
             padding: 25px;
             border-radius: 15px;
             border: 1px solid #222;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             margin-bottom: 20px;
         }
 
-        /* TIMER GLOW */
+        h1 { color: white; }
+
+        /* TIMER & GLOW */
         .timer-display {
-            font-size: 55px;
+            font-size: 60px;
             font-weight: 800;
             color: var(--taxi-yellow);
             text-align: center;
+            text-shadow: 0 0 20px rgba(225, 255, 0, 0.5);
             margin: 20px 0;
-            text-shadow: 0 0 20px rgba(225, 255, 0, 0.6);
-            font-family: monospace;
+        }
+
+        .on-duty-glow {
+            box-shadow: inset 0 0 50px rgba(255, 204, 0, 0.1);
+            border: 1px solid var(--taxi-yellow);
         }
 
         /* PROGRESS BAR */
         .progress-container {
-            background: #222;
-            border-radius: 10px;
-            height: 20px;
-            width: 100%;
-            margin: 15px 0;
-            overflow: hidden;
+            background: #222; border-radius: 10px; height: 20px; width: 100%; margin: 15px 0; overflow: hidden;
         }
-
         .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #b8d000, var(--taxi-yellow));
-            box-shadow: 0 0 10px var(--taxi-yellow);
-            width: 0%;
-            transition: 1s ease-in-out;
+            height: 100%; background: var(--taxi-yellow); box-shadow: 0 0 10px var(--taxi-yellow);
+            width: 0%; transition: 1s ease-in-out;
         }
 
-        /* BUTTONS */
+        /* INPUTS & BUTTONS */
+        input, select {
+            width: 100%; padding: 12px; margin: 10px 0;
+            background: #222; border: 1px solid #444; color: white; border-radius: 5px;
+        }
+
         .btn {
-            padding: 12px 20px;
-            border-radius: 8px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
+            padding: 12px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s;
         }
+        .btn-yellow { background: var(--taxi-yellow); color: black; box-shadow: var(--glow); width: 100%; }
+        .btn-danger { background: var(--danger); color: white; width: 100%; }
 
-        .btn-yellow { 
-            background: var(--taxi-yellow); 
-            color: black; 
-            box-shadow: var(--glow);
-        }
+        /* AVATAR */
+        .user-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--taxi-yellow); object-fit: cover; }
 
-        .btn-yellow:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(225, 255, 0, 0.6); }
-
-        /* TABELLE */
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 15px; border-bottom: 1px solid #333; font-size: 12px; text-transform: uppercase; }
-        td { padding: 15px; border-bottom: 1px solid #1a1a1a; color: #eee; }
+        th { text-align: left; padding: 12px; border-bottom: 1px solid #333; font-size: 12px; }
+        td { padding: 12px; border-bottom: 1px solid #1a1a1a; color: #eee; }
 
-        .hidden { display: none; }
+        .hidden { display: none !important; }
 
-        #login-overlay {
-            position: fixed; inset: 0; background: var(--bg-black);
-            display: flex; align-items: center; justify-content: center; z-index: 1000;
-        }
-
-        /* TOGGLE SWITCH */
         .theme-switch {
-            position: absolute; top: 20px; right: 20px;
-            cursor: pointer; background: #222; padding: 10px; border-radius: 50px;
+            position: absolute; top: 20px; right: 20px; cursor: pointer; background: #222; padding: 10px; border-radius: 20px; color: white;
         }
     </style>
 </head>
-<body id="body">
+<body id="body-tag">
 
     <div id="login-overlay">
-        <div class="card" style="width: 350px; text-align: center;">
-            <h2 style="color: var(--taxi-yellow)">TaxiHub Login</h2>
-            <input type="text" id="l-user" placeholder="Name" style="width:90%; padding:10px; margin:10px; background:#222; border:1px solid #444; color:white;">
-            <input type="password" id="l-pass" placeholder="Passwort" style="width:90%; padding:10px; margin:10px; background:#222; border:1px solid #444; color:white;">
-            <button class="btn btn-yellow" style="width:95%" onclick="app.login()">Einloggen</button>
+        <div class="login-card">
+            <h2 style="color: var(--taxi-yellow)">TaxiHub NRW</h2>
+            <p style="font-size: 12px; color: #666;">Bitte Login-Daten eingeben</p>
+            <input type="text" id="l-user" placeholder="Name (z.B. Maverick Stone)">
+            <input type="password" id="l-pass" placeholder="Passwort">
+            <button class="btn btn-yellow" onclick="app.login()">EINLOGGEN</button>
+            <p id="error-msg" style="color: red; font-size: 12px; display: none; margin-top: 10px;">Name oder Passwort falsch!</p>
         </div>
     </div>
 
     <div class="sidebar">
-        <h2>TaxiHub NRW</h2>
-        <div class="nav-item active" onclick="app.showPage('dashboard')">Dashboard</div>
-        <div class="nav-item" onclick="app.showPage('fahrtenbuch')">Fahrten erfassen</div>
-        <div class="nav-item" onclick="app.showPage('mitarbeiter')">Mitgliederliste</div>
-        <div id="admin-nav" class="nav-item hidden" onclick="app.showPage('admin')">Verwaltung</div>
+        <h2>TaxiHub</h2>
+        <div class="nav-item active" onclick="app.showPage('dashboard')">🏠 Dashboard</div>
+        <div class="nav-item" onclick="app.showPage('fahrtenbuch')">📖 Fahrtenbuch</div>
+        <div class="nav-item" onclick="app.showPage('mitarbeiter')">👥 Mitglieder</div>
+        <div id="admin-nav" class="nav-item hidden" onclick="app.showPage('admin')">⚙️ Verwaltung</div>
         
-        <div style="margin-top: auto; display: flex; align-items: center; gap: 10px;">
-            <img id="side-avatar" src="images/Fahrer.jpg" class="user-avatar" alt="Profil">
-            <div>
-                <b id="side-name" style="color: white; font-size: 14px;">Name</b><br>
-                <small id="side-rang">Rang</small>
+        <div style="margin-top: auto; display: flex; align-items: center; gap: 12px; padding: 10px; background: #111; border-radius: 10px;">
+            <img id="side-avatar" src="images/Fahrer.jpg" class="user-avatar">
+            <div style="overflow: hidden;">
+                <b id="side-name" style="color: white; font-size: 14px; white-space: nowrap;">Name</b><br>
+                <small id="side-rang" style="color: var(--taxi-yellow);">Rang</small>
             </div>
         </div>
         <button class="btn" style="margin-top: 15px; background: #222; color: white;" onclick="location.reload()">Abmelden</button>
     </div>
 
     <div class="main-content">
-        <div class="theme-switch" onclick="app.toggleTheme()">🌙 Mode</div>
+        <div class="theme-switch" onclick="app.toggleTheme()">🌓 Modus wechseln</div>
 
         <div id="page-dashboard">
-            <h1>Willkommen im Dashboard!</h1>
+            <h1 id="welcome-msg">Willkommen!</h1>
             <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px;">
-                <div class="card">
+                <div class="card" id="timer-card">
                     <h3>Stempeluhr</h3>
                     <div id="timer" class="timer-display">00:00:00</div>
-                    <button id="stempel-btn" class="btn btn-yellow" style="width: 100%; font-size: 18px;" onclick="app.toggleDuty()">DIENST ANTRETEN</button>
+                    <button id="stempel-btn" class="btn btn-yellow" onclick="app.toggleDuty()">DIENST ANTRETEN</button>
                 </div>
                 <div class="card">
-                    <h3>Milestone: Wochenziel</h3>
-                    <p id="milestone-text">Noch 50 Fahrten bis zum Bonus</p>
+                    <h3>Dein Wochenziel</h3>
+                    <p id="milestone-text">Lade Daten...</p>
                     <div class="progress-container">
                         <div id="progress-bar" class="progress-bar"></div>
                     </div>
@@ -205,10 +195,23 @@
             </div>
         </div>
 
+        <div id="page-fahrtenbuch" class="hidden">
+            <h1>Fahrt erfassen</h1>
+            <div class="card" style="max-width: 450px;">
+                <label>Fahrzeug-Typ</label>
+                <select id="f-typ">
+                    <option value="normal">Normale Fahrt (Kostenlos)</option>
+                    <option value="heli">Helikopter (Premium)</option>
+                    <option value="limo">Limosine (Premium)</option>
+                </select>
+                <button class="btn btn-yellow" onclick="app.addDrive()">FAHRT SPEICHERN</button>
+            </div>
+        </div>
+
         <div id="page-mitarbeiter" class="hidden">
             <h1>Mitgliederliste</h1>
             <div class="card">
-                <table id="staff-table">
+                <table>
                     <thead>
                         <tr>
                             <th>Fahrer</th>
@@ -216,7 +219,6 @@
                             <th>Rang</th>
                             <th>Fahrten</th>
                             <th>Status</th>
-                            <th class="admin-only hidden">Aktion</th>
                         </tr>
                     </thead>
                     <tbody id="staff-body"></tbody>
@@ -225,40 +227,22 @@
         </div>
 
         <div id="page-admin" class="hidden">
-            <h1>Account Verwaltung</h1>
+            <h1>Verwaltung</h1>
             <div class="card">
-                <h3>Neuen Mitarbeiter anlegen</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <input type="text" id="adm-name" placeholder="Name">
-                    <input type="text" id="adm-pass" placeholder="Passwort">
-                    <input type="text" id="adm-dn" placeholder="Dienstnummer (z.B. 08)">
-                    <select id="adm-rang">
-                        <option value="Praktikant">Praktikant</option>
-                        <option value="Azubi Fahrer">Azubi Fahrer</option>
-                        <option value="Jr. Fahrer">Jr. Fahrer</option>
-                        <option value="Fahrer" selected>Fahrer</option>
-                        <option value="Sr. Fahrer">Sr. Fahrer</option>
-                        <option value="Stvl. Geschäftsführung">Stvl. Geschäftsführung</option>
-                        <option value="Geschäftsführung">Geschäftsführung</option>
-                    </select>
-                </div>
-                <div style="margin-top: 10px;">
-                    <input type="checkbox" id="adm-isadmin"> Admin-Berechtigungen (Bearbeiten)
-                </div>
-                <button class="btn btn-yellow" style="margin-top: 15px;" onclick="app.createAcc()">Account Erstellen</button>
-            </div>
-        </div>
-
-        <div id="page-fahrtenbuch" class="hidden">
-            <h1>Fahrt erfassen</h1>
-            <div class="card" style="max-width: 500px;">
-                <label>Fahrzeug Typ</label>
-                <select id="f-typ" style="width: 100%; padding: 10px; margin: 10px 0; background: #222; color: white; border: 1px solid #444;">
-                    <option value="normal">Normale Fahrt (Kostenlos)</option>
-                    <option value="heli">Helikopter (Premium)</option>
-                    <option value="limo">Limosine (Premium)</option>
+                <h3>Neuen Account erstellen</h3>
+                <input type="text" id="adm-name" placeholder="Vollständiger Name">
+                <input type="text" id="adm-pass" placeholder="Passwort">
+                <input type="text" id="adm-dn" placeholder="Dienstnummer (z.B. 05)">
+                <select id="adm-rang">
+                    <option>Praktikant</option>
+                    <option>Azubi Fahrer</option>
+                    <option>Jr. Fahrer</option>
+                    <option selected>Fahrer</option>
+                    <option>Sr. Fahrer</option>
+                    <option>Stvl. Geschäftsführung</option>
+                    <option>Geschäftsführung</option>
                 </select>
-                <button class="btn btn-yellow" style="width: 100%;" onclick="app.addDrive()">Absenden</button>
+                <button class="btn btn-yellow" onclick="app.createAcc()">ACCOUNT ANLEGEN</button>
             </div>
         </div>
     </div>
@@ -266,115 +250,112 @@
     <script>
         const app = {
             currentUser: null,
-            users: JSON.parse(localStorage.getItem('th_users')) || [{
-                name: "Maverick Stone", pass: "Bka26r", dn: "01", rang: "Geschäftsführung", 
-                isAdmin: true, drives: 0, onDuty: false, totalTime: 0, lastLogin: Date.now()
-            }],
-            timerSecs: 0,
+            users: [],
             timerInt: null,
-            isDark: true,
+            timerSecs: 0,
 
             init: function() {
-                this.renderStaff();
+                // Lade User aus Speicher oder erstelle Standard-Admin
+                const saved = localStorage.getItem('th_users_v2');
+                if (saved) {
+                    this.users = JSON.parse(saved);
+                } else {
+                    this.users = [{
+                        name: "Maverick Stone", pass: "Bka26r", dn: "01", 
+                        rang: "Geschäftsführung", isAdmin: true, drives: 0, 
+                        onDuty: false, totalTime: 0
+                    }];
+                    this.save();
+                }
             },
 
             login: function() {
-                const u = document.getElementById('l-user').value;
-                const p = document.getElementById('l-pass').value;
-                const user = this.users.find(x => x.name === u && x.pass === p);
-                if(user) {
-                    this.currentUser = user;
-                    document.getElementById('login-overlay').style.display = 'none';
+                const u = document.getElementById('l-user').value.trim();
+                const p = document.getElementById('l-pass').value.trim();
+                const found = this.users.find(x => x.name === u && x.pass === p);
+
+                if (found) {
+                    this.currentUser = found;
+                    document.getElementById('login-overlay').classList.add('hidden');
                     this.updateUI();
+                } else {
+                    document.getElementById('error-msg').style.display = 'block';
                 }
             },
 
             updateUI: function() {
+                document.getElementById('welcome-msg').innerText = "Willkommen, " + this.currentUser.name + "!";
                 document.getElementById('side-name').innerText = this.currentUser.name;
                 document.getElementById('side-rang').innerText = this.currentUser.rang;
                 
-                // Bild-Logik basierend auf deinen Dateinamen im GitHub
+                // Avatar Mapping
                 const imgMap = {
-                    "Praktikant": "Praktikant.jpg",
-                    "Azubi Fahrer": "Azubi.jpg",
-                    "Jr. Fahrer": "Jr.jpg",
-                    "Fahrer": "Fahrer.jpg",
-                    "Sr. Fahrer": "Sr. Fahrer.jpg",
-                    "Stvl. Geschäftsführung": "Stvl.jpg",
+                    "Praktikant": "Praktikant.jpg", "Azubi Fahrer": "Azubi.jpg",
+                    "Jr. Fahrer": "Jr.jpg", "Fahrer": "Fahrer.jpg",
+                    "Sr. Fahrer": "Sr. Fahrer.jpg", "Stvl. Geschäftsführung": "Stvl.jpg",
                     "Geschäftsführung": "Inhaber.jpg"
                 };
                 document.getElementById('side-avatar').src = "images/" + (imgMap[this.currentUser.rang] || "Fahrer.jpg");
+
+                if (this.currentUser.isAdmin) document.getElementById('admin-nav').classList.remove('hidden');
                 
-                if(this.currentUser.isAdmin) {
-                    document.getElementById('admin-nav').classList.remove('hidden');
-                    document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
-                }
                 this.updateMilestone();
                 this.renderStaff();
             },
 
             toggleDuty: function() {
-                this.currentUser.onDuty = !this.currentUser.onDuty;
                 const btn = document.getElementById('stempel-btn');
-                const timerDisplay = document.getElementById('timer');
-                
-                if(this.currentUser.onDuty) {
+                const card = document.getElementById('timer-card');
+                this.currentUser.onDuty = !this.currentUser.onDuty;
+
+                if (this.currentUser.onDuty) {
                     btn.innerText = "DIENST BEENDEN";
-                    btn.style.background = "var(--danger)";
-                    btn.style.boxShadow = "0 0 20px rgba(255, 0, 0, 0.4)";
+                    btn.className = "btn btn-danger";
+                    card.classList.add('on-duty-glow');
                     this.timerInt = setInterval(() => {
                         this.timerSecs++;
-                        this.currentUser.totalTime++;
-                        timerDisplay.innerText = new Date(this.timerSecs * 1000).toISOString().substr(11, 8);
-                        if(this.timerSecs % 10 === 0) this.save(); // Alle 10 Sek speichern
+                        document.getElementById('timer').innerText = new Date(this.timerSecs * 1000).toISOString().substr(11, 8);
                     }, 1000);
                 } else {
                     clearInterval(this.timerInt);
                     this.timerSecs = 0;
                     btn.innerText = "DIENST ANTRETEN";
-                    btn.style.background = "var(--taxi-yellow)";
-                    btn.style.boxShadow = var(--glow);
-                    timerDisplay.innerText = "00:00:00";
-                    this.save();
+                    btn.className = "btn btn-yellow";
+                    card.classList.remove('on-duty-glow');
+                    document.getElementById('timer').innerText = "00:00:00";
                 }
                 this.renderStaff();
+                this.save();
             },
 
             addDrive: function() {
                 this.currentUser.drives++;
                 this.save();
                 this.updateMilestone();
-                alert("Fahrt registriert!");
+                alert("Fahrt wurde im System für " + this.currentUser.name + " gespeichert!");
+                this.showPage('dashboard');
             },
 
             updateMilestone: function() {
                 const target = 50;
-                const current = this.currentUser.drives;
-                const perc = Math.min((current / target) * 100, 100);
+                const perc = Math.min((this.currentUser.drives / target) * 100, 100);
                 document.getElementById('progress-bar').style.width = perc + "%";
                 document.getElementById('progress-val').innerText = Math.floor(perc);
-                document.getElementById('milestone-text').innerText = `Noch ${Math.max(target - current, 0)} Fahrten bis zum Wochen-Bonus!`;
+                document.getElementById('milestone-text').innerText = `Noch ${Math.max(target - this.currentUser.drives, 0)} Fahrten bis zum Bonus.`;
             },
 
             renderStaff: function() {
                 const body = document.getElementById('staff-body');
                 body.innerHTML = "";
-                const imgMap = { "Praktikant": "Praktikant.jpg", "Azubi Fahrer": "Azubi.jpg", "Jr. Fahrer": "Jr.jpg", "Fahrer": "Fahrer.jpg", "Sr. Fahrer": "Sr. Fahrer.jpg", "Stvl. Geschäftsführung": "Stvl.jpg", "Geschäftsführung": "Inhaber.jpg" };
-
-                this.users.forEach((u, index) => {
-                    const status = u.onDuty ? '<b style="color:var(--taxi-yellow); text-shadow: 0 0 5px yellow;">IM DIENST</b>' : 'Außer Dienst';
-                    const img = "images/" + (imgMap[u.rang] || "Fahrer.jpg");
-                    
-                    let adminActions = this.currentUser?.isAdmin ? `<td><button onclick="app.editUser(${index})" style="background:#444; color:white; border:none; padding:5px; cursor:pointer;">Edit</button></td>` : '';
-
+                this.users.forEach(u => {
+                    const status = u.onDuty ? '<span style="color:var(--taxi-yellow)">● Im Dienst</span>' : '<span style="color:#444">○ Außer Dienst</span>';
                     body.innerHTML += `
                         <tr>
-                            <td style="display:flex; align-items:center; gap:10px;"><img src="${img}" width="30" height="30" style="border-radius:50%; border:1px solid yellow;"> ${u.name}</td>
+                            <td>${u.name}</td>
                             <td>#${u.dn}</td>
                             <td>${u.rang}</td>
                             <td>${u.drives}</td>
                             <td>${status}</td>
-                            ${adminActions}
                         </tr>
                     `;
                 });
@@ -385,47 +366,36 @@
                 const pass = document.getElementById('adm-pass').value;
                 const dn = document.getElementById('adm-dn').value;
                 const rang = document.getElementById('adm-rang').value;
-                const isAdmin = document.getElementById('adm-isadmin').checked;
 
-                if(name && pass) {
-                    this.users.push({ name, pass, dn, rang, isAdmin, drives:0, onDuty:false, totalTime:0 });
+                if (name && pass) {
+                    this.users.push({
+                        name, pass, dn, rang, isAdmin: false, drives: 0, onDuty: false, totalTime: 0
+                    });
                     this.save();
                     this.renderStaff();
-                    alert("Account erstellt!");
+                    alert("Account für " + name + " erstellt!");
                 }
             },
 
-            editUser: function(index) {
-                const u = this.users[index];
-                const newName = prompt("Neuer Name:", u.name);
-                const newRang = prompt("Neuer Rang (Exakt schreiben!):", u.rang);
-                const newDrives = prompt("Fahrten Anzahl:", u.drives);
-                
-                if(newName) u.name = newName;
-                if(newRang) u.rang = newRang;
-                if(newDrives) u.drives = parseInt(newDrives);
-                
-                this.save();
-                this.renderStaff();
-            },
-
             showPage: function(id) {
-                const p = ['dashboard', 'fahrtenbuch', 'mitarbeiter', 'admin'];
-                p.forEach(x => document.getElementById('page-'+x).classList.add('hidden'));
-                document.getElementById('page-'+id).classList.remove('hidden');
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                event.target.classList.add('active');
+                const pages = ['dashboard', 'fahrtenbuch', 'mitarbeiter', 'admin'];
+                pages.forEach(p => document.getElementById('page-' + p).classList.add('hidden'));
+                document.getElementById('page-' + id).classList.remove('hidden');
+                
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                // Einfacher Weg um Active-Klasse zu setzen
+                event.currentTarget.classList.add('active');
             },
 
             toggleTheme: function() {
-                this.isDark = !this.isDark;
-                document.body.classList.toggle('light-mode');
+                document.getElementById('body-tag').classList.toggle('light-mode');
             },
 
             save: function() {
-                localStorage.setItem('th_users', JSON.stringify(this.users));
+                localStorage.setItem('th_users_v2', JSON.stringify(this.users));
             }
         };
+
         app.init();
     </script>
 </body>
