@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi-Tracker Dashboard</title>
+    <title>TaxiHub NRW | Dashboard</title>
+    <link rel="icon" type="image/png" href="images/bild.png">
     <style>
         :root {
             --taxi-yellow: #e1ff00;
@@ -11,370 +12,420 @@
             --card-bg: #161616;
             --text-gray: #b3b3b3;
             --danger: #ff3e3e;
-            --sidebar-width: 240px;
+            --sidebar-width: 260px;
+            --glow: 0 0 15px rgba(225, 255, 0, 0.4);
+        }
+
+        .light-mode {
+            --bg-black: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-gray: #444;
+            --taxi-yellow: #d4e600;
+            --glow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg-black);
-            color: white;
+            color: var(--text-gray);
             margin: 0;
             display: flex;
             height: 100vh;
-            overflow: hidden;
-        }
-
-        /* LOGIN SCREEN */
-        #login-overlay {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-black);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .login-card {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 12px;
-            width: 350px;
-            border: 1px solid #333;
-            text-align: center;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: #222;
-            border: 1px solid #444;
-            color: white;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        .btn {
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
             transition: 0.3s;
         }
 
-        .btn-primary { background: var(--taxi-yellow); color: black; padding: 12px; width: 100%; }
-        .btn-danger { background: var(--danger); color: white; padding: 10px; }
-
-        /* MAIN LAYOUT */
+        /* SIDEBAR MIT GLOW */
         .sidebar {
             width: var(--sidebar-width);
             background: #0d0d0d;
-            border-right: 1px solid #222;
+            border-right: 2px solid var(--taxi-yellow);
+            box-shadow: 5px 0 20px rgba(225, 255, 0, 0.05);
             padding: 20px;
             display: flex;
             flex-direction: column;
+            z-index: 10;
         }
 
-        .sidebar h2 { color: var(--taxi-yellow); font-size: 20px; margin-bottom: 30px; }
+        .sidebar h2 { color: var(--taxi-yellow); text-shadow: var(--glow); margin-bottom: 30px; }
+
         .nav-item {
             padding: 12px;
             color: var(--text-gray);
             text-decoration: none;
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             cursor: pointer;
-            border-radius: 5px;
-        }
-        .nav-item:hover, .nav-item.active { background: #1a1a1a; color: white; }
-
-        .main-content {
-            flex-grow: 1;
-            padding: 30px;
-            overflow-y: auto;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: 0.2s;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+        .nav-item:hover, .nav-item.active {
+            background: #1a1a1a;
+            color: var(--taxi-yellow);
+            box-shadow: inset 0 0 10px rgba(225, 255, 0, 0.1);
         }
+
+        /* AVATARE */
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid var(--taxi-yellow);
+            object-fit: cover;
+            box-shadow: var(--glow);
+        }
+
+        /* MAIN CONTENT */
+        .main-content { flex-grow: 1; padding: 30px; overflow-y: auto; }
 
         .card {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 15px;
             border: 1px solid #222;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
         }
 
-        /* STEMPELUHR */
+        /* TIMER GLOW */
         .timer-display {
-            font-size: 40px;
-            font-weight: bold;
+            font-size: 55px;
+            font-weight: 800;
             color: var(--taxi-yellow);
+            text-align: center;
             margin: 20px 0;
+            text-shadow: 0 0 20px rgba(225, 255, 0, 0.6);
+            font-family: monospace;
         }
 
-        /* TABELLEN */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { text-align: left; color: var(--text-gray); font-size: 12px; padding: 10px; border-bottom: 1px solid #333; }
-        td { padding: 12px 10px; font-size: 14px; border-bottom: 1px solid #222; }
+        /* PROGRESS BAR */
+        .progress-container {
+            background: #222;
+            border-radius: 10px;
+            height: 20px;
+            width: 100%;
+            margin: 15px 0;
+            overflow: hidden;
+        }
 
-        .hidden { display: none !important; }
-        
-        .badge {
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            background: #333;
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #b8d000, var(--taxi-yellow));
+            box-shadow: 0 0 10px var(--taxi-yellow);
+            width: 0%;
+            transition: 1s ease-in-out;
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-yellow { 
+            background: var(--taxi-yellow); 
+            color: black; 
+            box-shadow: var(--glow);
+        }
+
+        .btn-yellow:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(225, 255, 0, 0.6); }
+
+        /* TABELLE */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 15px; border-bottom: 1px solid #333; font-size: 12px; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid #1a1a1a; color: #eee; }
+
+        .hidden { display: none; }
+
+        #login-overlay {
+            position: fixed; inset: 0; background: var(--bg-black);
+            display: flex; align-items: center; justify-content: center; z-index: 1000;
+        }
+
+        /* TOGGLE SWITCH */
+        .theme-switch {
+            position: absolute; top: 20px; right: 20px;
+            cursor: pointer; background: #222; padding: 10px; border-radius: 50px;
         }
     </style>
 </head>
-<body>
+<body id="body">
 
     <div id="login-overlay">
-        <div class="login-card">
-            <h2 style="color: var(--taxi-yellow)">Taxi Dashboard</h2>
-            <input type="text" id="login-user" placeholder="Name">
-            <input type="password" id="login-pass" placeholder="Passwort">
-            <button class="btn btn-primary" onclick="app.login()">Einloggen</button>
-            <p id="login-error" style="color:red; font-size: 12px; margin-top: 10px;"></p>
+        <div class="card" style="width: 350px; text-align: center;">
+            <h2 style="color: var(--taxi-yellow)">TaxiHub Login</h2>
+            <input type="text" id="l-user" placeholder="Name" style="width:90%; padding:10px; margin:10px; background:#222; border:1px solid #444; color:white;">
+            <input type="password" id="l-pass" placeholder="Passwort" style="width:90%; padding:10px; margin:10px; background:#222; border:1px solid #444; color:white;">
+            <button class="btn btn-yellow" style="width:95%" onclick="app.login()">Einloggen</button>
         </div>
     </div>
 
     <div class="sidebar">
-        <h2>Taxi Köln</h2>
+        <h2>TaxiHub NRW</h2>
         <div class="nav-item active" onclick="app.showPage('dashboard')">Dashboard</div>
-        <div class="nav-item" onclick="app.showPage('fahrtenbuch')">Fahrtenbuch</div>
-        <div class="nav-item" onclick="app.showPage('mitarbeiter')">Mitarbeiterliste</div>
-        <div id="admin-nav" class="nav-item hidden" onclick="app.showPage('admin')">Admin-Panel</div>
+        <div class="nav-item" onclick="app.showPage('fahrtenbuch')">Fahrten erfassen</div>
+        <div class="nav-item" onclick="app.showPage('mitarbeiter')">Mitgliederliste</div>
+        <div id="admin-nav" class="nav-item hidden" onclick="app.showPage('admin')">Verwaltung</div>
         
-        <div style="margin-top: auto;">
-            <p id="user-display-name" style="font-size: 14px; margin-bottom: 5px;"></p>
-            <button class="btn btn-danger" style="width: 100%" onclick="app.logout()">Abmelden</button>
+        <div style="margin-top: auto; display: flex; align-items: center; gap: 10px;">
+            <img id="side-avatar" src="images/Fahrer.jpg" class="user-avatar" alt="Profil">
+            <div>
+                <b id="side-name" style="color: white; font-size: 14px;">Name</b><br>
+                <small id="side-rang">Rang</small>
+            </div>
         </div>
+        <button class="btn" style="margin-top: 15px; background: #222; color: white;" onclick="location.reload()">Abmelden</button>
     </div>
 
     <div class="main-content">
-        
+        <div class="theme-switch" onclick="app.toggleTheme()">🌙 Mode</div>
+
         <div id="page-dashboard">
-            <h1>Willkommen, <span id="welcome-name"></span>!</h1>
-            <div class="grid">
+            <h1>Willkommen im Dashboard!</h1>
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px;">
                 <div class="card">
                     <h3>Stempeluhr</h3>
                     <div id="timer" class="timer-display">00:00:00</div>
-                    <button id="btn-stempel" class="btn btn-primary" onclick="app.toggleDuty()">Dienst antreten</button>
+                    <button id="stempel-btn" class="btn btn-yellow" style="width: 100%; font-size: 18px;" onclick="app.toggleDuty()">DIENST ANTRETEN</button>
                 </div>
                 <div class="card">
-                    <h3>Deine Statistik</h3>
-                    <p>Fahrten gesamt: <span id="stat-total">0</span></p>
-                    <p>Heli / Limo: <span id="stat-premium">0 / 0</span></p>
+                    <h3>Milestone: Wochenziel</h3>
+                    <p id="milestone-text">Noch 50 Fahrten bis zum Bonus</p>
+                    <div class="progress-container">
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                    <small>Fortschritt: <span id="progress-val">0</span>%</small>
                 </div>
+            </div>
+        </div>
+
+        <div id="page-mitarbeiter" class="hidden">
+            <h1>Mitgliederliste</h1>
+            <div class="card">
+                <table id="staff-table">
+                    <thead>
+                        <tr>
+                            <th>Fahrer</th>
+                            <th>DN</th>
+                            <th>Rang</th>
+                            <th>Fahrten</th>
+                            <th>Status</th>
+                            <th class="admin-only hidden">Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staff-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="page-admin" class="hidden">
+            <h1>Account Verwaltung</h1>
+            <div class="card">
+                <h3>Neuen Mitarbeiter anlegen</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <input type="text" id="adm-name" placeholder="Name">
+                    <input type="text" id="adm-pass" placeholder="Passwort">
+                    <input type="text" id="adm-dn" placeholder="Dienstnummer (z.B. 08)">
+                    <select id="adm-rang">
+                        <option value="Praktikant">Praktikant</option>
+                        <option value="Azubi Fahrer">Azubi Fahrer</option>
+                        <option value="Jr. Fahrer">Jr. Fahrer</option>
+                        <option value="Fahrer" selected>Fahrer</option>
+                        <option value="Sr. Fahrer">Sr. Fahrer</option>
+                        <option value="Stvl. Geschäftsführung">Stvl. Geschäftsführung</option>
+                        <option value="Geschäftsführung">Geschäftsführung</option>
+                    </select>
+                </div>
+                <div style="margin-top: 10px;">
+                    <input type="checkbox" id="adm-isadmin"> Admin-Berechtigungen (Bearbeiten)
+                </div>
+                <button class="btn btn-yellow" style="margin-top: 15px;" onclick="app.createAcc()">Account Erstellen</button>
             </div>
         </div>
 
         <div id="page-fahrtenbuch" class="hidden">
             <h1>Fahrt erfassen</h1>
             <div class="card" style="max-width: 500px;">
-                <label>Fahrer</label>
-                <input type="text" id="fb-name" disabled>
-                <label>Von</label>
-                <input type="text" id="fb-von" placeholder="Startort">
-                <label>Bis</label>
-                <input type="text" id="fb-bis" placeholder="Zielort">
-                <label>KM Anzahl</label>
-                <input type="number" id="fb-km" placeholder="0">
-                <label>Fahrzeug-Typ</label>
-                <select id="fb-typ">
+                <label>Fahrzeug Typ</label>
+                <select id="f-typ" style="width: 100%; padding: 10px; margin: 10px 0; background: #222; color: white; border: 1px solid #444;">
                     <option value="normal">Normale Fahrt (Kostenlos)</option>
                     <option value="heli">Helikopter (Premium)</option>
-                    <option value="limo">Limo (Premium)</option>
+                    <option value="limo">Limosine (Premium)</option>
                 </select>
-                <button class="btn btn-primary" onclick="app.saveDrive()">Fahrt absenden</button>
+                <button class="btn btn-yellow" style="width: 100%;" onclick="app.addDrive()">Absenden</button>
             </div>
         </div>
-
-        <div id="page-mitarbeiter" class="hidden">
-            <h1>Mitarbeiterliste</h1>
-            <div class="card">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Dienstnummer</th>
-                            <th>Rang</th>
-                            <th>Fahrten (N/H/L)</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="staff-table-body"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="page-admin" class="hidden">
-            <h1>Admin Management</h1>
-            <div class="card">
-                <h3>Neuen Account anlegen</h3>
-                <div class="grid" style="grid-template-columns: 1fr 1fr;">
-                    <input type="text" id="adm-name" placeholder="Name">
-                    <input type="text" id="adm-pass" placeholder="Passwort">
-                    <input type="text" id="adm-nr" placeholder="Dienstnummer">
-                    <input type="text" id="adm-rang" placeholder="Rang (z.B. Chef)">
-                </div>
-                <p>Berechtigungen:</p>
-                <input type="checkbox" id="perm-admin"> Admin-Rechte
-                <input type="checkbox" id="perm-ls"> Leitstelle
-                <button class="btn btn-primary" style="margin-top: 15px;" onclick="app.createUser()">Account erstellen</button>
-            </div>
-        </div>
-
     </div>
 
     <script>
         const app = {
             currentUser: null,
-            users: JSON.parse(localStorage.getItem('taxi_users')) || [
-                {
-                    name: "Maverick Stone",
-                    pass: "Bka26r",
-                    nr: "01",
-                    rang: "Inhaber",
-                    since: new Date().toLocaleDateString(),
-                    stats: { normal: 0, heli: 0, limo: 0 },
-                    isAdmin: true,
-                    onDuty: false,
-                    lastStart: null,
-                    perms: ["admin", "ls", "stempel"]
-                }
-            ],
-            timerInterval: null,
+            users: JSON.parse(localStorage.getItem('th_users')) || [{
+                name: "Maverick Stone", pass: "Bka26r", dn: "01", rang: "Geschäftsführung", 
+                isAdmin: true, drives: 0, onDuty: false, totalTime: 0, lastLogin: Date.now()
+            }],
+            timerSecs: 0,
+            timerInt: null,
+            isDark: true,
 
             init: function() {
-                this.save();
                 this.renderStaff();
             },
 
-            save: function() {
-                localStorage.setItem('taxi_users', JSON.stringify(this.users));
-            },
-
             login: function() {
-                const u = document.getElementById('login-user').value;
-                const p = document.getElementById('login-pass').value;
+                const u = document.getElementById('l-user').value;
+                const p = document.getElementById('l-pass').value;
                 const user = this.users.find(x => x.name === u && x.pass === p);
-
                 if(user) {
                     this.currentUser = user;
-                    document.getElementById('login-overlay').classList.add('hidden');
-                    document.getElementById('welcome-name').innerText = user.name;
-                    document.getElementById('user-display-name').innerText = user.name + " (" + user.rang + ")";
-                    document.getElementById('fb-name').value = user.name;
-                    
-                    if(user.isAdmin) document.getElementById('admin-nav').classList.remove('hidden');
-                    this.updateStats();
-                    this.showPage('dashboard');
-                } else {
-                    document.getElementById('login-error').innerText = "Falsche Daten!";
+                    document.getElementById('login-overlay').style.display = 'none';
+                    this.updateUI();
                 }
             },
 
-            logout: function() {
-                location.reload();
-            },
-
-            showPage: function(pageId) {
-                const pages = ['dashboard', 'fahrtenbuch', 'mitarbeiter', 'admin'];
-                pages.forEach(p => document.getElementById('page-' + p).classList.add('hidden'));
-                document.getElementById('page-' + pageId).classList.remove('hidden');
+            updateUI: function() {
+                document.getElementById('side-name').innerText = this.currentUser.name;
+                document.getElementById('side-rang').innerText = this.currentUser.rang;
+                
+                // Bild-Logik basierend auf deinen Dateinamen im GitHub
+                const imgMap = {
+                    "Praktikant": "Praktikant.jpg",
+                    "Azubi Fahrer": "Azubi.jpg",
+                    "Jr. Fahrer": "Jr.jpg",
+                    "Fahrer": "Fahrer.jpg",
+                    "Sr. Fahrer": "Sr. Fahrer.jpg",
+                    "Stvl. Geschäftsführung": "Stvl.jpg",
+                    "Geschäftsführung": "Inhaber.jpg"
+                };
+                document.getElementById('side-avatar').src = "images/" + (imgMap[this.currentUser.rang] || "Fahrer.jpg");
+                
+                if(this.currentUser.isAdmin) {
+                    document.getElementById('admin-nav').classList.remove('hidden');
+                    document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+                }
+                this.updateMilestone();
+                this.renderStaff();
             },
 
             toggleDuty: function() {
                 this.currentUser.onDuty = !this.currentUser.onDuty;
-                const btn = document.getElementById('btn-stempel');
+                const btn = document.getElementById('stempel-btn');
+                const timerDisplay = document.getElementById('timer');
                 
                 if(this.currentUser.onDuty) {
-                    btn.innerText = "Dienst beenden";
+                    btn.innerText = "DIENST BEENDEN";
                     btn.style.background = "var(--danger)";
-                    this.startTimer();
+                    btn.style.boxShadow = "0 0 20px rgba(255, 0, 0, 0.4)";
+                    this.timerInt = setInterval(() => {
+                        this.timerSecs++;
+                        this.currentUser.totalTime++;
+                        timerDisplay.innerText = new Date(this.timerSecs * 1000).toISOString().substr(11, 8);
+                        if(this.timerSecs % 10 === 0) this.save(); // Alle 10 Sek speichern
+                    }, 1000);
                 } else {
-                    btn.innerText = "Dienst antreten";
+                    clearInterval(this.timerInt);
+                    this.timerSecs = 0;
+                    btn.innerText = "DIENST ANTRETEN";
                     btn.style.background = "var(--taxi-yellow)";
-                    clearInterval(this.timerInterval);
+                    btn.style.boxShadow = var(--glow);
+                    timerDisplay.innerText = "00:00:00";
+                    this.save();
                 }
-                this.save();
                 this.renderStaff();
             },
 
-            startTimer: function() {
-                let s = 0;
-                this.timerInterval = setInterval(() => {
-                    s++;
-                    let hrs = Math.floor(s / 3600).toString().padStart(2, '0');
-                    let mins = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
-                    let secs = (s % 60).toString().padStart(2, '0');
-                    document.getElementById('timer').innerText = `${hrs}:${mins}:${secs}`;
-                }, 1000);
-            },
-
-            saveDrive: function() {
-                const typ = document.getElementById('fb-typ').value;
-                this.currentUser.stats[typ]++;
-                alert("Fahrt erfolgreich im System gespeichert!");
-                this.updateStats();
+            addDrive: function() {
+                this.currentUser.drives++;
                 this.save();
-                this.renderStaff();
-                
-                // Reset fields
-                document.getElementById('fb-von').value = "";
-                document.getElementById('fb-bis').value = "";
-                document.getElementById('fb-km').value = "";
+                this.updateMilestone();
+                alert("Fahrt registriert!");
             },
 
-            updateStats: function() {
-                const s = this.currentUser.stats;
-                document.getElementById('stat-total').innerText = s.normal + s.heli + s.limo;
-                document.getElementById('stat-premium').innerText = `${s.heli} / ${s.limo}`;
+            updateMilestone: function() {
+                const target = 50;
+                const current = this.currentUser.drives;
+                const perc = Math.min((current / target) * 100, 100);
+                document.getElementById('progress-bar').style.width = perc + "%";
+                document.getElementById('progress-val').innerText = Math.floor(perc);
+                document.getElementById('milestone-text').innerText = `Noch ${Math.max(target - current, 0)} Fahrten bis zum Wochen-Bonus!`;
             },
 
             renderStaff: function() {
-                const tbody = document.getElementById('staff-table-body');
-                tbody.innerHTML = "";
-                this.users.forEach(u => {
-                    const status = u.onDuty ? '<span style="color:var(--taxi-yellow)">Eingestempelt</span>' : 'Außer Dienst';
-                    tbody.innerHTML += `
+                const body = document.getElementById('staff-body');
+                body.innerHTML = "";
+                const imgMap = { "Praktikant": "Praktikant.jpg", "Azubi Fahrer": "Azubi.jpg", "Jr. Fahrer": "Jr.jpg", "Fahrer": "Fahrer.jpg", "Sr. Fahrer": "Sr. Fahrer.jpg", "Stvl. Geschäftsführung": "Stvl.jpg", "Geschäftsführung": "Inhaber.jpg" };
+
+                this.users.forEach((u, index) => {
+                    const status = u.onDuty ? '<b style="color:var(--taxi-yellow); text-shadow: 0 0 5px yellow;">IM DIENST</b>' : 'Außer Dienst';
+                    const img = "images/" + (imgMap[u.rang] || "Fahrer.jpg");
+                    
+                    let adminActions = this.currentUser?.isAdmin ? `<td><button onclick="app.editUser(${index})" style="background:#444; color:white; border:none; padding:5px; cursor:pointer;">Edit</button></td>` : '';
+
+                    body.innerHTML += `
                         <tr>
-                            <td>${u.name}</td>
-                            <td>#${u.nr}</td>
-                            <td><span class="badge">${u.rang}</span></td>
-                            <td>${u.stats.normal} / ${u.stats.heli} / ${u.stats.limo}</td>
+                            <td style="display:flex; align-items:center; gap:10px;"><img src="${img}" width="30" height="30" style="border-radius:50%; border:1px solid yellow;"> ${u.name}</td>
+                            <td>#${u.dn}</td>
+                            <td>${u.rang}</td>
+                            <td>${u.drives}</td>
                             <td>${status}</td>
+                            ${adminActions}
                         </tr>
                     `;
                 });
             },
 
-            createUser: function() {
-                const newUser = {
-                    name: document.getElementById('adm-name').value,
-                    pass: document.getElementById('adm-pass').value,
-                    nr: document.getElementById('adm-nr').value,
-                    rang: document.getElementById('adm-rang').value,
-                    since: new Date().toLocaleDateString(),
-                    stats: { normal: 0, heli: 0, limo: 0 },
-                    isAdmin: document.getElementById('perm-admin').checked,
-                    onDuty: false,
-                    perms: []
-                };
+            createAcc: function() {
+                const name = document.getElementById('adm-name').value;
+                const pass = document.getElementById('adm-pass').value;
+                const dn = document.getElementById('adm-dn').value;
+                const rang = document.getElementById('adm-rang').value;
+                const isAdmin = document.getElementById('adm-isadmin').checked;
 
-                if(newUser.name && newUser.pass) {
-                    this.users.push(newUser);
+                if(name && pass) {
+                    this.users.push({ name, pass, dn, rang, isAdmin, drives:0, onDuty:false, totalTime:0 });
                     this.save();
                     this.renderStaff();
-                    alert("Account für " + newUser.name + " erstellt!");
+                    alert("Account erstellt!");
                 }
+            },
+
+            editUser: function(index) {
+                const u = this.users[index];
+                const newName = prompt("Neuer Name:", u.name);
+                const newRang = prompt("Neuer Rang (Exakt schreiben!):", u.rang);
+                const newDrives = prompt("Fahrten Anzahl:", u.drives);
+                
+                if(newName) u.name = newName;
+                if(newRang) u.rang = newRang;
+                if(newDrives) u.drives = parseInt(newDrives);
+                
+                this.save();
+                this.renderStaff();
+            },
+
+            showPage: function(id) {
+                const p = ['dashboard', 'fahrtenbuch', 'mitarbeiter', 'admin'];
+                p.forEach(x => document.getElementById('page-'+x).classList.add('hidden'));
+                document.getElementById('page-'+id).classList.remove('hidden');
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                event.target.classList.add('active');
+            },
+
+            toggleTheme: function() {
+                this.isDark = !this.isDark;
+                document.body.classList.toggle('light-mode');
+            },
+
+            save: function() {
+                localStorage.setItem('th_users', JSON.stringify(this.users));
             }
         };
-
         app.init();
     </script>
 </body>
