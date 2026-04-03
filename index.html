@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Köln | NRW RP - Management & Service</title>
+    <title>Taxi Köln | Management & Dispatch</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- GLOBAL & THEME --- */
         :root {
             --taxi-yellow: #ffcc00;
             --taxi-black: #121212;
@@ -22,48 +21,52 @@
         .hidden { display: none !important; }
         .accent { color: var(--taxi-yellow); }
 
-        /* --- PUBLIC WEBSITE STYLE --- */
-        .navbar { background-color: var(--taxi-yellow) !important; }
+        /* --- PUBLIC WEBSITE --- */
+        .navbar { background-color: var(--taxi-yellow) !important; border-bottom: 2px solid #000; }
         .navbar-brand, .nav-link { color: black !important; font-weight: bold; }
         
         .hero-section { 
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('images/banner.png') no-repeat center center; 
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('images/banner.png') no-repeat center center; 
             background-size: cover; 
-            height: 500px; 
+            height: 450px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             border-bottom: 5px solid var(--taxi-yellow); 
         }
 
-        .card { background-color: var(--taxi-dark-gray); border: 1px solid var(--taxi-yellow); color: white; }
-        .btn-yellow { background-color: var(--taxi-yellow); color: black; font-weight: bold; border: none; padding: 12px 25px; }
-        .btn-yellow:hover { background-color: #e6b800; transform: translateY(-2px); transition: 0.2s; }
+        .btn-yellow { background-color: var(--taxi-yellow); color: black; font-weight: bold; border: none; padding: 12px 25px; border-radius: 5px; }
+        .btn-yellow:hover { background-color: #e6b800; transform: scale(1.02); }
 
-        /* --- DASHBOARD & SIDEBAR --- */
+        /* --- DASHBOARD STRUCTURE --- */
         #admin-wrapper { display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: 280px; background: #080808; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        .sidebar { width: 280px; background: #0a0a0a; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
         .main-content { flex-grow: 1; overflow-y: auto; padding: 40px; background: #050505; }
         
-        .nav-item-dash { padding: 15px 25px; color: #888; cursor: pointer; transition: 0.3s; border-left: 4px solid transparent; }
+        .nav-item-dash { padding: 15px 25px; color: #888; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent; display: flex; align-items: center; }
+        .nav-item-dash i { width: 25px; }
         .nav-item-dash:hover, .nav-item-dash.active { background: rgba(255, 204, 0, 0.1); color: white; border-left-color: var(--taxi-yellow); }
 
         /* --- LST SYSTEM --- */
-        .lst-box { border: 2px solid #444; border-radius: 12px; padding: 25px; text-align: center; margin-bottom: 30px; }
-        .lst-active { border-color: var(--taxi-yellow); background: rgba(255, 204, 0, 0.05); }
-        .status-dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
-        .bg-online { background-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
+        .lst-box { border: 2px solid #333; border-radius: 15px; padding: 30px; text-align: center; background: #111; }
+        .lst-active { border-color: var(--taxi-yellow); box-shadow: 0 0 15px rgba(255, 204, 0, 0.2); }
+        .status-dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; margin-right: 10px; }
+        .bg-online { background-color: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
 
-        /* --- CALCULATOR INTEGRATION --- */
-        .calc-container { background: #1e1e1e; padding: 30px; border-radius: 12px; }
-        .calc-input { background: #2a2a2a; border: 1px solid #444; color: white; padding: 10px; border-radius: 5px; width: 100%; margin-bottom: 15px; }
+        /* --- UI COMPONENTS --- */
+        .card { background-color: var(--taxi-dark-gray); border: 1px solid #333; color: white; border-radius: 10px; }
+        .calc-input { background: #252525; border: 1px solid #444; color: white; padding: 12px; border-radius: 6px; width: 100%; margin-bottom: 15px; }
+        .calc-input:focus { border-color: var(--taxi-yellow); outline: none; }
         
-        /* --- INVOICE PRINT --- */
-        #invoice { background: white; color: black; padding: 40px; border-radius: 5px; margin-top: 20px; }
-        @media print { .no-print { display: none !important; } #invoice { margin: 0; } }
+        /* --- FOOTER & CREDITS --- */
+        .credits-box { padding: 20px; font-size: 12px; color: #555; border-top: 1px solid #222; margin-top: auto; }
+        .support-link { color: var(--taxi-yellow); text-decoration: none; }
 
-        /* --- LOGIN OVERLAY --- */
-        #login-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        /* --- INVOICE --- */
+        #invoice { background: white; color: black; padding: 40px; border-radius: 5px; display: none; }
+        @media print { .no-print { display: none !important; } #invoice { display: block !important; } body { background: white; } }
+
+        #login-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
@@ -71,110 +74,125 @@
     <div id="page-public">
         <nav class="navbar navbar-expand-lg sticky-top">
             <div class="container">
-                <a class="navbar-brand" href="#">
-                    <img src="images/logo.png" alt="Logo" width="40" class="d-inline-block align-text-top"> TAXI KÖLN
-                </a>
+                <a class="navbar-brand" href="#"><i class="fas fa-taxi me-2"></i> TAXI KÖLN</a>
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" href="#preise">Tarife</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#fuhrpark">Fuhrpark</a></li>
-                        <li class="nav-item"><a class="nav-link" href="javascript:void(0)" onclick="ui.showLogin()" style="color:red !important;">MITARBEITER LOGIN</a></li>
+                        <li class="nav-item"><a class="nav-link" href="javascript:void(0)" onclick="ui.showLogin()" style="color: #000 !important; border: 1px solid #000; border-radius: 5px; padding: 5px 15px;">MITARBEITER LOGIN</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
 
         <header class="hero-section">
-            <div class="text-center" style="background: rgba(0,0,0,0.7); padding: 40px; border-radius: 20px; border: 1px solid var(--taxi-yellow);">
+            <div class="text-center" style="background: rgba(0,0,0,0.8); padding: 50px; border-radius: 20px; border: 2px solid var(--taxi-yellow);">
                 <h1 class="display-3 fw-bold">Jetzt <span class="accent">Service buchen.</span></h1>
-                <p class="lead">Dein zuverlässiger Partner im NRW RP</p>
+                <p class="lead mb-4">Sicher durch Kölle – Dein Partner im NRW RP</p>
                 <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
                     <a href="https://discord.gg/yxgbeyARDr" target="_blank" class="btn btn-yellow btn-lg">Jetzt Funk rufen (Discord)</a>
-                    <a href="#" class="btn btn-outline-light btn-lg">Standard Taxi per Dienste App</a>
+                    <a href="#" class="btn btn-outline-light btn-lg">Dienste App Smartphone</a>
                 </div>
             </div>
         </header>
 
-        <div class="container mt-5">
-            <section id="fuhrpark" class="py-5">
-                <h2 class="text-center mb-4">Unser <span class="accent">Fuhrpark</span></h2>
-                <div class="row g-4">
-                    <div class="col-md-3">
-                        <div class="card p-3 h-100">
-                            <h3>Standard Taxi</h3>
-                            <p>Der Klassiker für jeden Tag. Schnell und günstig.</p>
-                            <span class="badge bg-secondary">Basic</span>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card p-3 h-100">
-                            <h3>Extended S-Klasse</h3>
-                            <p>Luxus pur für wichtige Geschäftstermine.</p>
-                            <span class="badge bg-warning text-dark">Premium</span>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card p-3 h-100">
-                            <h3>Stretch-Limousine</h3>
-                            <p>Perfekt für Hochzeiten oder Club-Auftritte.</p>
-                            <span class="badge bg-warning text-dark">Exklusiv</span>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card p-3 h-100">
-                            <h3>Patriot Limousine</h3>
-                            <p>Der auffälligste Auftritt im Staat.</p>
-                            <span class="badge bg-warning text-dark">VIP</span>
-                        </div>
+        <div class="container py-5">
+            <div class="row g-4 text-center">
+                <div class="col-md-3">
+                    <div class="card p-4 h-100">
+                        <i class="fas fa-car fa-3x accent mb-3"></i>
+                        <h4>Standard Taxi</h4>
+                        <p class="small text-secondary">Schnell & Günstig</p>
                     </div>
                 </div>
-            </section>
+                <div class="col-md-3">
+                    <div class="card p-4 h-100">
+                        <i class="fas fa-crown fa-3x accent mb-3"></i>
+                        <h4>S-Klasse</h4>
+                        <p class="small text-secondary">Premium Komfort</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-4 h-100">
+                        <i class="fas fa-glass-cheers fa-3x accent mb-3"></i>
+                        <h4>Limousine</h4>
+                        <p class="small text-secondary">Exklusiv & Edel</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-4 h-100">
+                        <i class="fas fa-helicopter fa-3x accent mb-3"></i>
+                        <h4>Helikopter</h4>
+                        <p class="small text-secondary">VIP Transport</p>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <footer class="py-5 mt-5" style="background: #111; border-top: 2px solid var(--taxi-yellow); text-align: center;">
-            <p>&copy; 2026 Taxi Köln - NRW RP | <small>Keine Ingame-Datenverbindung.</small></p>
-        </footer>
     </div>
 
     <div id="login-screen" class="hidden">
-        <div class="card p-5" style="width: 400px;">
-            <h2 class="text-center mb-4 accent">Interner Login</h2>
-            <input type="text" id="log-user" class="calc-input" placeholder="Benutzername">
-            <input type="password" id="log-pass" class="calc-input" placeholder="Passwort">
-            <button class="btn btn-yellow w-100" onclick="app.login()">Einloggen</button>
-            <button class="btn btn-link btn-sm w-100 mt-3 text-secondary" onclick="ui.hideLogin()">Abbrechen</button>
+        <div class="card p-5" style="width: 450px; border-width: 3px;">
+            <h2 class="text-center mb-4 accent">Mitarbeiterbereich</h2>
+            <div class="mb-3">
+                <label>Benutzername</label>
+                <input type="text" id="log-user" class="calc-input" placeholder="Name...">
+            </div>
+            <div class="mb-4">
+                <label>Passwort</label>
+                <input type="password" id="log-pass" class="calc-input" placeholder="Passwort...">
+            </div>
+            <button class="btn btn-yellow w-100 mb-3" onclick="app.login()">EINLOGGEN</button>
+            <button class="btn btn-link btn-sm w-100 text-secondary" onclick="ui.hideLogin()">Zurück zur Webseite</button>
         </div>
     </div>
 
     <div id="page-admin" class="hidden">
         <div id="admin-wrapper">
             <div class="sidebar">
-                <div class="p-4 border-bottom border-secondary">
-                    <h4 class="accent mb-0">ZENTRALE</h4>
-                    <small id="user-display-name">Azubi</small>
+                <div class="p-4 text-center border-bottom border-secondary">
+                    <img src="images/logo.png" alt="Logo" width="60" class="mb-2">
+                    <h5 class="accent mb-0">TAXI KÖLN</h5>
+                    <small id="user-display-name">Lädt...</small>
                 </div>
-                <div class="nav-item-dash active" onclick="ui.tab('dash', this)"><i class="fas fa-home me-2"></i> Dashboard</div>
-                <div class="nav-item-dash" onclick="ui.tab('lst', this)"><i class="fas fa-headset me-2"></i> Leitstelle</div>
-                <div class="nav-item-dash" onclick="ui.tab('fb', this)"><i class="fas fa-book me-2"></i> Fahrtenbuch</div>
-                <div class="nav-item-dash" onclick="ui.tab('rechner', this)"><i class="fas fa-calculator me-2"></i> TaxiRechner</div>
-                <div class="nav-item-dash mt-auto text-danger" onclick="app.logout()"><i class="fas fa-sign-out-alt me-2"></i> Abmelden</div>
+                
+                <div class="nav-item-dash active" onclick="ui.tab('dash', this)"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
+                <div class="nav-item-dash" onclick="ui.tab('lst', this)"><i class="fas fa-headset"></i> Leitstelle</div>
+                <div class="nav-item-dash" onclick="ui.tab('fb', this)"><i class="fas fa-book"></i> Fahrtenbuch</div>
+                <div class="nav-item-dash" onclick="ui.tab('rechner', this)"><i class="fas fa-calculator"></i> TaxiRechner</div>
+                
+                <div id="nav-admin-only" class="nav-item-dash hidden" onclick="ui.tab('admin', this)"><i class="fas fa-users-cog"></i> Mitarbeiter-Verwaltung</div>
+
+                <div class="credits-box">
+                    <p class="mb-1"><i class="fas fa-code me-1"></i> Created By <b>agrar.julian</b></p>
+                    <p class="mb-2"><i class="fas fa-server me-1"></i> Hosted by <b>norixius.</b></p>
+                    <a href="https://discord.gg/yxgbeyARDr" target="_blank" class="support-link"><i class="fab fa-discord me-1"></i> Support kontaktieren</a>
+                </div>
+
+                <div class="p-3">
+                    <button class="btn btn-outline-danger btn-sm w-100" onclick="app.logout()">ABMELDEN</button>
+                </div>
             </div>
 
             <div class="main-content">
                 
                 <div id="tab-dash">
-                    <h1 class="mb-4">Willkommen zurück</h1>
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="card p-4 mb-4">
-                                <h3>Aktueller LST-Status</h3>
-                                <div id="lst-status-info">Lädt...</div>
-                            </div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1>Zentrale Dashboard</h1>
+                        <div class="text-end">
+                            <h2 id="timer-display" class="mb-0">00:00:00</h2>
+                            <small class="text-secondary">Aktuelle Sitzungszeit</small>
                         </div>
+                    </div>
+                    
+                    <div class="row g-4">
                         <div class="col-md-4">
                             <div class="card p-4 text-center">
-                                <h2 id="timer-display">00:00:00</h2>
+                                <h5>Dienst-Status</h5>
                                 <button id="btn-stempel" class="btn btn-yellow w-100 mt-3" onclick="app.toggleTimer()">EINSTEMPELN</button>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card p-4">
+                                <h5>News & Ankündigungen</h5>
+                                <p class="text-secondary">Herzlich Willkommen im neuen Dashboard. Bitte denkt daran, eure Fahrten sofort im Fahrtenbuch zu dokumentieren!</p>
                             </div>
                         </div>
                     </div>
@@ -182,48 +200,48 @@
 
                 <div id="tab-lst" class="hidden">
                     <h1>Leitstelle (LST)</h1>
-                    <div id="lst-control-box" class="lst-box">
+                    <div id="lst-control-box" class="lst-box mb-4">
                         </div>
 
-                    <div class="card p-4 mt-4">
-                        <h3>Dispatcher Tool (PLZ Suche)</h3>
+                    <div class="card p-4">
+                        <h5>PLZ-Schnellsuche</h5>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-8">
                                 <input type="text" id="lst-plz-in" class="calc-input" placeholder="PLZ eingeben (z.B. 2020)" oninput="app.lookupPLZ()">
                             </div>
-                            <div class="col-md-6">
-                                <div id="plz-result" class="p-2 border rounded" style="background:#000;">Ort: -</div>
+                            <div class="col-md-4">
+                                <div id="plz-result" class="p-2 text-center rounded bg-dark border border-secondary" style="height: 48px; line-height: 30px;">-</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div id="tab-fb" class="hidden">
-                    <h1>Fahrtenbuch</h1>
+                    <h1>Dein Fahrtenbuch</h1>
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <div class="card p-4">
-                                <h5>Fahrt eintragen</h5>
+                                <h5>Neue Fahrt dokumentieren</h5>
                                 <label>Anfangs-Ort</label>
-                                <input type="text" id="fb-start" class="calc-input" placeholder="Von...">
+                                <input type="text" id="fb-start" class="calc-input" placeholder="z.B. Zentrale">
                                 <label>Ziel-Ort</label>
-                                <input type="text" id="fb-ziel" class="calc-input" placeholder="Nach...">
+                                <input type="text" id="fb-ziel" class="calc-input" placeholder="z.B. Flughafen">
                                 <label>Kilometer</label>
-                                <input type="number" id="fb-km" class="calc-input" placeholder="Distanz">
+                                <input type="number" id="fb-km" class="calc-input" placeholder="Anzahl KM">
                                 <label>Art der Fahrt</label>
                                 <select id="fb-art" class="calc-input">
                                     <option>Normale fahrt (Kostenlos)</option>
                                     <option>Helikopter (Premium)</option>
                                     <option>Limousine (Premium)</option>
                                 </select>
-                                <button class="btn btn-yellow w-100" onclick="app.saveDrive()">Speichern</button>
+                                <button class="btn btn-yellow w-100" onclick="app.saveDrive()">FAHRT SPEICHERN</button>
                             </div>
                         </div>
-                        <div class="col-md-8">
-                            <div class="card p-4">
-                                <h5>Deine letzten Fahrten</h5>
-                                <table class="table table-dark table-hover mt-3">
-                                    <thead><tr><th>Datum</th><th>Von-Nach</th><th>KM</th><th>Typ</th></tr></thead>
+                        <div class="col-md-7">
+                            <div class="card p-4" style="max-height: 600px; overflow-y: auto;">
+                                <h5>Deine Fahrten-Historie</h5>
+                                <table class="table table-dark table-striped mt-3">
+                                    <thead><tr><th>Datum</th><th>Strecke</th><th>KM</th><th>Typ</th></tr></thead>
                                     <tbody id="fb-list"></tbody>
                                 </table>
                             </div>
@@ -232,44 +250,72 @@
                 </div>
 
                 <div id="tab-rechner" class="hidden">
-                    <h1>TaxiRechner</h1>
-                    <div class="calc-container no-print">
+                    <h1 class="no-print">TaxiRechner & Rechnung</h1>
+                    <div class="card p-4 no-print mb-4">
                         <div class="row">
                             <div class="col-md-6">
-                                <label>Fahrer Name</label>
-                                <input type="text" id="calc-name" class="calc-input" placeholder="Dein Name" oninput="rechner.update()">
-                                <label>Fahrzeug</label>
+                                <label>Fahrzeugtyp</label>
                                 <select id="calc-car" class="calc-input" onchange="rechner.update()">
+                                    <option value="taxi">Standard Taxi</option>
                                     <option value="s-klasse">Extended S-Klasse</option>
                                     <option value="stretch">Stretch-Limousine</option>
                                     <option value="patriot">Patriot Limousine</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label>Modus</label>
+                                <label>Fahrt-Modus</label>
                                 <select id="calc-mode" class="calc-input" onchange="rechner.update()">
                                     <option value="0">Einfache Fahrt</option>
                                     <option value="1">Hin- und Rückfahrt</option>
                                     <option value="2">1 Stunde exklusiv</option>
                                 </select>
-                                <label>Zusatzstopps</label>
-                                <input type="number" id="calc-stops" class="calc-input" value="0" oninput="rechner.update()">
                             </div>
                         </div>
                         <button class="btn btn-yellow w-100" onclick="window.print()">RECHNUNG DRUCKEN</button>
                     </div>
 
                     <div id="invoice">
-                        <div class="d-flex justify-content-between border-bottom pb-3">
-                            <div><h4>Taxi Köln</h4><small>Rechnung</small></div>
-                            <div id="inv-date">Datum: --</div>
+                        <div class="d-flex justify-content-between border-bottom border-dark pb-3">
+                            <div><h3>TAXI KÖLN</h3><p>Chauffeurservice NRW RP</p></div>
+                            <div class="text-end"><h2 class="mb-0">RECHNUNG</h2><p id="inv-date"></p></div>
                         </div>
-                        <table class="table mt-4">
-                            <thead><tr><th>Posten</th><th class="text-end">Preis</th></tr></thead>
+                        <table class="table table-bordered mt-4">
+                            <thead><tr><th>Beschreibung</th><th class="text-end">Betrag</th></tr></thead>
                             <tbody id="inv-items"></tbody>
-                            <tfoot><tr><th class="fs-4">GESAMT</th><th class="text-end fs-4" id="inv-total">0 EUR</th></tr></tfoot>
+                            <tfoot><tr><th class="fs-4">GESAMTSUMME</th><th class="text-end fs-4" id="inv-total">0 EUR</th></tr></tfoot>
                         </table>
-                        <div class="mt-4 italic">Bearbeitet von: <span id="inv-user">...</span></div>
+                        <div class="mt-5 pt-5 border-top">
+                            <p>Bearbeitet von: <b id="inv-user"></b></p>
+                            <p class="small text-muted">Vielen Dank für Ihre Fahrt mit Taxi Köln!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-admin" class="hidden">
+                    <h1>Mitarbeiter-Verwaltung</h1>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card p-4">
+                                <h5>Neuen Mitarbeiter anlegen</h5>
+                                <input type="text" id="adm-new-name" class="calc-input" placeholder="Name">
+                                <input type="text" id="adm-new-pass" class="calc-input" placeholder="Passwort">
+                                <select id="adm-new-role" class="calc-input">
+                                    <option value="Fahrer">Fahrer</option>
+                                    <option value="Azubi">Azubi</option>
+                                    <option value="Disponent">Disponent</option>
+                                </select>
+                                <button class="btn btn-yellow w-100" onclick="app.createUser()">MITARBEITER ERSTELLEN</button>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card p-4">
+                                <h5>Mitarbeiterliste</h5>
+                                <table class="table table-dark">
+                                    <thead><tr><th>Name</th><th>Rolle</th><th>Aktion</th></tr></thead>
+                                    <tbody id="adm-user-list"></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -280,24 +326,16 @@
     <script>
         const app = {
             currentUser: null,
-            users: [
+            users: JSON.parse(localStorage.getItem('taxi_users')) || [
                 { name: "Chris Schreiner", pass: "Bka26r", role: "CEO", isAdmin: true },
                 { name: "Marco Krause", pass: "Bka26r", role: "Stellv. CEO", isAdmin: true },
                 { name: "Azubi", pass: "azubi123", role: "Azubi", isAdmin: false }
             ],
-            plzMap: {
-                "2020": "Flughafen Köln/Bonn",
-                "1010": "Zentrale Hauptbahnhof",
-                "3030": "Industriegebiet West",
-                "4040": "Villenvierteil Nord"
-            },
+            plzMap: { "2020": "Flughafen Köln/Bonn", "1010": "Zentrale Hauptbahnhof", "3030": "Industrie West", "4040": "Villenvierteil" },
             timer: null,
             seconds: 0,
-            
-            // LST State (Simuliert über LocalStorage)
-            getLST: () => JSON.parse(localStorage.getItem('taxi_lst')) || { active: false, user: null },
-            setLST: (state) => localStorage.setItem('taxi_lst', JSON.stringify(state)),
 
+            // Auth
             login: function() {
                 const u = document.getElementById('log-user').value;
                 const p = document.getElementById('log-pass').value;
@@ -308,16 +346,18 @@
                     ui.hideLogin();
                     document.getElementById('page-public').classList.add('hidden');
                     document.getElementById('page-admin').classList.remove('hidden');
-                    document.getElementById('user-display-name').innerText = `${match.name} (${match.role})`;
+                    document.getElementById('user-display-name').innerText = `${match.name} | ${match.role}`;
+                    
+                    if(match.isAdmin) document.getElementById('nav-admin-only').classList.remove('hidden');
                     this.updateLSTUI();
                     this.renderFB();
-                } else {
-                    alert("Zugangsdaten falsch!");
-                }
+                    this.renderUserList();
+                } else { alert("Login fehlgeschlagen!"); }
             },
 
-            logout: function() { location.reload(); },
+            logout: () => location.reload(),
 
+            // Timer
             toggleTimer: function() {
                 const btn = document.getElementById('btn-stempel');
                 if(!this.timer) {
@@ -328,97 +368,82 @@
                         let s = (this.seconds % 60).toString().padStart(2, '0');
                         document.getElementById('timer-display').innerText = `${h}:${m}:${s}`;
                     }, 1000);
-                    btn.innerText = "AUSSTEMPELN";
-                    btn.className = "btn btn-danger w-100 mt-3";
+                    btn.innerText = "AUSSTEMPELN"; btn.className = "btn btn-danger w-100 mt-3";
                 } else {
-                    clearInterval(this.timer);
-                    this.timer = null;
-                    this.seconds = 0;
+                    clearInterval(this.timer); this.timer = null; this.seconds = 0;
                     document.getElementById('timer-display').innerText = "00:00:00";
-                    btn.innerText = "EINSTEMPELN";
-                    btn.className = "btn btn-yellow w-100 mt-3";
+                    btn.innerText = "EINSTEMPELN"; btn.className = "btn btn-yellow w-100 mt-3";
                 }
             },
 
-            // LEITSTELLEN LOGIK
+            // LST Logic
+            getLST: () => JSON.parse(localStorage.getItem('taxi_lst')) || { active: false, user: null },
+            setLST: (state) => { localStorage.setItem('taxi_lst', JSON.stringify(state)); app.updateLSTUI(); },
+
             updateLSTUI: function() {
                 const state = this.getLST();
                 const box = document.getElementById('lst-control-box');
-                const info = document.getElementById('lst-status-info');
-
                 if(!state.active) {
-                    box.innerHTML = `
-                        <h2 class="text-secondary">LST ist aktuell unbesetzt</h2>
-                        <button class="btn btn-yellow btn-lg mt-3" onclick="app.claimLST()">LEITSTELLE ÜBERNEHMEN</button>
-                    `;
+                    box.innerHTML = `<h2 class="text-secondary">LST UNBESETZT</h2><button class="btn btn-yellow mt-3" onclick="app.claimLST()">LEITSTELLE ÜBERNEHMEN</button>`;
                     box.className = "lst-box";
-                    info.innerHTML = "Aktuell kein Disponent im Dienst.";
                 } else {
                     box.className = "lst-box lst-active";
                     box.innerHTML = `
                         <h2 class="accent"><span class="status-dot bg-online"></span> LST AKTIV</h2>
-                        <p>Besetzt durch: <b>${state.user}</b></p>
+                        <p>Im Dienst: <b>${state.user}</b></p>
                         <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-outline-warning" onclick="app.claimLST()">ALS ABLÖSE EINTRAGEN</button>
-                            ${this.currentUser.isAdmin ? `<button class="btn btn-outline-danger" onclick="app.kickLST()">LST FREIGEBEN (ADMIN)</button>` : ''}
-                        </div>
-                    `;
-                    info.innerHTML = `Disponent <b>${state.user}</b> ist aktuell im Funk.`;
+                            <button class="btn btn-sm btn-outline-warning" onclick="app.claimLST()">ALS ABLÖSE EINTRAGEN</button>
+                            ${this.currentUser.isAdmin ? `<button class="btn btn-sm btn-outline-danger" onclick="app.kickLST()">KICKEN (ADMIN)</button>` : ''}
+                        </div>`;
                 }
             },
 
-            claimLST: function() {
-                this.setLST({ active: true, user: this.currentUser.name });
-                this.updateLSTUI();
-            },
-
-            kickLST: function() {
-                this.setLST({ active: false, user: null });
-                this.updateLSTUI();
-            },
+            claimLST: function() { this.setLST({ active: true, user: this.currentUser.name }); },
+            kickLST: function() { this.setLST({ active: false, user: null }); },
 
             lookupPLZ: function() {
                 const val = document.getElementById('lst-plz-in').value;
                 const res = document.getElementById('plz-result');
                 if(this.plzMap[val]) {
-                    res.innerText = "Ort: " + this.plzMap[val];
-                    res.style.color = "#ffcc00";
-                    // Autofill Ziel im Fahrtenbuch (simuliert für die Person)
+                    res.innerText = this.plzMap[val]; res.style.color = "#ffcc00";
                     document.getElementById('fb-ziel').value = this.plzMap[val];
-                } else {
-                    res.innerText = "Ort unbekannt";
-                    res.style.color = "white";
-                }
+                } else { res.innerText = "-"; res.style.color = "white"; }
             },
 
-            // FAHRTENBUCH LOGIK
+            // Driving Log
             saveDrive: function() {
-                const drive = {
-                    start: document.getElementById('fb-start').value,
-                    ziel: document.getElementById('fb-ziel').value,
-                    km: document.getElementById('fb-km').value,
-                    art: document.getElementById('fb-art').value,
-                    date: new Date().toLocaleString()
-                };
-                if(!drive.start || !drive.ziel) return alert("Bitte Start und Ziel angeben!");
-                
-                let list = JSON.parse(localStorage.getItem('my_drives_' + this.currentUser.name)) || [];
-                list.unshift(drive);
-                localStorage.setItem('my_drives_' + this.currentUser.name, JSON.stringify(list));
+                const d = { start: document.getElementById('fb-start').value, ziel: document.getElementById('fb-ziel').value, km: document.getElementById('fb-km').value, art: document.getElementById('fb-art').value, date: new Date().toLocaleDateString() };
+                if(!d.start || !d.ziel) return;
+                let list = JSON.parse(localStorage.getItem('fb_' + this.currentUser.name)) || [];
+                list.unshift(d);
+                localStorage.setItem('fb_' + this.currentUser.name, JSON.stringify(list));
                 this.renderFB();
-                alert("Fahrt gespeichert!");
             },
 
             renderFB: function() {
-                const list = JSON.parse(localStorage.getItem('my_drives_' + this.currentUser.name)) || [];
-                document.getElementById('fb-list').innerHTML = list.map(d => `
-                    <tr>
-                        <td><small>${d.date}</small></td>
-                        <td>${d.start} ➔ ${d.ziel}</td>
-                        <td>${d.km}</td>
-                        <td>${d.art}</td>
-                    </tr>
-                `).join('');
+                const list = JSON.parse(localStorage.getItem('fb_' + this.currentUser.name)) || [];
+                document.getElementById('fb-list').innerHTML = list.map(x => `<tr><td><small>${x.date}</small></td><td>${x.start} - ${x.ziel}</td><td>${x.km}</td><td>${x.art}</td></tr>`).join('');
+            },
+
+            // Admin Logic
+            renderUserList: function() {
+                document.getElementById('adm-user-list').innerHTML = this.users.map(u => `<tr><td>${u.name}</td><td>${u.role}</td><td>${u.isAdmin ? '' : `<button class="btn btn-sm btn-danger" onclick="app.deleteUser('${u.name}')">Entfernen</button>`}</td></tr>`).join('');
+            },
+
+            createUser: function() {
+                const name = document.getElementById('adm-new-name').value;
+                const pass = document.getElementById('adm-new-pass').value;
+                const role = document.getElementById('adm-new-role').value;
+                if(!name || !pass) return;
+                this.users.push({ name, pass, role, isAdmin: false });
+                localStorage.setItem('taxi_users', JSON.stringify(this.users));
+                this.renderUserList();
+            },
+
+            deleteUser: function(name) {
+                this.users = this.users.filter(x => x.name !== name);
+                localStorage.setItem('taxi_users', JSON.stringify(this.users));
+                this.renderUserList();
             }
         };
 
@@ -430,37 +455,22 @@
                 document.getElementById('tab-' + id).classList.remove('hidden');
                 document.querySelectorAll('.nav-item-dash').forEach(n => n.classList.remove('active'));
                 el.classList.add('active');
+                if(id === 'rechner') rechner.update();
             }
         };
 
         const rechner = {
-            config: {
-                's-klasse': { base: [12000, 22000, 30000], stop: 3000 },
-                'stretch':  { base: [22000, 40000, 50000], stop: 5000 },
-                'patriot':  { base: [35000, 50000, 60000], stop: 6000 }
-            },
+            prices: { 'taxi': [0,0,0], 's-klasse': [12000, 22000, 30000], 'stretch': [22000, 40000, 50000], 'patriot': [35000, 50000, 60000] },
             update: function() {
                 const car = document.getElementById('calc-car').value;
                 const mode = document.getElementById('calc-mode').value;
-                const stops = parseInt(document.getElementById('calc-stops').value) || 0;
-                const name = document.getElementById('calc-name').value;
-
-                const data = this.config[car];
-                let total = data.base[mode] + (stops * data.stop);
-
-                document.getElementById('inv-user').innerText = name || "...";
-                document.getElementById('inv-date').innerText = "Datum: " + new Date().toLocaleDateString();
+                const total = this.prices[car][mode];
+                document.getElementById('inv-user').innerText = app.currentUser.name;
+                document.getElementById('inv-date').innerText = new Date().toLocaleDateString();
                 document.getElementById('inv-total').innerText = total.toLocaleString() + " EUR";
-                
-                document.getElementById('inv-items').innerHTML = `
-                    <tr><td>Grundpauschale (${car})</td><td class="text-end">${data.base[mode].toLocaleString()} EUR</td></tr>
-                    ${stops > 0 ? `<tr><td>Zusatzstopps (${stops}x)</td><td class="text-end">${(stops * data.stop).toLocaleString()} EUR</td></tr>` : ''}
-                `;
+                document.getElementById('inv-items').innerHTML = `<tr><td>Grundfahrt (${car})</td><td class="text-end">${total.toLocaleString()} EUR</td></tr>`;
             }
         };
-
-        // Initialisierung
-        rechner.update();
     </script>
 </body>
 </html>
