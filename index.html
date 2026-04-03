@@ -3,474 +3,720 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Köln | Management System</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>TaxiHub NRW | Management System v16</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* --- DESIGN SYSTEM --- */
         :root {
-            --taxi-yellow: #f1c40f;
-            --bg-dark: #0f0f0f;
-            --sidebar-bg: #151515;
-            --card-bg: #1a1a1a;
+            --taxi-yellow: #e1ff00;
+            --bg-black: #050505;
+            --card-bg: #111111;
+            --sidebar-bg: #080808;
             --text-main: #ffffff;
-            --text-muted: #888888;
-            --border-color: #2a2a2a;
+            --text-dim: #888888;
+            --border: #1a1a1a;
+            --status-red: #e74c3c;
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 80px;
         }
 
-        body { 
-            background-color: var(--bg-dark); 
-            color: var(--text-main); 
-            font-family: 'Inter', 'Segoe UI', sans-serif; 
-            margin: 0; 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-black);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            height: 100vh;
             overflow: hidden;
         }
 
-        .hidden { display: none !important; }
-
-        /* --- LOGIN SCREEN --- */
-        #login-screen {
-            position: fixed; inset: 0;
-            background: linear-gradient(135deg, #000 0%, #111 100%);
+        /* --- LOGIN PAGE --- */
+        #login-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
             z-index: 10000;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .login-card {
+
+        .login-box {
             background: var(--card-bg);
-            padding: 40px; border-radius: 12px;
+            width: 380px;
+            padding: 40px;
             border: 1px solid var(--taxi-yellow);
-            width: 100%; max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
         }
 
-        /* --- DASHBOARD LAYOUT --- */
-        #admin-wrapper { display: flex; height: 100vh; }
-        
-        .sidebar { 
-            width: 280px; 
-            background: var(--sidebar-bg); 
-            border-right: 1px solid var(--border-color);
-            display: flex; flex-direction: column;
+        .login-box h2 {
+            letter-spacing: 5px;
+            color: var(--taxi-yellow);
+            margin-bottom: 30px;
         }
 
-        .main-content { 
-            flex-grow: 1; 
-            overflow-y: auto; 
-            padding: 40px; 
-            background: var(--bg-dark); 
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
 
-        /* --- SIDEBAR NAVIGATION --- */
-        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
-        .sidebar-header h4 { color: var(--taxi-yellow); font-weight: 800; letter-spacing: 1px; margin: 0; }
-        
-        .nav-link-custom {
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-header {
+            padding: 30px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            color: var(--taxi-yellow);
+            font-size: 18px;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar.collapsed .sidebar-header h3 {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .nav-section {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-title {
+            padding: 0 25px 10px;
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .sidebar.collapsed .nav-title {
+            display: none;
+        }
+
+        .nav-item {
             padding: 15px 25px;
-            color: var(--text-muted);
-            text-decoration: none;
-            display: flex; align-items: center;
-            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-dim);
             cursor: pointer;
+            transition: 0.2s;
             border-left: 4px solid transparent;
         }
-        .nav-link-custom i { width: 30px; font-size: 1.1rem; }
-        .nav-link-custom:hover, .nav-link-custom.active {
+
+        .nav-item:hover, .nav-item.active {
             color: var(--text-main);
-            background: rgba(241, 196, 15, 0.05);
+            background: rgba(225, 255, 0, 0.05);
             border-left-color: var(--taxi-yellow);
         }
 
-        /* --- CREDITS & SUPPORT (SIDEBAR BOTTOM) --- */
+        .sidebar.collapsed .nav-item span {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-item i {
+            font-size: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* --- MAIN CONTENT AREA --- */
+        .main-view {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 50px;
+            background: radial-gradient(circle at top right, #0a0a0a, #050505);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 40px;
+        }
+
+        /* --- DASHBOARD WIDGETS --- */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .stempel-card {
+            background: var(--status-red);
+            color: white;
+            text-align: center;
+            border: none;
+        }
+
+        .timer-display {
+            font-size: 54px;
+            font-weight: 900;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 15px 0;
+        }
+
+        .btn-action {
+            background: var(--taxi-yellow);
+            color: #000;
+            border: none;
+            padding: 40px;
+            width: 100%;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(225, 255, 0, 0.2);
+        }
+
+        /* --- TABLES (EDITABLE) --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px;
+            color: var(--text-dim);
+            font-size: 12px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .table-input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid transparent;
+            color: #fff;
+            padding: 8px;
+            width: 90%;
+            border-radius: 4px;
+        }
+
+        .table-input:focus {
+            border-color: var(--taxi-yellow);
+            outline: none;
+            background: #000;
+        }
+
+        /* --- INPUTS --- */
+        input[type="text"], input[type="password"], input[type="number"], select {
+            background: #000;
+            border: 1px solid #333;
+            color: white;
+            padding: 14px;
+            width: 100%;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* --- FOOTER --- */
         .sidebar-footer {
             margin-top: auto;
             padding: 20px;
-            background: #0d0d0d;
-            border-top: 1px solid var(--border-color);
-            font-size: 0.8rem;
-        }
-        .credit-item { margin-bottom: 5px; color: var(--text-muted); }
-        .credit-item b { color: var(--text-main); }
-        .support-links { margin-top: 15px; }
-        .support-btn {
-            display: block;
-            color: var(--taxi-yellow);
-            text-decoration: none;
-            margin-bottom: 8px;
-            transition: 0.2s;
-        }
-        .support-btn:hover { text-decoration: underline; }
-
-        /* --- CARDS & UI --- */
-        .stats-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px; padding: 25px;
-            height: 100%;
-        }
-        .btn-taxi { 
-            background: var(--taxi-yellow); color: #000; 
-            font-weight: 700; border: none; border-radius: 6px; 
-        }
-        .btn-taxi:hover { background: #d4ac0d; }
-
-        .form-control-taxi {
-            background: #222; border: 1px solid var(--border-color);
-            color: white; padding: 12px; border-radius: 6px;
-        }
-        .form-control-taxi:focus {
-            background: #252525; border-color: var(--taxi-yellow); color: white; box-shadow: none;
+            border-top: 1px solid var(--border);
         }
 
-        /* --- LST DISPLAY --- */
-        .lst-status-box {
-            border: 2px solid var(--border-color);
-            border-radius: 12px; padding: 40px; text-align: center;
+        .user-info-box {
+            background: #111;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .sidebar.collapsed .user-info-box, 
+        .sidebar.collapsed .copyright-text {
+            display: none;
+        }
+
+        .copyright-text {
+            font-size: 10px;
+            color: var(--text-dim);
+            line-height: 1.8;
+        }
+
+        /* --- CONTACT BUBBLE --- */
+        #bubble-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--taxi-yellow);
+            color: #000;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            z-index: 1000;
             transition: 0.3s;
         }
-        .lst-active { border-color: var(--taxi-yellow); background: rgba(241, 196, 15, 0.02); }
-        .status-indicator {
-            height: 10px; width: 10px; border-radius: 50%;
-            display: inline-block; margin-right: 8px;
-        }
-        .bg-online { background-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
 
-        /* --- INVOICE PRINT --- */
-        #invoice { background: white; color: black; padding: 50px; display: none; }
-        @media print { .no-print { display: none !important; } #invoice { display: block !important; } }
+        #bubble-btn:hover { transform: scale(1.1) rotate(10deg); }
+
+        #bubble-menu {
+            position: fixed;
+            bottom: 110px;
+            right: 30px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            width: 280px;
+            padding: 25px;
+            border-radius: 15px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+        }
+
+        #bubble-menu.active { display: block; }
+
+        #bubble-menu a {
+            color: var(--taxi-yellow);
+            text-decoration: none;
+            display: block;
+            padding: 10px 0;
+            font-weight: bold;
+            border-bottom: 1px solid #222;
+        }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-card">
-            <h3 class="text-center mb-4"><i class="fas fa-taxi text-warning"></i> INTERN</h3>
-            <div class="mb-3">
-                <label class="small text-muted mb-1">Benutzername</label>
-                <input type="text" id="log-user" class="form-control form-control-taxi">
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>TAXI HUB</h2>
+            <input type="text" id="log-user" placeholder="Name">
+            <div style="position:relative;">
+                <input type="password" id="log-pass" placeholder="Passwort">
+                <i class="fas fa-eye" onclick="app.toggleLoginPass(this)" style="position:absolute; right:15px; top:15px; cursor:pointer; color:#555;"></i>
             </div>
-            <div class="mb-4">
-                <label class="small text-muted mb-1">Passwort</label>
-                <input type="password" id="log-pass" class="form-control form-control-taxi">
-            </div>
-            <button class="btn btn-taxi w-100 p-2" onclick="app.login()">AUTHENTIFIZIEREN</button>
+            <label style="display:flex; align-items:center; gap:10px; color:#777; font-size:13px; margin: 15px 0; cursor:pointer;">
+                <input type="checkbox" id="log-remember"> Gerät merken
+            </label>
+            <button onclick="app.processLogin()" style="background:var(--taxi-yellow); border:none; width:100%; padding:16px; font-weight:bold; cursor:pointer; border-radius:6px;">LOGIN</button>
         </div>
     </div>
 
-    <div id="page-admin" class="hidden">
-        <div id="admin-wrapper">
-            
-            <div class="sidebar">
-                <div class="sidebar-header">
-                    <h4>TAXI KÖLN</h4>
-                    <small class="text-muted" id="user-display-name">Identität prüfen...</small>
-                </div>
-                
-                <div class="py-3">
-                    <div class="nav-link-custom active" onclick="ui.tab('dash', this)"><i class="fas fa-th-large"></i> Dashboard</div>
-                    <div class="nav-link-custom" onclick="ui.tab('lst', this)"><i class="fas fa-headset"></i> Leitstelle</div>
-                    <div class="nav-link-custom" onclick="ui.tab('fb', this)"><i class="fas fa-file-invoice"></i> Fahrtenbuch</div>
-                    <div class="nav-link-custom" onclick="ui.tab('rechner', this)"><i class="fas fa-calculator"></i> Rechner</div>
-                    <div id="nav-admin-only" class="nav-link-custom hidden" onclick="ui.tab('admin', this)"><i class="fas fa-user-shield"></i> Verwaltung</div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>ZENTRALE</h3>
+            <i class="fas fa-bars" onclick="app.sidebarToggle()" style="cursor:pointer;"></i>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Navigation</div>
+            <div class="nav-item active" onclick="app.page('dash', this)"><i class="fas fa-th-large"></i> <span>Dashboard</span></div>
+            <div class="nav-item" onclick="app.page('fahrt', this)"><i class="fas fa-map-marked-alt"></i> <span>Fahrtenbuch</span></div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Management</div>
+            <div class="nav-item" onclick="app.page('members', this)"><i class="fas fa-users"></i> <span>Mitglieder</span></div>
+            <div id="nav-admin" class="nav-item hidden" onclick="app.page('admin', this)"><i class="fas fa-user-shield"></i> <span>Personal</span></div>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-info-box">
+                <b id="display-username">Gast</b><br>
+                <small style="color:var(--taxi-yellow)">Geschäftsführung Chris Schreiner</small>
+            </div>
+            <div class="copyright-text">
+                © Taxi Köln NRW-RP<br>
+                Created by agrar.julian<br>
+                Hosted by Marco Krause
+            </div>
+            <button onclick="app.processLogout()" style="background:none; border:none; color:#ff4444; cursor:pointer; width:100%; font-size:22px; margin-top:20px;">
+                <i class="fas fa-power-off"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="main-view">
+        
+        <div id="view-dash">
+            <h1>Dashboard</h1>
+            <div class="grid-layout">
+                <div class="card stempel-card">
+                    <div style="text-transform:uppercase; font-size:11px; letter-spacing:2px;">Sitzungszeit</div>
+                    <div class="timer-display" id="main-timer">00:00:00</div>
+                    <div id="last-session-val" style="font-size:13px; margin-bottom:20px; opacity:0.8;">Letzte Sitzung: --:--:--</div>
+                    <button id="stempel-btn" onclick="app.timerToggle()" style="background:white; color:black; border:none; padding:12px 40px; border-radius:30px; font-weight:bold; cursor:pointer;">EINSTEMPELN</button>
                 </div>
 
-                <div class="sidebar-footer">
-                    <div class="credit-item"><i class="fas fa-code"></i> Created By <b>agrar.julian</b></div>
-                    <div class="credit-item"><i class="fas fa-server"></i> Hosted by <b>norixius.</b></div>
-                    
-                    <div class="support-links">
-                        <a href="https://forms.gle/7uRovRSJ1TUwaMJJA" target="_blank" class="support-btn"><i class="fas fa-star"></i> Bewertung abgeben</a>
-                        <a href="https://forms.gle/mSuLUNHAYsSzSM2i8" target="_blank" class="support-btn"><i class="fas fa-bug"></i> Fehler melden</a>
-                        <span class="text-muted small"><i class="fab fa-discord"></i> Discord: agrar.julian</span>
+                <div class="card" style="padding:0; border:none; background:transparent;">
+                    <button class="btn-action" onclick="app.page('fahrt')">
+                        <i class="fas fa-plus-circle" style="font-size:30px; margin-bottom:15px;"></i><br>
+                        NEUE FAHRT PROTOKOLLIEREN
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                        <h3 style="margin:0;">HAUPTORTE</h3>
+                        <i class="fas fa-plus-square hidden adm-tool" onclick="app.ortAdd()" style="cursor:pointer; color:var(--taxi-yellow); font-size:20px;"></i>
                     </div>
+                    <div id="orte-render-area"></div>
+                </div>
 
-                    <button class="btn btn-outline-danger btn-sm w-100 mt-3" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> Abmelden</button>
+                <div class="card">
+                    <h3>AKTIVITÄT</h3>
+                    <div id="history-render-area" style="font-size:14px; color:var(--text-dim);">Keine Daten vorhanden.</div>
                 </div>
             </div>
+        </div>
 
-            <div class="main-content">
-                
-                <div id="tab-dash">
-                    <div class="d-flex justify-content-between align-items-center mb-5">
-                        <h2 class="fw-bold">Willkommen zurück</h2>
-                        <div class="text-end">
-                            <h1 id="timer-display" class="mb-0 fw-bold">00:00:00</h1>
-                            <small class="text-muted uppercase">Dienstzeit Aktuell</small>
-                        </div>
-                    </div>
-
-                    <div class="row g-4">
-                        <div class="col-md-4">
-                            <div class="stats-card">
-                                <h6 class="text-muted mb-3">DIENST-STATUS</h6>
-                                <button id="btn-stempel" class="btn btn-taxi w-100 p-3" onclick="app.toggleTimer()">
-                                    <i class="fas fa-play me-2"></i> EINSTEMPELN
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="stats-card">
-                                <h6 class="text-muted mb-3">INTERNE NEWS</h6>
-                                <p>Bitte achtet auf die neue Preisliste für VIP-Fahrten. Das Fahrtenbuch muss lückenlos geführt werden!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-lst" class="hidden">
-                    <h2 class="fw-bold mb-4">Leitstellen-Management</h2>
-                    <div id="lst-control-box" class="lst-status-box mb-5">
-                        </div>
-
-                    <div class="stats-card">
-                        <h6 class="text-muted mb-3">PLZ SCHNELLSUCHE (KÖLN)</h6>
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <input type="text" id="lst-plz-in" class="form-control form-control-taxi" placeholder="PLZ eingeben..." oninput="app.lookupPLZ()">
-                            </div>
-                            <div class="col-md-4">
-                                <div id="plz-result" class="fw-bold text-center">-</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-fb" class="hidden">
-                    <h2 class="fw-bold mb-4">Dokumentation</h2>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="stats-card">
-                                <div class="mb-3">
-                                    <label class="small text-muted">Start</label>
-                                    <input type="text" id="fb-start" class="form-control form-control-taxi" placeholder="Ort...">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="small text-muted">Ziel</label>
-                                    <input type="text" id="fb-ziel" class="form-control form-control-taxi" placeholder="Ort...">
-                                </div>
-                                <div class="mb-4">
-                                    <label class="small text-muted">Kategorie</label>
-                                    <select id="fb-art" class="form-control form-control-taxi">
-                                        <option>Standard Taxi</option>
-                                        <option>Limousinen Service</option>
-                                        <option>VIP Helikopter</option>
-                                    </select>
-                                </div>
-                                <button class="btn btn-taxi w-100" onclick="app.saveDrive()">EINTRAGEN</button>
-                            </div>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="stats-card">
-                                <table class="table table-dark table-hover">
-                                    <thead><tr><th class="text-muted">Zeit</th><th class="text-muted">Route</th><th class="text-muted text-end">Typ</th></tr></thead>
-                                    <tbody id="fb-list"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-rechner" class="hidden">
-                    <h2 class="fw-bold mb-4 no-print">Taxi-Rechner</h2>
-                    <div class="stats-card no-print">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="small text-muted">Fahrzeug</label>
-                                <select id="calc-car" class="form-control form-control-taxi" onchange="rechner.update()">
-                                    <option value="taxi">Standard Taxi</option>
-                                    <option value="s-klasse">Extended S-Klasse</option>
-                                    <option value="stretch">Stretch-Limousine</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="small text-muted">Tarif</label>
-                                <select id="calc-mode" class="form-control form-control-taxi" onchange="rechner.update()">
-                                    <option value="0">Standard (einfach)</option>
-                                    <option value="1">Hin- & Rückfahrt</option>
-                                    <option value="2">Stundenmiete</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button class="btn btn-taxi w-100 mt-4" onclick="window.print()"><i class="fas fa-print me-2"></i>RECHNUNG GENERIEREN</button>
-                    </div>
-
-                    <div id="invoice">
-                        <div class="d-flex justify-content-between align-items-center mb-5 border-bottom pb-4">
-                            <div><h3>TAXI KÖLN</h3><p class="text-muted">Management & Chauffeurservice</p></div>
-                            <div class="text-end"><h2>QUITTUNG</h2><p id="inv-date"></p></div>
-                        </div>
-                        <table class="table mt-4">
-                            <tbody id="inv-items"></tbody>
-                            <tfoot><tr><th class="fs-3">GESAMT</th><th class="text-end fs-3" id="inv-total">0 EUR</th></tr></tfoot>
-                        </table>
-                        <div class="mt-5">
-                            <p>Ausgestellt durch: <b id="inv-user"></b></p>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-admin" class="hidden">
-                    <h2 class="fw-bold mb-4 text-warning"><i class="fas fa-user-shield"></i> Administration</h2>
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="stats-card">
-                                <h6 class="mb-3">NEUER MITARBEITER</h6>
-                                <input type="text" id="adm-new-name" class="form-control form-control-taxi mb-2" placeholder="Name">
-                                <input type="text" id="adm-new-pass" class="form-control form-control-taxi mb-3" placeholder="Passwort">
-                                <button class="btn btn-taxi w-100" onclick="app.createUser()">HINZUFÜGEN</button>
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="stats-card">
-                                <table class="table table-dark">
-                                    <thead><tr><th>Name</th><th class="text-end">Aktion</th></tr></thead>
-                                    <tbody id="adm-user-list"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+        <div id="view-fahrt" class="hidden">
+            <h1>Fahrt erfassen</h1>
+            <div class="card" style="max-width:550px;">
+                <label style="font-size:12px; color:var(--text-dim);">Zielort</label>
+                <input type="text" id="inp-f-ziel" placeholder="Wohin ging die Reise?">
+                <label style="font-size:12px; color:var(--text-dim);">Distanz (KM)</label>
+                <input type="number" id="inp-f-km" placeholder="Kilometerstand">
+                <button class="btn-action" onclick="app.fahrtSave()" style="padding:15px; font-size:16px; margin-top:10px;">EINTRAG SPEICHERN</button>
             </div>
+        </div>
+
+        <div id="view-members" class="hidden">
+            <h1>Personalübersicht</h1>
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Rang</th>
+                            <th>DN (Dienstnummer)</th>
+                            <th>Fahrten</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody id="members-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="view-admin" class="hidden">
+            <h1>Personal-Verwaltung</h1>
+            <div class="card" style="max-width:600px;">
+                <h3>Neuen Account anlegen</h3>
+                <input type="text" id="adm-new-name" placeholder="Name des Mitarbeiters">
+                <input type="text" id="adm-new-dn" placeholder="Dienstnummer (DN)">
+                <input type="password" id="adm-new-pass" placeholder="Passwort vergeben">
+                <select id="adm-new-rang">
+                    <option>Praktikant</option>
+                    <option>Azubi Fahrer</option>
+                    <option>Fahrer</option>
+                    <option>Sr. Fahrer</option>
+                    <option>Leitung</option>
+                    <option>Geschäftsführung</option>
+                </select>
+                <button onclick="app.adminCreateUser()" style="background:var(--taxi-yellow); border:none; width:100%; padding:15px; font-weight:bold; cursor:pointer; border-radius:4px;">BENUTZER ANLEGEN</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="bubble-btn" onclick="app.bubbleToggle()">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+    <div id="bubble-menu">
+        <h4 style="margin:0 0 15px 0; color:var(--taxi-yellow);">Support-Zentrale</h4>
+        <p style="font-size:12px; color:#888; margin-bottom:15px;">Wähle eine Option aus um Hilfe zu erhalten:</p>
+        <a href="https://forms.gle/UxSdaw5BFk8mpRPT6" target="_blank"><i class="fas fa-bug"></i> Fehler melden</a>
+        <a href="https://forms.gle/pk3iQFQZaLvPVu3c6" target="_blank"><i class="fas fa-star"></i> Feedback geben</a>
+        <div style="margin-top:20px; font-size:11px; border-top:1px solid #333; padding-top:15px;">
+            Technischer Kontakt (Discord):<br>
+            <b style="color:white;">agrar.julian</b>
         </div>
     </div>
 
     <script>
+        /* --- CORE APPLICATION LOGIC --- */
         const app = {
             currentUser: null,
-            users: JSON.parse(localStorage.getItem('taxi_users')) || [
-                { name: "Chris Schreiner", pass: "Bka26r", isAdmin: true },
-                { name: "Marco Krause", pass: "Bka26r", isAdmin: true },
-                { name: "Azubi", pass: "azubi123", isAdmin: false }
+            // Standard-Daten falls LocalStorage leer ist
+            users: JSON.parse(localStorage.getItem('th_v16_data_users')) || [
+                { name: "Maverick Stone", pass: "Bka26r", dn: "01", rang: "Geschäftsführung", drives: 0, isAdmin: true, history: [] },
+                { name: "Chris Schreiner", pass: "Bka26r", dn: "02", rang: "Geschäftsführung", drives: 0, isAdmin: true, history: [] }
             ],
-            plzMap: { "2020": "Flughafen", "1010": "Hauptbahnhof", "3030": "Industriegebiet", "5000": "Rathaus" },
-            timer: null,
+            orte: JSON.parse(localStorage.getItem('th_v16_data_orte')) || [
+                { name: "Zentrale", plz: "50667" },
+                { name: "Flughafen", plz: "51147" }
+            ],
+            activeTimer: null,
             seconds: 0,
 
-            login: function() {
-                const u = document.getElementById('log-user').value;
-                const p = document.getElementById('log-pass').value;
-                const match = this.users.find(x => x.name === u && x.pass === p);
-                
-                if(match) {
-                    this.currentUser = match;
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('page-admin').classList.remove('hidden');
-                    document.getElementById('user-display-name').innerText = match.name;
-                    if(match.isAdmin) document.getElementById('nav-admin-only').classList.remove('hidden');
-                    this.updateLSTUI();
-                    this.renderFB();
-                } else { alert("Zugriff verweigert!"); }
+            init: function() {
+                const session = localStorage.getItem('th_v16_session');
+                if(session) {
+                    this.currentUser = JSON.parse(session);
+                    document.getElementById('login-overlay').classList.add('hidden');
+                    this.uiUpdate();
+                }
             },
 
-            toggleTimer: function() {
-                const btn = document.getElementById('btn-stempel');
-                if(!this.timer) {
-                    this.timer = setInterval(() => {
+            processLogin: function() {
+                const uInput = document.getElementById('log-user').value;
+                const pInput = document.getElementById('log-pass').value;
+                const remember = document.getElementById('log-remember').checked;
+
+                const match = this.users.find(u => u.name === uInput && u.pass === pInput);
+                if(match) {
+                    this.currentUser = match;
+                    if(remember) localStorage.setItem('th_v16_session', JSON.stringify(match));
+                    document.getElementById('login-overlay').classList.add('hidden');
+                    this.uiUpdate();
+                } else {
+                    alert("Zugriff verweigert: Name oder Passwort falsch.");
+                }
+            },
+
+            processLogout: function() {
+                localStorage.removeItem('th_v16_session');
+                location.reload();
+            },
+
+            uiUpdate: function() {
+                document.getElementById('display-username').innerText = this.currentUser.name;
+                
+                // Admin Features freischalten
+                if(this.currentUser.isAdmin) {
+                    document.getElementById('nav-admin').classList.remove('hidden');
+                    document.querySelectorAll('.adm-tool').forEach(el => el.classList.remove('hidden'));
+                }
+
+                this.renderMembers();
+                this.renderOrte();
+                this.renderHistory();
+            },
+
+            /* --- TIMER FUNKTION --- */
+            timerToggle: function() {
+                const btn = document.getElementById('stempel-btn');
+                const display = document.getElementById('main-timer');
+
+                if(!this.activeTimer) {
+                    // Start
+                    this.seconds = 0;
+                    this.activeTimer = setInterval(() => {
                         this.seconds++;
                         let h = Math.floor(this.seconds / 3600).toString().padStart(2, '0');
                         let m = Math.floor((this.seconds % 3600) / 60).toString().padStart(2, '0');
                         let s = (this.seconds % 60).toString().padStart(2, '0');
-                        document.getElementById('timer-display').innerText = `${h}:${m}:${s}`;
+                        display.innerText = `${h}:${m}:${s}`;
                     }, 1000);
-                    btn.innerHTML = '<i class="fas fa-stop me-2"></i> AUSSTEMPELN';
-                    btn.className = "btn btn-danger w-100 p-3";
+                    btn.innerText = "AUSSTEMPELN";
+                    btn.style.background = "#000";
+                    btn.style.color = "#fff";
                 } else {
-                    clearInterval(this.timer); this.timer = null;
-                    btn.innerHTML = '<i class="fas fa-play me-2"></i> EINSTEMPELN';
-                    btn.className = "btn btn-taxi w-100 p-3";
+                    // Stop & Reset
+                    const finalTime = display.innerText;
+                    document.getElementById('last-session-val').innerText = "Letzte Sitzung: " + finalTime;
+                    
+                    clearInterval(this.activeTimer);
+                    this.activeTimer = null;
+                    this.seconds = 0;
+                    display.innerText = "00:00:00";
+                    
+                    btn.innerText = "EINSTEMPELN";
+                    btn.style.background = "#fff";
+                    btn.style.color = "#000";
                 }
             },
 
-            getLST: () => JSON.parse(localStorage.getItem('taxi_lst')) || { active: false, user: null },
-            setLST: (state) => { localStorage.setItem('taxi_lst', JSON.stringify(state)); app.updateLSTUI(); },
+            /* --- MITGLIEDER EDITIEREN --- */
+            renderMembers: function() {
+                const container = document.getElementById('members-table-body');
+                container.innerHTML = "";
 
-            updateLSTUI: function() {
-                const state = this.getLST();
-                const box = document.getElementById('lst-control-box');
-                if(!state.active) {
-                    box.innerHTML = `<h3 class="text-muted">LST UNBESETZT</h3><button class="btn btn-taxi mt-3" onclick="app.claimLST()">ÜBERNEHMEN</button>`;
-                    box.classList.remove('lst-active');
-                } else {
-                    box.classList.add('lst-active');
-                    box.innerHTML = `
-                        <h2 class="text-warning mb-2"><span class="status-indicator bg-online"></span> LST AKTIV</h2>
-                        <p class="mb-4">Eingeteilt: <b>${state.user}</b></p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-sm btn-outline-light" onclick="app.claimLST()">ABLÖSE ANFORDERN</button>
-                            ${this.currentUser.isAdmin ? `<button class="btn btn-sm btn-outline-danger" onclick="app.kickLST()">LST KICKEN</button>` : ''}
-                        </div>`;
+                this.users.forEach((u, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><input class="table-input" value="${u.name}" onchange="app.memberEdit(${index}, 'name', this.value)"></td>
+                        <td><input class="table-input" value="${u.rang}" onchange="app.memberEdit(${index}, 'rang', this.value)"></td>
+                        <td><input class="table-input" value="${u.dn || ''}" onchange="app.memberEdit(${index}, 'dn', this.value)"></td>
+                        <td>${u.drives}</td>
+                        <td>
+                            <i class="fas fa-trash-alt" onclick="app.memberDelete(${index})" style="color:#ff4444; cursor:pointer; margin-left:10px;"></i>
+                        </td>
+                    `;
+                    container.appendChild(row);
+                });
+            },
+
+            memberEdit: function(index, field, value) {
+                this.users[index][field] = value;
+                this.saveAll();
+            },
+
+            memberDelete: function(index) {
+                if(confirm("Möchtest du dieses Mitglied wirklich unwiderruflich löschen?")) {
+                    this.users.splice(index, 1);
+                    this.saveAll();
+                    this.renderMembers();
                 }
             },
 
-            claimLST: function() { this.setLST({ active: true, user: this.currentUser.name }); },
-            kickLST: function() { this.setLST({ active: false, user: null }); },
-
-            lookupPLZ: function() {
-                const val = document.getElementById('lst-plz-in').value;
-                const res = document.getElementById('plz-result');
-                if(this.plzMap[val]) {
-                    res.innerText = this.plzMap[val]; res.classList.add('text-warning');
-                    document.getElementById('fb-ziel').value = this.plzMap[val];
-                } else { res.innerText = "-"; res.classList.remove('text-warning'); }
+            /* --- ORTE --- */
+            renderOrte: function() {
+                const area = document.getElementById('orte-render-area');
+                area.innerHTML = this.orte.map((o, idx) => `
+                    <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #1a1a1a;">
+                        <span><b style="color:var(--taxi-yellow); margin-right:10px;">${o.plz}</b> ${o.name}</span>
+                        ${this.currentUser.isAdmin ? `<i class="fas fa-times" onclick="app.ortDelete(${idx})" style="color:red; cursor:pointer;"></i>` : ''}
+                    </div>
+                `).join('') || "Keine Orte definiert.";
             },
 
-            saveDrive: function() {
-                const d = { start: document.getElementById('fb-start').value, ziel: document.getElementById('fb-ziel').value, art: document.getElementById('fb-art').value, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
-                if(!d.start || !d.ziel) return;
-                let log = JSON.parse(localStorage.getItem('fb_' + this.currentUser.name)) || [];
-                log.unshift(d);
-                localStorage.setItem('fb_' + this.currentUser.name, JSON.stringify(log));
-                this.renderFB();
+            ortAdd: function() {
+                const n = prompt("Name des Hauptortes:");
+                const p = prompt("Postleitzahl (PLZ):");
+                if(n && p) {
+                    this.orte.push({ name: n, plz: p });
+                    this.saveAll();
+                    this.renderOrte();
+                }
             },
 
-            renderFB: function() {
-                const log = JSON.parse(localStorage.getItem('fb_' + this.currentUser.name)) || [];
-                document.getElementById('fb-list').innerHTML = log.map(x => `<tr><td>${x.time}</td><td>${x.start} > ${x.ziel}</td><td class="text-end text-warning small">${x.art}</td></tr>`).join('');
+            ortDelete: function(idx) {
+                this.orte.splice(idx, 1);
+                this.saveAll();
+                this.renderOrte();
             },
 
-            createUser: function() {
+            /* --- FAHRTENBUCH --- */
+            fahrtSave: function() {
+                const ziel = document.getElementById('inp-f-ziel').value;
+                const km = document.getElementById('inp-f-km').value;
+
+                if(!ziel || !km) return alert("Bitte alle Felder ausfüllen!");
+
+                const entry = { ziel: ziel, km: km, date: new Date().toLocaleString() };
+                this.currentUser.history.unshift(entry);
+                this.currentUser.drives++;
+
+                this.saveAll();
+                this.renderHistory();
+                this.page('dash');
+                alert("Fahrt erfolgreich gespeichert!");
+                
+                document.getElementById('inp-f-ziel').value = "";
+                document.getElementById('inp-f-km').value = "";
+            },
+
+            renderHistory: function() {
+                const area = document.getElementById('history-render-area');
+                area.innerHTML = this.currentUser.history.slice(0, 5).map(h => `
+                    <div style="margin-bottom:10px; padding:10px; background:rgba(255,255,255,0.02); border-radius:4px;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <b style="color:white;">${h.ziel}</b>
+                            <span style="color:var(--taxi-yellow);">${h.km} KM</span>
+                        </div>
+                        <small style="color:#555;">${h.date}</small>
+                    </div>
+                `).join('') || "Noch keine Fahrten aufgezeichnet.";
+            },
+
+            /* --- ADMIN --- */
+            adminCreateUser: function() {
                 const n = document.getElementById('adm-new-name').value;
+                const d = document.getElementById('adm-new-dn').value;
                 const p = document.getElementById('adm-new-pass').value;
-                if(!n || !p) return;
-                this.users.push({ name: n, pass: p, isAdmin: false });
-                localStorage.setItem('taxi_users', JSON.stringify(this.users));
-                this.renderUserList();
+                const r = document.getElementById('adm-new-rang').value;
+
+                if(!n || !p) return alert("Name und Passwort sind Pflicht!");
+
+                this.users.push({
+                    name: n, dn: d, pass: p, rang: r, drives: 0, history: [],
+                    isAdmin: (r === "Geschäftsführung" || r === "Leitung")
+                });
+
+                this.saveAll();
+                this.renderMembers();
+                alert("Benutzer erfolgreich angelegt!");
+                
+                document.getElementById('adm-new-name').value = "";
+                document.getElementById('adm-new-dn').value = "";
+                document.getElementById('adm-new-pass').value = "";
             },
 
-            renderUserList: function() {
-                document.getElementById('adm-user-list').innerHTML = this.users.map(u => `<tr><td>${u.name}</td><td class="text-end">${u.isAdmin ? '<i class="fas fa-lock text-muted"></i>' : `<button class="btn btn-sm btn-danger" onclick="app.deleteUser('${u.name}')"><i class="fas fa-trash"></i></button>`}</td></tr>`).join('');
+            /* --- UI HELPER --- */
+            page: function(id, el) {
+                document.querySelectorAll('.main-view > div').forEach(v => v.classList.add('hidden'));
+                document.getElementById('view-' + id).classList.remove('hidden');
+
+                if(el) {
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    el.classList.add('active');
+                }
             },
 
-            deleteUser: function(name) {
-                this.users = this.users.filter(x => x.name !== name);
-                localStorage.setItem('taxi_users', JSON.stringify(this.users));
-                this.renderUserList();
+            sidebarToggle: function() { document.getElementById('sidebar').classList.toggle('collapsed'); },
+            bubbleToggle: function() { document.getElementById('bubble-menu').classList.toggle('active'); },
+            toggleLoginPass: function(el) {
+                const inp = el.previousElementSibling;
+                inp.type = inp.type === "password" ? "text" : "password";
+                el.classList.toggle('fa-eye-slash');
+            },
+
+            saveAll: function() {
+                localStorage.setItem('th_v16_data_users', JSON.stringify(this.users));
+                localStorage.setItem('th_v16_data_orte', JSON.stringify(this.orte));
+                // Update current user data in case it changed
+                const idx = this.users.findIndex(u => u.name === this.currentUser.name);
+                if(idx !== -1) {
+                    this.currentUser = this.users[idx];
+                    // Also update session if active
+                    if(localStorage.getItem('th_v16_session')) {
+                        localStorage.setItem('th_v16_session', JSON.stringify(this.currentUser));
+                    }
+                }
             }
         };
 
-        const ui = {
-            tab: (id, el) => {
-                document.querySelectorAll('.main-content > div').forEach(d => d.classList.add('hidden'));
-                document.getElementById('tab-' + id).classList.remove('hidden');
-                document.querySelectorAll('.nav-link-custom').forEach(n => n.classList.remove('active'));
-                el.classList.add('active');
-                if(id === 'admin') app.renderUserList();
-            }
-        };
-
-        const rechner = {
-            prices: { 'taxi': [0,0,0], 's-klasse': [12000, 22000, 30000], 'stretch': [20000, 35000, 50000] },
-            update: function() {
-                const car = document.getElementById('calc-car').value;
-                const mode = document.getElementById('calc-mode').value;
-                const total = this.prices[car][mode];
-                document.getElementById('inv-user').innerText = app.currentUser.name;
-                document.getElementById('inv-date').innerText = new Date().toLocaleDateString();
-                document.getElementById('inv-total').innerText = total.toLocaleString() + " EUR";
-                document.getElementById('inv-items').innerHTML = `<tr><td>Fahrt mit ${car.toUpperCase()}</td><td class="text-end">${total.toLocaleString()} EUR</td></tr>`;
-            }
-        };
+        // Start
+        app.init();
     </script>
 </body>
 </html>
