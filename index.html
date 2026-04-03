@@ -3,175 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaxiHub NRW | Management-System v7</title>
+    <title>TaxiHub NRW | Ultimate Management</title>
     <style>
         :root {
             --taxi-yellow: #e1ff00;
-            --bg-black: #0a0a0a;
-            --card-bg: #161616;
+            --bg-black: #050505;
+            --card-bg: #111111;
+            --border: #222;
             --status-1: #2ecc71; --status-2: #3498db; --status-3: #f1c40f; --status-4: #f39c12; --status-6: #e74c3c;
-            --glow: 0 0 15px rgba(225, 255, 0, 0.3);
         }
 
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-black); color: white; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-black); color: white; margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
         /* SIDEBAR */
-        .sidebar { width: 280px; background: #0d0d0d; border-right: 2px solid var(--taxi-yellow); padding: 20px; display: flex; flex-direction: column; overflow-y: auto; }
-        .nav-item { padding: 12px; color: #b3b3b3; cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.3s; }
-        .nav-item.active { background: #1a1a1a; color: var(--taxi-yellow); border-left: 4px solid var(--taxi-yellow); }
+        .sidebar { width: 280px; background: #080808; border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; }
+        .nav-item { padding: 12px; color: #666; cursor: pointer; border-radius: 4px; margin-bottom: 2px; font-size: 13px; transition: 0.2s; }
+        .nav-item:hover { background: #111; color: white; }
+        .nav-item.active { background: #151515; color: var(--taxi-yellow); border-left: 3px solid var(--taxi-yellow); }
 
-        /* STEMPELUHR */
-        .punch-card { background: #e74c3c; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; transition: 0.5s; }
-        .punch-card.active { background: #2ecc71; }
-        .timer-big { font-size: 32px; font-weight: 800; margin: 10px 0; font-family: monospace; }
-
-        /* MAIN CONTENT */
-        .main-content { flex-grow: 1; padding: 25px; overflow-y: auto; }
-        .card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid #222; margin-bottom: 20px; }
-
-        /* TABLES & LISTS */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; padding: 12px; color: var(--taxi-yellow); border-bottom: 2px solid #333; font-size: 12px; }
-        td { padding: 12px; border-bottom: 1px solid #222; font-size: 14px; }
+        /* MAIN */
+        .main-content { flex-grow: 1; padding: 30px; overflow-y: auto; position: relative; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 2px; border: 1px solid var(--border); margin-bottom: 20px; }
         
-        .badge { background: #333; color: var(--taxi-yellow); padding: 2px 8px; border-radius: 4px; font-size: 10px; margin-right: 5px; border: 1px solid var(--taxi-yellow); }
-        
-        /* FMS BUTTONS */
-        .fms-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 10px; }
-        .fms-btn { padding: 10px 2px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
-        .s1 { background: var(--status-1); } .s2 { background: var(--status-2); } .s3 { background: var(--status-3); color: black; } 
-        .s4 { background: var(--status-4); color: black; animation: blink 1s infinite; } .s6 { background: var(--status-6); }
-        
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        h1, h2, h3 { font-weight: 300; letter-spacing: 1px; text-transform: uppercase; margin-top: 0; }
 
-        .user-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--taxi-yellow); object-fit: cover; }
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; color: #444; border-bottom: 1px solid var(--border); font-size: 10px; text-transform: uppercase; }
+        td { padding: 12px; border-bottom: 1px solid #181818; font-size: 13px; }
+
+        /* INPUTS */
+        input, select, textarea { background: #0a0a0a; border: 1px solid #222; color: white; padding: 10px; width: 100%; box-sizing: border-box; margin-bottom: 10px; font-size: 13px; }
+        input[type="checkbox"] { width: auto; margin-right: 10px; }
+        .btn-yellow { background: var(--taxi-yellow); color: black; border: none; padding: 12px 20px; cursor: pointer; font-weight: bold; width: 100%; }
+        
+        .perm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #0a0a0a; padding: 15px; border: 1px solid #222; margin-bottom: 15px; }
+        .perm-item { font-size: 11px; color: #bbb; display: flex; align-items: center; }
+
+        /* FOOTER */
+        .sidebar-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); font-size: 10px; color: #333; line-height: 1.5; }
+        .contact-box { position: fixed; bottom: 20px; right: 20px; background: #080808; padding: 15px; border: 1px solid var(--border); font-size: 11px; z-index: 100; }
+        .contact-box a { color: var(--taxi-yellow); text-decoration: none; font-weight: bold; }
+
+        .status-pill { padding: 4px 8px; border-radius: 2px; font-size: 10px; font-weight: bold; color: black; }
         .hidden { display: none !important; }
-        input[type="text"], select, textarea { background: #222; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; }
-        .btn-action { background: var(--taxi-yellow); color: black; border: none; padding: 10px; cursor: pointer; font-weight: bold; border-radius: 5px; }
     </style>
 </head>
 <body>
 
     <div id="login-overlay" style="position:fixed; inset:0; background:var(--bg-black); z-index:1000; display:flex; align-items:center; justify-content:center;">
-        <div class="card" style="width:340px; text-align:center; border: 1px solid var(--taxi-yellow);">
-            <h2 style="color:var(--taxi-yellow)">TaxiHub NRW Login</h2>
-            <input type="text" id="l-user" placeholder="Name" style="width:80%"><br><br>
-            <input type="password" id="l-pass" placeholder="Passwort" style="width:80%"><br><br>
-            <button class="btn-action" onclick="app.login()" style="width:85%">SYSTEM STARTEN</button>
+        <div class="card" style="width:320px; border: 1px solid var(--taxi-yellow);">
+            <h2 style="text-align:center; color:var(--taxi-yellow)">Taxi NRW</h2>
+            <input type="text" id="l-user" placeholder="Vorname Nachname">
+            <input type="password" id="l-pass" placeholder="Passwort">
+            <button class="btn-yellow" onclick="app.login()">Systemzugriff</button>
         </div>
     </div>
 
     <div class="sidebar">
-        <div id="punch-ui" class="punch-card">
-            <small>Aktuelle Sitzung</small>
-            <div id="timer" class="timer-big">00:00:00</div>
-            <button id="punch-btn" onclick="app.toggleClock()" style="background:white; border:none; padding:8px 15px; border-radius:20px; cursor:pointer; font-weight:bold;">EINSTEMPELN</button>
+        <h2 style="font-size: 18px; margin-bottom: 40px;">TaxiHub <span style="color:var(--taxi-yellow)">NRW</span></h2>
+        
+        <div class="nav-item active" onclick="app.showPage('dashboard')">Zentrale / FMS</div>
+        <div class="nav-item" id="nav-fahrtenbuch" onclick="app.showPage('fahrtenbuch')">Fahrtenbuch</div>
+        <div class="nav-item" onclick="app.showPage('mitglieder')">Mitgliederliste</div>
+        <div class="nav-item" onclick="app.showPage('protokoll')">Dienstbesprechung</div>
+        <div class="nav-item" onclick="app.showPage('board')">Dienstanweisungen</div>
+        <div class="nav-item" id="nav-logs" onclick="app.showPage('logs')">Wochenarchiv</div>
+        <div class="nav-item hidden" id="nav-admin" onclick="app.showPage('admin')">Personalverwaltung</div>
+
+        <div style="margin-top: auto;">
+            <div style="padding: 12px; background: #111; border: 1px solid var(--border); margin-bottom: 10px;">
+                <small id="side-rang" style="color:var(--taxi-yellow); font-size:9px; text-transform:uppercase;"></small><br>
+                <b id="side-name" style="font-size:13px; letter-spacing: 0.5px;"></b>
+            </div>
+            <button onclick="location.reload()" style="width:100%; background:transparent; border:1px solid #333; color:#555; padding:8px; cursor:pointer; font-size:11px;">Abmelden</button>
         </div>
 
-        <div class="nav-item active" onclick="app.showPage('dashboard')">🏠 Dashboard</div>
-        <div class="nav-item" onclick="app.showPage('fahrtenbuch')">📖 Fahrtenbuch</div>
-        <div class="nav-item" onclick="app.showPage('mitglieder')">👥 Mitgliederliste</div>
-        <div class="nav-item" onclick="app.showPage('board')">📋 Schwarzes Brett</div>
-        <div class="nav-item" onclick="app.showPage('logs')">📜 Archiv / Logs</div>
-        <div id="admin-nav" class="nav-item hidden" onclick="app.showPage('admin')">⚙️ Personal-Abteilung</div>
-
-        <div style="margin-top: auto; display: flex; align-items: center; gap: 12px; background:#111; padding:12px; border-radius:10px;">
-            <img id="side-avatar" src="images/Fahrer.png" class="user-avatar">
-            <div style="overflow:hidden;"><b id="side-name">Name</b><br><small id="side-rang" style="color:var(--taxi-yellow);">Rang</small></div>
+        <div class="sidebar-footer">
+            Credit C - Taxi Köln<br>
+            Created by agrar.julian<br>
+            Hosted by Marco Krause
         </div>
     </div>
 
     <div class="main-content">
+        
         <div id="page-dashboard">
-            <h1>Willkommen, <span id="welcome-name">Kollege</span>!</h1>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <h1>Zentrale</h1>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="card">
-                    <h3>FMS Status-Panel</h3>
-                    <div class="fms-grid">
-                        <button class="fms-btn s1" onclick="app.setFMS(1)">S1</button>
-                        <button class="fms-btn s2" onclick="app.setFMS(2)">S2</button>
-                        <button class="fms-btn s3" onclick="app.setFMS(3)">S3</button>
-                        <button class="fms-btn s4" onclick="app.setFMS(4)">S4</button>
-                        <button class="fms-btn s6" onclick="app.setFMS(6)">S6</button>
+                    <h3>Mein Funkstatus</h3>
+                    <div id="status-box" style="padding:20px; text-align:center; font-size:24px; font-weight:bold; margin-bottom:15px; background:#111;">S6</div>
+                    <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap: 8px;">
+                        <button onclick="app.setFMS(1)" style="background:var(--status-1); border:none; padding:12px; cursor:pointer;">S1</button>
+                        <button onclick="app.setFMS(2)" style="background:var(--status-2); border:none; padding:12px; cursor:pointer;">S2</button>
+                        <button onclick="app.setFMS(3)" style="background:var(--status-3); border:none; padding:12px; cursor:pointer;">S3</button>
+                        <button onclick="app.setFMS(4)" style="background:var(--status-4); border:none; padding:12px; cursor:pointer;">S4</button>
+                        <button onclick="app.setFMS(6)" style="background:var(--status-6); border:none; padding:12px; cursor:pointer;">S6</button>
                     </div>
                 </div>
                 <div class="card">
-                    <h3>🏆 Wochen-Bestenliste</h3>
-                    <div id="leaderboard">Lade...</div>
+                    <h3>Status-Monitor</h3>
+                    <div id="fleet-monitor"></div>
                 </div>
-                <div class="card" style="grid-column: span 2;">
-                    <h3>🚗 Aktive Flotte</h3>
-                    <div id="fleet-monitor" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="page-mitglieder" class="hidden">
-            <h1>Mitgliederverwaltung</h1>
-            <div class="card">
-                <table id="member-table">
-                    <thead><tr><th>Avatar</th><th>Info</th><th>DN</th><th>Fahrten</th><th>Abzeichen</th></tr></thead>
-                    <tbody id="member-body"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="page-board" class="hidden">
-            <h1>Dienstanweisungen</h1>
-            <div class="card" id="board-content">
-                <div id="admin-board-edit" class="hidden">
-                    <textarea id="board-input" style="width:100%; height:200px;"></textarea><br><br>
-                    <button class="btn-action" onclick="app.saveBoard()">Aushang speichern</button>
-                </div>
-                <div id="board-display" style="white-space: pre-wrap; line-height: 1.6;">Lade Dienstanweisungen...</div>
             </div>
         </div>
 
         <div id="page-fahrtenbuch" class="hidden">
             <h1>Fahrt erfassen</h1>
-            <div class="card" style="max-width:400px;">
-                <input type="text" id="f-von" placeholder="Abholort" style="width:100%"><br><br>
-                <input type="text" id="f-nach" placeholder="Zielort" style="width:100%"><br><br>
-                <button class="btn-action" onclick="app.addDrive()" style="width:100%">DOKUMENTIEREN</button>
+            <div class="card" id="f-form" style="max-width:500px;">
+                <select id="f-art">
+                    <option value="Normal">Normale Fahrt (Kostenlos)</option>
+                    <option value="Heli">Helikopter (Premium)</option>
+                    <option value="Limo">Limusine (Premium)</option>
+                </select>
+                <input type="text" id="f-von" placeholder="Startpunkt">
+                <input type="text" id="f-nach" placeholder="Zielpunkt">
+                <input type="number" id="f-km" placeholder="Kilometerstand">
+                <button class="btn-yellow" onclick="app.addDrive()">Eintragen</button>
+            </div>
+            <div id="f-no-perm" class="card hidden">Sie haben keine Berechtigung, Fahrten einzutragen.</div>
+        </div>
+
+        <div id="page-mitglieder" class="hidden">
+            <h1>Mitarbeiterliste</h1>
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr><th>Name</th><th>Rang</th><th>DN</th><th>Fahrten</th><th>Info / Vermerk</th></tr>
+                    </thead>
+                    <tbody id="member-body"></tbody>
+                </table>
             </div>
         </div>
 
-        <div id="page-logs" class="hidden">
-            <h1>Archivierte Wochenlogs</h1>
-            <div id="logs-container"></div>
+        <div id="page-protokoll" class="hidden">
+            <h1>Besprechungen</h1>
+            <div id="p-editor" class="card hidden">
+                <textarea id="p-text" style="height:100px;" placeholder="Protokoll-Inhalt..."></textarea>
+                <button class="btn-yellow" onclick="app.saveProtokoll()">Protokoll speichern</button>
+            </div>
+            <div id="protokoll-list"></div>
         </div>
 
         <div id="page-admin" class="hidden">
-            <h1>Personal-Abteilung</h1>
-            <div class="card">
-                <h3>Neuen Account erstellen</h3>
-                <input type="text" id="a-name" placeholder="Name">
-                <input type="text" id="a-pass" placeholder="Passwort">
-                <input type="text" id="a-dn" placeholder="DN">
-                <select id="a-rang">
-                    <option>Praktikant</option><option>Azubi Fahrer</option><option>Fahrer</option>
-                    <option>Sr. Fahrer</option><option>Stvl. Geschäftsführung</option><option>Geschäftsführung</option>
-                </select>
-                <button class="btn-action" onclick="app.createAcc()">Account erstellen</button>
+            <h1>Personalverwaltung</h1>
+            <div class="card" style="max-width:700px;">
+                <h3>Mitarbeiter anlegen / Rechte verwalten</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <input type="text" id="a-vor" placeholder="Vorname">
+                    <input type="text" id="a-nach" placeholder="Nachname">
+                    <input type="text" id="a-dn" placeholder="Dienstnummer">
+                    <input type="password" id="a-pass" placeholder="Passwort">
+                    <select id="a-rang" style="grid-column: span 2;">
+                        <option>Praktikant</option><option>Azubi Fahrer</option><option>Jr. Fahrer</option>
+                        <option>Fahrer</option><option>Sr. Fahrer</option><option>Leitung</option>
+                        <option>Geschäftsführung</option>
+                    </select>
+                </div>
+                <p style="font-size:11px; color:var(--taxi-yellow); margin: 15px 0 5px 0;">BERECHTIGUNGEN (A-Z):</p>
+                <div class="perm-grid">
+                    <div class="perm-item"><input type="checkbox" id="p-f-write" checked> Fahrtenbuch schreiben</div>
+                    <div class="perm-item"><input type="checkbox" id="p-f-del"> Fahrtenbuch löschen</div>
+                    <div class="perm-item"><input type="checkbox" id="p-pers"> Personalverwaltung</div>
+                    <div class="perm-item"><input type="checkbox" id="p-prot-w"> Protokoll schreiben</div>
+                    <div class="perm-item"><input type="checkbox" id="p-prot-d"> Protokoll löschen</div>
+                    <div class="perm-item"><input type="checkbox" id="p-board"> Board verwalten</div>
+                    <div class="perm-item"><input type="checkbox" id="p-logs" checked> Archiv einsehen</div>
+                </div>
+                <button class="btn-yellow" onclick="app.createAcc()">Account anlegen</button>
             </div>
         </div>
+
+    </div>
+
+    <div class="contact-box">
+        Fehler/Fragen Discord: <b>agrar.julian</b><br>
+        <a href="https://forms.gle/UxSdaw5BFk8mpRPT6" target="_blank">Fehler Formular</a> | 
+        <a href="https://forms.gle/pk3iQFQZaLvPVu3c6" target="_blank">Website Bewerten</a>
     </div>
 
     <script>
         const app = {
             currentUser: null,
-            users: JSON.parse(localStorage.getItem('th_v7_users')) || [{
+            users: JSON.parse(localStorage.getItem('th_v9_users')) || [{
                 name: "Maverick Stone", pass: "Bka26r", dn: "01", rang: "Geschäftsführung", 
-                isPersonal: true, drives: 0, status: 6, badges: ["Gründer"]
+                drives: 0, status: 6, info: "-",
+                perms: { f_w:true, f_d:true, pers:true, prot_w:true, prot_d:true, board:true, logs:true }
             }],
-            board: localStorage.getItem('th_v7_board') || "1. Höflichkeit steht an erster Stelle.\n2. Funkdisziplin einhalten.\n3. Fahrzeuge sauber halten.",
-            logs: JSON.parse(localStorage.getItem('th_v7_logs')) || [],
-            timerInt: null, seconds: 0,
-
-            init: function() {
-                this.checkWeeklyReset();
-                this.renderAll();
-            },
+            protokolle: JSON.parse(localStorage.getItem('th_v9_prots')) || [],
 
             login: function() {
                 const u = document.getElementById('l-user').value;
@@ -180,156 +200,146 @@
                 if(found) {
                     this.currentUser = found;
                     document.getElementById('login-overlay').classList.add('hidden');
-                    if(found.isPersonal) {
-                        document.getElementById('admin-nav').classList.remove('hidden');
-                        document.getElementById('admin-board-edit').classList.remove('hidden');
-                    }
                     this.updateUI();
-                }
+                } else { alert("Zugriff verweigert."); }
             },
 
             updateUI: function() {
                 document.getElementById('side-name').innerText = this.currentUser.name;
                 document.getElementById('side-rang').innerText = this.currentUser.rang;
-                document.getElementById('welcome-name').innerText = this.currentUser.name;
-                document.getElementById('board-display').innerText = this.board;
-                document.getElementById('board-input').value = this.board;
                 
-                // Avatar Logik (PNG oder JPG aus deinen Bildern)
-                const imgMap = {"Praktikant":"Praktikant.png", "Azubi Fahrer":"Azubi.png", "Fahrer":"Fahrer.png", "Sr. Fahrer":"Sr. Fahrer.png", "Stvl. Geschäftsführung":"Stlv.png", "Geschäftsführung":"Inhaber.png"};
-                document.getElementById('side-avatar').src = "images/" + (imgMap[this.currentUser.rang] || "Fahrer.png");
+                // Rechte-Check für UI
+                const p = this.currentUser.perms;
+                if(!p.pers) document.getElementById('nav-admin').classList.add('hidden'); 
+                else document.getElementById('nav-admin').classList.remove('hidden');
                 
-                this.renderAll();
+                if(!p.logs) document.getElementById('nav-logs').classList.add('hidden');
+                if(!p.f_w) document.getElementById('f-form').classList.add('hidden'), document.getElementById('f-no-perm').classList.remove('hidden');
+                if(p.prot_w) document.getElementById('p-editor').classList.remove('hidden');
+                
+                this.renderFleet();
+                this.renderMembers();
+                this.renderProts();
             },
 
-            toggleClock: function() {
-                const btn = document.getElementById('punch-btn');
-                const card = document.getElementById('punch-ui');
-                if(!this.timerInt) {
-                    this.timerInt = setInterval(() => {
-                        this.seconds++;
-                        document.getElementById('timer').innerText = new Date(this.seconds * 1000).toISOString().substr(11, 8);
-                    }, 1000);
-                    btn.innerText = "AUSSTEMPELN";
-                    card.classList.add('active');
-                } else {
-                    clearInterval(this.timerInt);
-                    this.timerInt = null; this.seconds = 0;
-                    document.getElementById('timer').innerText = "00:00:00";
-                    btn.innerText = "EINSTEMPELN";
-                    card.classList.remove('active');
-                }
+            setFMS: function(s) {
+                this.currentUser.status = s;
+                const b = document.getElementById('status-box');
+                b.innerText = "S" + s;
+                b.style.background = `var(--status-${s})`;
+                b.style.color = (s === 3 || s === 4) ? "black" : "white";
+                this.save();
+                this.renderFleet();
             },
-
-            setFMS: function(s) { this.currentUser.status = s; this.save(); this.renderFleet(); },
 
             addDrive: function() {
+                const km = document.getElementById('f-km').value;
+                if(!km) return alert("Kilometerstand fehlt!");
                 this.currentUser.drives++;
                 this.save();
-                alert("Fahrt erfolgreich eingetragen!");
+                this.setFMS(1);
+                alert("Erfolgreich übermittelt.");
                 this.showPage('dashboard');
-            },
-
-            saveBoard: function() {
-                this.board = document.getElementById('board-input').value;
-                localStorage.setItem('th_v7_board', this.board);
-                this.updateUI();
-                alert("Aushang aktualisiert!");
             },
 
             renderMembers: function() {
                 const body = document.getElementById('member-body');
                 body.innerHTML = "";
+                const canEdit = this.currentUser.perms.pers;
                 this.users.forEach((u, i) => {
-                    const isAdm = this.currentUser.isPersonal;
-                    const badges = u.badges ? u.badges.map(b => `<span class="badge">${b}</span>`).join('') : '';
-                    
                     body.innerHTML += `
                         <tr>
-                            <td><img src="images/Fahrer.png" class="user-avatar" style="width:35px; height:35px;"></td>
-                            <td>
-                                ${isAdm ? `<input type="text" value="${u.name}" onchange="app.editU(${i}, 'name', this.value)">` : `<b>${u.name}</b>`}<br>
-                                ${isAdm ? `<input type="text" value="${u.rang}" onchange="app.editU(${i}, 'rang', this.value)">` : `<small>${u.rang}</small>`}
-                            </td>
-                            <td>${isAdm ? `<input type="text" value="${u.dn}" style="width:40px" onchange="app.editU(${i}, 'dn', this.value)">` : u.dn}</td>
+                            <td>${canEdit ? `<input value="${u.name}" onchange="app.edit(${i}, 'name', this.value)">` : u.name}</td>
+                            <td>${canEdit ? `<select onchange="app.edit(${i}, 'rang', this.value)">
+                                <option ${u.rang==='Praktikant'?'selected':''}>Praktikant</option>
+                                <option ${u.rang==='Fahrer'?'selected':''}>Fahrer</option>
+                                <option ${u.rang==='Geschäftsführung'?'selected':''}>Geschäftsführung</option>
+                            </select>` : u.rang}</td>
+                            <td>${canEdit ? `<input value="${u.dn}" style="width:40px" onchange="app.edit(${i}, 'dn', this.value)">` : u.dn}</td>
                             <td>${u.drives}</td>
-                            <td>
-                                ${badges}
-                                ${isAdm ? `<button onclick="app.addBadge(${i})">+</button>` : ''}
-                            </td>
+                            <td>${canEdit ? `<input value="${u.info}" onchange="app.edit(${i}, 'info', this.value)">` : u.info}</td>
                         </tr>
                     `;
                 });
             },
 
-            editU: function(i, field, val) { this.users[i][field] = val; this.save(); },
+            edit: function(i, f, v) { this.users[i][f] = v; this.save(); },
 
-            addBadge: function(i) {
-                const b = prompt("Welches Abzeichen verleihen?");
-                if(b) {
-                    if(!this.users[i].badges) this.users[i].badges = [];
-                    this.users[i].badges.push(b);
-                    this.save(); this.renderMembers();
-                }
+            saveProtokoll: function() {
+                const t = document.getElementById('p-text').value;
+                if(!t) return;
+                this.protokolle.unshift({ id: Date.now(), author: this.currentUser.name, date: new Date().toLocaleString(), text: t });
+                document.getElementById('p-text').value = "";
+                this.save(); this.renderProts();
             },
 
-            renderFleet: function() {
-                const mon = document.getElementById('fleet-monitor'); mon.innerHTML = "";
-                this.users.filter(u => u.status !== 6).forEach(u => {
-                    mon.innerHTML += `<div style="background:#222; padding:10px; border-radius:8px; border-bottom:3px solid var(--status-${u.status})"><b>[${u.dn}] ${u.name}</b></div>`;
-                });
-            },
-
-            renderLeaderboard: function() {
-                const sorted = [...this.users].sort((a,b) => b.drives - a.drives).slice(0,3);
-                document.getElementById('leaderboard').innerHTML = sorted.map((u, idx) => `<div>${idx+1}. ${u.name} (${u.drives} Fahrten)</div>`).join('');
-            },
-
-            checkWeeklyReset: function() {
-                const now = new Date();
-                const lastReset = localStorage.getItem('th_last_reset');
-                // Wenn Sonntag ist und heute noch kein Reset war
-                if(now.getDay() === 0 && lastReset !== now.toDateString()) {
-                    const logEntry = { date: now.toLocaleDateString(), data: this.users.map(u => ({name: u.name, drives: u.drives})) };
-                    this.logs.unshift(logEntry);
-                    this.users.forEach(u => u.drives = 0);
-                    localStorage.setItem('th_v7_logs', JSON.stringify(this.logs));
-                    localStorage.setItem('th_last_reset', now.toDateString());
-                    this.save();
-                }
-            },
-
-            renderLogs: function() {
-                document.getElementById('logs-container').innerHTML = this.logs.map(l => `
+            renderProts: function() {
+                const canDel = this.currentUser.perms.prot_d;
+                document.getElementById('protokoll-list').innerHTML = this.protokolle.map(p => `
                     <div class="card">
-                        <h4>Woche vom ${l.date}</h4>
-                        ${l.data.map(d => `<div>${d.name}: ${d.drives} Fahrten</div>`).join('')}
+                        <div style="display:flex; justify-content:space-between;">
+                            <small style="color:var(--taxi-yellow)">${p.date} | ${p.author}</small>
+                            ${canDel ? `<button onclick="app.delProt(${p.id})" style="background:none; border:none; color:red; cursor:pointer;">Löschen</button>` : ''}
+                        </div>
+                        <div style="margin-top:10px; white-space:pre-wrap;">${p.text}</div>
                     </div>
                 `).join('');
             },
 
+            delProt: function(id) {
+                this.protokolle = this.protokolle.filter(p => p.id !== id);
+                this.save(); this.renderProts();
+            },
+
             createAcc: function() {
-                const n = document.getElementById('a-name').value;
-                const p = document.getElementById('a-pass').value;
-                if(n && p) {
-                    this.users.push({ name: n, pass: p, dn: document.getElementById('a-dn').value, rang: document.getElementById('a-rang').value, drives: 0, status: 6, badges: [], isPersonal: false });
-                    this.save(); alert("Account erstellt!");
-                }
+                const vor = document.getElementById('a-vor').value;
+                const nach = document.getElementById('a-nach').value;
+                const pass = document.getElementById('a-pass').value;
+                if(!vor || !pass) return alert("Name/Passwort fehlt!");
+                
+                this.users.push({
+                    name: vor + " " + nach,
+                    pass: pass,
+                    dn: document.getElementById('a-dn').value || "00",
+                    rang: document.getElementById('a-rang').value,
+                    drives: 0, status: 6, info: "-",
+                    perms: {
+                        f_w: document.getElementById('p-f-write').checked,
+                        f_d: document.getElementById('p-f-del').checked,
+                        pers: document.getElementById('p-pers').checked,
+                        prot_w: document.getElementById('p-prot-w').checked,
+                        prot_d: document.getElementById('p-prot-d').checked,
+                        board: document.getElementById('p-board').checked,
+                        logs: document.getElementById('p-logs').checked
+                    }
+                });
+                this.save(); alert("Account erstellt.");
+                this.renderMembers();
+            },
+
+            renderFleet: function() {
+                const mon = document.getElementById('fleet-monitor');
+                mon.innerHTML = this.users.filter(u => u.status !== 6).map(u => `
+                    <div style="padding:10px; border-bottom:1px solid #111; display:flex; align-items:center;">
+                        <span style="width:8px; height:8px; border-radius:50%; background:var(--status-${u.status}); margin-right:10px;"></span>
+                        <b>${u.name}</b> <small style="margin-left:auto; color:#444;">S${u.status}</small>
+                    </div>
+                `).join('');
             },
 
             showPage: function(id) {
-                document.querySelectorAll('.main-content > div').forEach(p => p.classList.add('hidden'));
+                document.querySelectorAll('.main-content > div').forEach(d => d.classList.add('hidden'));
                 document.getElementById('page-'+id).classList.remove('hidden');
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 event.currentTarget.classList.add('active');
-                if(id === 'mitglieder') this.renderMembers();
-                if(id === 'logs') this.renderLogs();
             },
 
-            renderAll: function() { this.renderFleet(); this.renderLeaderboard(); },
-            save: function() { localStorage.setItem('th_v7_users', JSON.stringify(this.users)); }
+            save: function() {
+                localStorage.setItem('th_v9_users', JSON.stringify(this.users));
+                localStorage.setItem('th_v9_prots', JSON.stringify(this.protokolle));
+            }
         };
-        app.init();
+        app.updateUI(); // Init
     </script>
 </body>
 </html>
