@@ -3,245 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Köln | Management & Dispatch</title>
+    <title>Taxi Köln | Management System</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --taxi-yellow: #ffcc00;
-            --taxi-black: #121212;
-            --taxi-dark-gray: #1e1e1e;
-            --text-light: #ffffff;
-            --border-color: #333;
+            --taxi-yellow: #f1c40f;
+            --bg-dark: #0f0f0f;
+            --sidebar-bg: #151515;
+            --card-bg: #1a1a1a;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --border-color: #2a2a2a;
         }
 
-        body { background-color: var(--taxi-black); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        body { 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            font-family: 'Inter', 'Segoe UI', sans-serif; 
+            margin: 0; 
+            overflow: hidden;
+        }
+
         .hidden { display: none !important; }
-        .accent { color: var(--taxi-yellow); }
 
-        /* --- PUBLIC WEBSITE --- */
-        .navbar { background-color: var(--taxi-yellow) !important; border-bottom: 2px solid #000; }
-        .navbar-brand, .nav-link { color: black !important; font-weight: bold; }
-        
-        .hero-section { 
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('images/banner.png') no-repeat center center; 
-            background-size: cover; 
-            height: 450px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border-bottom: 5px solid var(--taxi-yellow); 
+        /* --- LOGIN SCREEN --- */
+        #login-screen {
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, #000 0%, #111 100%);
+            z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .login-card {
+            background: var(--card-bg);
+            padding: 40px; border-radius: 12px;
+            border: 1px solid var(--taxi-yellow);
+            width: 100%; max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .btn-yellow { background-color: var(--taxi-yellow); color: black; font-weight: bold; border: none; padding: 12px 25px; border-radius: 5px; }
-        .btn-yellow:hover { background-color: #e6b800; transform: scale(1.02); }
-
-        /* --- DASHBOARD STRUCTURE --- */
-        #admin-wrapper { display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: 280px; background: #0a0a0a; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
-        .main-content { flex-grow: 1; overflow-y: auto; padding: 40px; background: #050505; }
+        /* --- DASHBOARD LAYOUT --- */
+        #admin-wrapper { display: flex; height: 100vh; }
         
-        .nav-item-dash { padding: 15px 25px; color: #888; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent; display: flex; align-items: center; }
-        .nav-item-dash i { width: 25px; }
-        .nav-item-dash:hover, .nav-item-dash.active { background: rgba(255, 204, 0, 0.1); color: white; border-left-color: var(--taxi-yellow); }
+        .sidebar { 
+            width: 280px; 
+            background: var(--sidebar-bg); 
+            border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column;
+        }
 
-        /* --- LST SYSTEM --- */
-        .lst-box { border: 2px solid #333; border-radius: 15px; padding: 30px; text-align: center; background: #111; }
-        .lst-active { border-color: var(--taxi-yellow); box-shadow: 0 0 15px rgba(255, 204, 0, 0.2); }
-        .status-dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; margin-right: 10px; }
-        .bg-online { background-color: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
+        .main-content { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 40px; 
+            background: var(--bg-dark); 
+        }
 
-        /* --- UI COMPONENTS --- */
-        .card { background-color: var(--taxi-dark-gray); border: 1px solid #333; color: white; border-radius: 10px; }
-        .calc-input { background: #252525; border: 1px solid #444; color: white; padding: 12px; border-radius: 6px; width: 100%; margin-bottom: 15px; }
-        .calc-input:focus { border-color: var(--taxi-yellow); outline: none; }
+        /* --- SIDEBAR NAVIGATION --- */
+        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .sidebar-header h4 { color: var(--taxi-yellow); font-weight: 800; letter-spacing: 1px; margin: 0; }
         
-        /* --- FOOTER & CREDITS --- */
-        .credits-box { padding: 20px; font-size: 12px; color: #555; border-top: 1px solid #222; margin-top: auto; }
-        .support-link { color: var(--taxi-yellow); text-decoration: none; }
+        .nav-link-custom {
+            padding: 15px 25px;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex; align-items: center;
+            transition: 0.3s;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+        .nav-link-custom i { width: 30px; font-size: 1.1rem; }
+        .nav-link-custom:hover, .nav-link-custom.active {
+            color: var(--text-main);
+            background: rgba(241, 196, 15, 0.05);
+            border-left-color: var(--taxi-yellow);
+        }
 
-        /* --- INVOICE --- */
-        #invoice { background: white; color: black; padding: 40px; border-radius: 5px; display: none; }
-        @media print { .no-print { display: none !important; } #invoice { display: block !important; } body { background: white; } }
+        /* --- CREDITS & SUPPORT (SIDEBAR BOTTOM) --- */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px;
+            background: #0d0d0d;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.8rem;
+        }
+        .credit-item { margin-bottom: 5px; color: var(--text-muted); }
+        .credit-item b { color: var(--text-main); }
+        .support-links { margin-top: 15px; }
+        .support-btn {
+            display: block;
+            color: var(--taxi-yellow);
+            text-decoration: none;
+            margin-bottom: 8px;
+            transition: 0.2s;
+        }
+        .support-btn:hover { text-decoration: underline; }
 
-        #login-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        /* --- CARDS & UI --- */
+        .stats-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 25px;
+            height: 100%;
+        }
+        .btn-taxi { 
+            background: var(--taxi-yellow); color: #000; 
+            font-weight: 700; border: none; border-radius: 6px; 
+        }
+        .btn-taxi:hover { background: #d4ac0d; }
+
+        .form-control-taxi {
+            background: #222; border: 1px solid var(--border-color);
+            color: white; padding: 12px; border-radius: 6px;
+        }
+        .form-control-taxi:focus {
+            background: #252525; border-color: var(--taxi-yellow); color: white; box-shadow: none;
+        }
+
+        /* --- LST DISPLAY --- */
+        .lst-status-box {
+            border: 2px solid var(--border-color);
+            border-radius: 12px; padding: 40px; text-align: center;
+            transition: 0.3s;
+        }
+        .lst-active { border-color: var(--taxi-yellow); background: rgba(241, 196, 15, 0.02); }
+        .status-indicator {
+            height: 10px; width: 10px; border-radius: 50%;
+            display: inline-block; margin-right: 8px;
+        }
+        .bg-online { background-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
+
+        /* --- INVOICE PRINT --- */
+        #invoice { background: white; color: black; padding: 50px; display: none; }
+        @media print { .no-print { display: none !important; } #invoice { display: block !important; } }
     </style>
 </head>
 <body>
 
-    <div id="page-public">
-        <nav class="navbar navbar-expand-lg sticky-top">
-            <div class="container">
-                <a class="navbar-brand" href="#"><i class="fas fa-taxi me-2"></i> TAXI KÖLN</a>
-                <div class="collapse navbar-collapse">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" href="javascript:void(0)" onclick="ui.showLogin()" style="color: #000 !important; border: 1px solid #000; border-radius: 5px; padding: 5px 15px;">MITARBEITER LOGIN</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <header class="hero-section">
-            <div class="text-center" style="background: rgba(0,0,0,0.8); padding: 50px; border-radius: 20px; border: 2px solid var(--taxi-yellow);">
-                <h1 class="display-3 fw-bold">Jetzt <span class="accent">Service buchen.</span></h1>
-                <p class="lead mb-4">Sicher durch Kölle – Dein Partner im NRW RP</p>
-                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
-                    <a href="https://discord.gg/yxgbeyARDr" target="_blank" class="btn btn-yellow btn-lg">Jetzt Funk rufen (Discord)</a>
-                    <a href="#" class="btn btn-outline-light btn-lg">Dienste App Smartphone</a>
-                </div>
-            </div>
-        </header>
-
-        <div class="container py-5">
-            <div class="row g-4 text-center">
-                <div class="col-md-3">
-                    <div class="card p-4 h-100">
-                        <i class="fas fa-car fa-3x accent mb-3"></i>
-                        <h4>Standard Taxi</h4>
-                        <p class="small text-secondary">Schnell & Günstig</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-4 h-100">
-                        <i class="fas fa-crown fa-3x accent mb-3"></i>
-                        <h4>S-Klasse</h4>
-                        <p class="small text-secondary">Premium Komfort</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-4 h-100">
-                        <i class="fas fa-glass-cheers fa-3x accent mb-3"></i>
-                        <h4>Limousine</h4>
-                        <p class="small text-secondary">Exklusiv & Edel</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-4 h-100">
-                        <i class="fas fa-helicopter fa-3x accent mb-3"></i>
-                        <h4>Helikopter</h4>
-                        <p class="small text-secondary">VIP Transport</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="login-screen" class="hidden">
-        <div class="card p-5" style="width: 450px; border-width: 3px;">
-            <h2 class="text-center mb-4 accent">Mitarbeiterbereich</h2>
+    <div id="login-screen">
+        <div class="login-card">
+            <h3 class="text-center mb-4"><i class="fas fa-taxi text-warning"></i> INTERN</h3>
             <div class="mb-3">
-                <label>Benutzername</label>
-                <input type="text" id="log-user" class="calc-input" placeholder="Name...">
+                <label class="small text-muted mb-1">Benutzername</label>
+                <input type="text" id="log-user" class="form-control form-control-taxi">
             </div>
             <div class="mb-4">
-                <label>Passwort</label>
-                <input type="password" id="log-pass" class="calc-input" placeholder="Passwort...">
+                <label class="small text-muted mb-1">Passwort</label>
+                <input type="password" id="log-pass" class="form-control form-control-taxi">
             </div>
-            <button class="btn btn-yellow w-100 mb-3" onclick="app.login()">EINLOGGEN</button>
-            <button class="btn btn-link btn-sm w-100 text-secondary" onclick="ui.hideLogin()">Zurück zur Webseite</button>
+            <button class="btn btn-taxi w-100 p-2" onclick="app.login()">AUTHENTIFIZIEREN</button>
         </div>
     </div>
 
     <div id="page-admin" class="hidden">
         <div id="admin-wrapper">
+            
             <div class="sidebar">
-                <div class="p-4 text-center border-bottom border-secondary">
-                    <img src="images/logo.png" alt="Logo" width="60" class="mb-2">
-                    <h5 class="accent mb-0">TAXI KÖLN</h5>
-                    <small id="user-display-name">Lädt...</small>
+                <div class="sidebar-header">
+                    <h4>TAXI KÖLN</h4>
+                    <small class="text-muted" id="user-display-name">Identität prüfen...</small>
                 </div>
                 
-                <div class="nav-item-dash active" onclick="ui.tab('dash', this)"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
-                <div class="nav-item-dash" onclick="ui.tab('lst', this)"><i class="fas fa-headset"></i> Leitstelle</div>
-                <div class="nav-item-dash" onclick="ui.tab('fb', this)"><i class="fas fa-book"></i> Fahrtenbuch</div>
-                <div class="nav-item-dash" onclick="ui.tab('rechner', this)"><i class="fas fa-calculator"></i> TaxiRechner</div>
-                
-                <div id="nav-admin-only" class="nav-item-dash hidden" onclick="ui.tab('admin', this)"><i class="fas fa-users-cog"></i> Mitarbeiter-Verwaltung</div>
-
-                <div class="credits-box">
-                    <p class="mb-1"><i class="fas fa-code me-1"></i> Created By <b>agrar.julian</b></p>
-                    <p class="mb-2"><i class="fas fa-server me-1"></i> Hosted by <b>norixius.</b></p>
-                    <a href="https://discord.gg/yxgbeyARDr" target="_blank" class="support-link"><i class="fab fa-discord me-1"></i> Support kontaktieren</a>
+                <div class="py-3">
+                    <div class="nav-link-custom active" onclick="ui.tab('dash', this)"><i class="fas fa-th-large"></i> Dashboard</div>
+                    <div class="nav-link-custom" onclick="ui.tab('lst', this)"><i class="fas fa-headset"></i> Leitstelle</div>
+                    <div class="nav-link-custom" onclick="ui.tab('fb', this)"><i class="fas fa-file-invoice"></i> Fahrtenbuch</div>
+                    <div class="nav-link-custom" onclick="ui.tab('rechner', this)"><i class="fas fa-calculator"></i> Rechner</div>
+                    <div id="nav-admin-only" class="nav-link-custom hidden" onclick="ui.tab('admin', this)"><i class="fas fa-user-shield"></i> Verwaltung</div>
                 </div>
 
-                <div class="p-3">
-                    <button class="btn btn-outline-danger btn-sm w-100" onclick="app.logout()">ABMELDEN</button>
+                <div class="sidebar-footer">
+                    <div class="credit-item"><i class="fas fa-code"></i> Created By <b>agrar.julian</b></div>
+                    <div class="credit-item"><i class="fas fa-server"></i> Hosted by <b>norixius.</b></div>
+                    
+                    <div class="support-links">
+                        <a href="https://forms.gle/7uRovRSJ1TUwaMJJA" target="_blank" class="support-btn"><i class="fas fa-star"></i> Bewertung abgeben</a>
+                        <a href="https://forms.gle/mSuLUNHAYsSzSM2i8" target="_blank" class="support-btn"><i class="fas fa-bug"></i> Fehler melden</a>
+                        <span class="text-muted small"><i class="fab fa-discord"></i> Discord: agrar.julian</span>
+                    </div>
+
+                    <button class="btn btn-outline-danger btn-sm w-100 mt-3" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> Abmelden</button>
                 </div>
             </div>
 
             <div class="main-content">
                 
                 <div id="tab-dash">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h1>Zentrale Dashboard</h1>
+                    <div class="d-flex justify-content-between align-items-center mb-5">
+                        <h2 class="fw-bold">Willkommen zurück</h2>
                         <div class="text-end">
-                            <h2 id="timer-display" class="mb-0">00:00:00</h2>
-                            <small class="text-secondary">Aktuelle Sitzungszeit</small>
+                            <h1 id="timer-display" class="mb-0 fw-bold">00:00:00</h1>
+                            <small class="text-muted uppercase">Dienstzeit Aktuell</small>
                         </div>
                     </div>
-                    
+
                     <div class="row g-4">
                         <div class="col-md-4">
-                            <div class="card p-4 text-center">
-                                <h5>Dienst-Status</h5>
-                                <button id="btn-stempel" class="btn btn-yellow w-100 mt-3" onclick="app.toggleTimer()">EINSTEMPELN</button>
+                            <div class="stats-card">
+                                <h6 class="text-muted mb-3">DIENST-STATUS</h6>
+                                <button id="btn-stempel" class="btn btn-taxi w-100 p-3" onclick="app.toggleTimer()">
+                                    <i class="fas fa-play me-2"></i> EINSTEMPELN
+                                </button>
                             </div>
                         </div>
                         <div class="col-md-8">
-                            <div class="card p-4">
-                                <h5>News & Ankündigungen</h5>
-                                <p class="text-secondary">Herzlich Willkommen im neuen Dashboard. Bitte denkt daran, eure Fahrten sofort im Fahrtenbuch zu dokumentieren!</p>
+                            <div class="stats-card">
+                                <h6 class="text-muted mb-3">INTERNE NEWS</h6>
+                                <p>Bitte achtet auf die neue Preisliste für VIP-Fahrten. Das Fahrtenbuch muss lückenlos geführt werden!</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div id="tab-lst" class="hidden">
-                    <h1>Leitstelle (LST)</h1>
-                    <div id="lst-control-box" class="lst-box mb-4">
+                    <h2 class="fw-bold mb-4">Leitstellen-Management</h2>
+                    <div id="lst-control-box" class="lst-status-box mb-5">
                         </div>
 
-                    <div class="card p-4">
-                        <h5>PLZ-Schnellsuche</h5>
-                        <div class="row">
+                    <div class="stats-card">
+                        <h6 class="text-muted mb-3">PLZ SCHNELLSUCHE (KÖLN)</h6>
+                        <div class="row align-items-center">
                             <div class="col-md-8">
-                                <input type="text" id="lst-plz-in" class="calc-input" placeholder="PLZ eingeben (z.B. 2020)" oninput="app.lookupPLZ()">
+                                <input type="text" id="lst-plz-in" class="form-control form-control-taxi" placeholder="PLZ eingeben..." oninput="app.lookupPLZ()">
                             </div>
                             <div class="col-md-4">
-                                <div id="plz-result" class="p-2 text-center rounded bg-dark border border-secondary" style="height: 48px; line-height: 30px;">-</div>
+                                <div id="plz-result" class="fw-bold text-center">-</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div id="tab-fb" class="hidden">
-                    <h1>Dein Fahrtenbuch</h1>
+                    <h2 class="fw-bold mb-4">Dokumentation</h2>
                     <div class="row">
-                        <div class="col-md-5">
-                            <div class="card p-4">
-                                <h5>Neue Fahrt dokumentieren</h5>
-                                <label>Anfangs-Ort</label>
-                                <input type="text" id="fb-start" class="calc-input" placeholder="z.B. Zentrale">
-                                <label>Ziel-Ort</label>
-                                <input type="text" id="fb-ziel" class="calc-input" placeholder="z.B. Flughafen">
-                                <label>Kilometer</label>
-                                <input type="number" id="fb-km" class="calc-input" placeholder="Anzahl KM">
-                                <label>Art der Fahrt</label>
-                                <select id="fb-art" class="calc-input">
-                                    <option>Normale fahrt (Kostenlos)</option>
-                                    <option>Helikopter (Premium)</option>
-                                    <option>Limousine (Premium)</option>
-                                </select>
-                                <button class="btn btn-yellow w-100" onclick="app.saveDrive()">FAHRT SPEICHERN</button>
+                        <div class="col-md-4">
+                            <div class="stats-card">
+                                <div class="mb-3">
+                                    <label class="small text-muted">Start</label>
+                                    <input type="text" id="fb-start" class="form-control form-control-taxi" placeholder="Ort...">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="small text-muted">Ziel</label>
+                                    <input type="text" id="fb-ziel" class="form-control form-control-taxi" placeholder="Ort...">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="small text-muted">Kategorie</label>
+                                    <select id="fb-art" class="form-control form-control-taxi">
+                                        <option>Standard Taxi</option>
+                                        <option>Limousinen Service</option>
+                                        <option>VIP Helikopter</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-taxi w-100" onclick="app.saveDrive()">EINTRAGEN</button>
                             </div>
                         </div>
-                        <div class="col-md-7">
-                            <div class="card p-4" style="max-height: 600px; overflow-y: auto;">
-                                <h5>Deine Fahrten-Historie</h5>
-                                <table class="table table-dark table-striped mt-3">
-                                    <thead><tr><th>Datum</th><th>Strecke</th><th>KM</th><th>Typ</th></tr></thead>
+                        <div class="col-md-8">
+                            <div class="stats-card">
+                                <table class="table table-dark table-hover">
+                                    <thead><tr><th class="text-muted">Zeit</th><th class="text-muted">Route</th><th class="text-muted text-end">Typ</th></tr></thead>
                                     <tbody id="fb-list"></tbody>
                                 </table>
                             </div>
@@ -250,68 +271,59 @@
                 </div>
 
                 <div id="tab-rechner" class="hidden">
-                    <h1 class="no-print">TaxiRechner & Rechnung</h1>
-                    <div class="card p-4 no-print mb-4">
-                        <div class="row">
+                    <h2 class="fw-bold mb-4 no-print">Taxi-Rechner</h2>
+                    <div class="stats-card no-print">
+                        <div class="row g-3">
                             <div class="col-md-6">
-                                <label>Fahrzeugtyp</label>
-                                <select id="calc-car" class="calc-input" onchange="rechner.update()">
+                                <label class="small text-muted">Fahrzeug</label>
+                                <select id="calc-car" class="form-control form-control-taxi" onchange="rechner.update()">
                                     <option value="taxi">Standard Taxi</option>
                                     <option value="s-klasse">Extended S-Klasse</option>
                                     <option value="stretch">Stretch-Limousine</option>
-                                    <option value="patriot">Patriot Limousine</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label>Fahrt-Modus</label>
-                                <select id="calc-mode" class="calc-input" onchange="rechner.update()">
-                                    <option value="0">Einfache Fahrt</option>
-                                    <option value="1">Hin- und Rückfahrt</option>
-                                    <option value="2">1 Stunde exklusiv</option>
+                                <label class="small text-muted">Tarif</label>
+                                <select id="calc-mode" class="form-control form-control-taxi" onchange="rechner.update()">
+                                    <option value="0">Standard (einfach)</option>
+                                    <option value="1">Hin- & Rückfahrt</option>
+                                    <option value="2">Stundenmiete</option>
                                 </select>
                             </div>
                         </div>
-                        <button class="btn btn-yellow w-100" onclick="window.print()">RECHNUNG DRUCKEN</button>
+                        <button class="btn btn-taxi w-100 mt-4" onclick="window.print()"><i class="fas fa-print me-2"></i>RECHNUNG GENERIEREN</button>
                     </div>
 
                     <div id="invoice">
-                        <div class="d-flex justify-content-between border-bottom border-dark pb-3">
-                            <div><h3>TAXI KÖLN</h3><p>Chauffeurservice NRW RP</p></div>
-                            <div class="text-end"><h2 class="mb-0">RECHNUNG</h2><p id="inv-date"></p></div>
+                        <div class="d-flex justify-content-between align-items-center mb-5 border-bottom pb-4">
+                            <div><h3>TAXI KÖLN</h3><p class="text-muted">Management & Chauffeurservice</p></div>
+                            <div class="text-end"><h2>QUITTUNG</h2><p id="inv-date"></p></div>
                         </div>
-                        <table class="table table-bordered mt-4">
-                            <thead><tr><th>Beschreibung</th><th class="text-end">Betrag</th></tr></thead>
+                        <table class="table mt-4">
                             <tbody id="inv-items"></tbody>
-                            <tfoot><tr><th class="fs-4">GESAMTSUMME</th><th class="text-end fs-4" id="inv-total">0 EUR</th></tr></tfoot>
+                            <tfoot><tr><th class="fs-3">GESAMT</th><th class="text-end fs-3" id="inv-total">0 EUR</th></tr></tfoot>
                         </table>
-                        <div class="mt-5 pt-5 border-top">
-                            <p>Bearbeitet von: <b id="inv-user"></b></p>
-                            <p class="small text-muted">Vielen Dank für Ihre Fahrt mit Taxi Köln!</p>
+                        <div class="mt-5">
+                            <p>Ausgestellt durch: <b id="inv-user"></b></p>
                         </div>
                     </div>
                 </div>
 
                 <div id="tab-admin" class="hidden">
-                    <h1>Mitarbeiter-Verwaltung</h1>
+                    <h2 class="fw-bold mb-4 text-warning"><i class="fas fa-user-shield"></i> Administration</h2>
                     <div class="row">
-                        <div class="col-md-4">
-                            <div class="card p-4">
-                                <h5>Neuen Mitarbeiter anlegen</h5>
-                                <input type="text" id="adm-new-name" class="calc-input" placeholder="Name">
-                                <input type="text" id="adm-new-pass" class="calc-input" placeholder="Passwort">
-                                <select id="adm-new-role" class="calc-input">
-                                    <option value="Fahrer">Fahrer</option>
-                                    <option value="Azubi">Azubi</option>
-                                    <option value="Disponent">Disponent</option>
-                                </select>
-                                <button class="btn btn-yellow w-100" onclick="app.createUser()">MITARBEITER ERSTELLEN</button>
+                        <div class="col-md-5">
+                            <div class="stats-card">
+                                <h6 class="mb-3">NEUER MITARBEITER</h6>
+                                <input type="text" id="adm-new-name" class="form-control form-control-taxi mb-2" placeholder="Name">
+                                <input type="text" id="adm-new-pass" class="form-control form-control-taxi mb-3" placeholder="Passwort">
+                                <button class="btn btn-taxi w-100" onclick="app.createUser()">HINZUFÜGEN</button>
                             </div>
                         </div>
-                        <div class="col-md-8">
-                            <div class="card p-4">
-                                <h5>Mitarbeiterliste</h5>
+                        <div class="col-md-7">
+                            <div class="stats-card">
                                 <table class="table table-dark">
-                                    <thead><tr><th>Name</th><th>Rolle</th><th>Aktion</th></tr></thead>
+                                    <thead><tr><th>Name</th><th class="text-end">Aktion</th></tr></thead>
                                     <tbody id="adm-user-list"></tbody>
                                 </table>
                             </div>
@@ -327,15 +339,14 @@
         const app = {
             currentUser: null,
             users: JSON.parse(localStorage.getItem('taxi_users')) || [
-                { name: "Chris Schreiner", pass: "Bka26r", role: "CEO", isAdmin: true },
-                { name: "Marco Krause", pass: "Bka26r", role: "Stellv. CEO", isAdmin: true },
-                { name: "Azubi", pass: "azubi123", role: "Azubi", isAdmin: false }
+                { name: "Chris Schreiner", pass: "Bka26r", isAdmin: true },
+                { name: "Marco Krause", pass: "Bka26r", isAdmin: true },
+                { name: "Azubi", pass: "azubi123", isAdmin: false }
             ],
-            plzMap: { "2020": "Flughafen Köln/Bonn", "1010": "Zentrale Hauptbahnhof", "3030": "Industrie West", "4040": "Villenvierteil" },
+            plzMap: { "2020": "Flughafen", "1010": "Hauptbahnhof", "3030": "Industriegebiet", "5000": "Rathaus" },
             timer: null,
             seconds: 0,
 
-            // Auth
             login: function() {
                 const u = document.getElementById('log-user').value;
                 const p = document.getElementById('log-pass').value;
@@ -343,21 +354,15 @@
                 
                 if(match) {
                     this.currentUser = match;
-                    ui.hideLogin();
-                    document.getElementById('page-public').classList.add('hidden');
+                    document.getElementById('login-screen').classList.add('hidden');
                     document.getElementById('page-admin').classList.remove('hidden');
-                    document.getElementById('user-display-name').innerText = `${match.name} | ${match.role}`;
-                    
+                    document.getElementById('user-display-name').innerText = match.name;
                     if(match.isAdmin) document.getElementById('nav-admin-only').classList.remove('hidden');
                     this.updateLSTUI();
                     this.renderFB();
-                    this.renderUserList();
-                } else { alert("Login fehlgeschlagen!"); }
+                } else { alert("Zugriff verweigert!"); }
             },
 
-            logout: () => location.reload(),
-
-            // Timer
             toggleTimer: function() {
                 const btn = document.getElementById('btn-stempel');
                 if(!this.timer) {
@@ -368,15 +373,15 @@
                         let s = (this.seconds % 60).toString().padStart(2, '0');
                         document.getElementById('timer-display').innerText = `${h}:${m}:${s}`;
                     }, 1000);
-                    btn.innerText = "AUSSTEMPELN"; btn.className = "btn btn-danger w-100 mt-3";
+                    btn.innerHTML = '<i class="fas fa-stop me-2"></i> AUSSTEMPELN';
+                    btn.className = "btn btn-danger w-100 p-3";
                 } else {
-                    clearInterval(this.timer); this.timer = null; this.seconds = 0;
-                    document.getElementById('timer-display').innerText = "00:00:00";
-                    btn.innerText = "EINSTEMPELN"; btn.className = "btn btn-yellow w-100 mt-3";
+                    clearInterval(this.timer); this.timer = null;
+                    btn.innerHTML = '<i class="fas fa-play me-2"></i> EINSTEMPELN';
+                    btn.className = "btn btn-taxi w-100 p-3";
                 }
             },
 
-            // LST Logic
             getLST: () => JSON.parse(localStorage.getItem('taxi_lst')) || { active: false, user: null },
             setLST: (state) => { localStorage.setItem('taxi_lst', JSON.stringify(state)); app.updateLSTUI(); },
 
@@ -384,16 +389,16 @@
                 const state = this.getLST();
                 const box = document.getElementById('lst-control-box');
                 if(!state.active) {
-                    box.innerHTML = `<h2 class="text-secondary">LST UNBESETZT</h2><button class="btn btn-yellow mt-3" onclick="app.claimLST()">LEITSTELLE ÜBERNEHMEN</button>`;
-                    box.className = "lst-box";
+                    box.innerHTML = `<h3 class="text-muted">LST UNBESETZT</h3><button class="btn btn-taxi mt-3" onclick="app.claimLST()">ÜBERNEHMEN</button>`;
+                    box.classList.remove('lst-active');
                 } else {
-                    box.className = "lst-box lst-active";
+                    box.classList.add('lst-active');
                     box.innerHTML = `
-                        <h2 class="accent"><span class="status-dot bg-online"></span> LST AKTIV</h2>
-                        <p>Im Dienst: <b>${state.user}</b></p>
+                        <h2 class="text-warning mb-2"><span class="status-indicator bg-online"></span> LST AKTIV</h2>
+                        <p class="mb-4">Eingeteilt: <b>${state.user}</b></p>
                         <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-sm btn-outline-warning" onclick="app.claimLST()">ALS ABLÖSE EINTRAGEN</button>
-                            ${this.currentUser.isAdmin ? `<button class="btn btn-sm btn-outline-danger" onclick="app.kickLST()">KICKEN (ADMIN)</button>` : ''}
+                            <button class="btn btn-sm btn-outline-light" onclick="app.claimLST()">ABLÖSE ANFORDERN</button>
+                            ${this.currentUser.isAdmin ? `<button class="btn btn-sm btn-outline-danger" onclick="app.kickLST()">LST KICKEN</button>` : ''}
                         </div>`;
                 }
             },
@@ -405,39 +410,36 @@
                 const val = document.getElementById('lst-plz-in').value;
                 const res = document.getElementById('plz-result');
                 if(this.plzMap[val]) {
-                    res.innerText = this.plzMap[val]; res.style.color = "#ffcc00";
+                    res.innerText = this.plzMap[val]; res.classList.add('text-warning');
                     document.getElementById('fb-ziel').value = this.plzMap[val];
-                } else { res.innerText = "-"; res.style.color = "white"; }
+                } else { res.innerText = "-"; res.classList.remove('text-warning'); }
             },
 
-            // Driving Log
             saveDrive: function() {
-                const d = { start: document.getElementById('fb-start').value, ziel: document.getElementById('fb-ziel').value, km: document.getElementById('fb-km').value, art: document.getElementById('fb-art').value, date: new Date().toLocaleDateString() };
+                const d = { start: document.getElementById('fb-start').value, ziel: document.getElementById('fb-ziel').value, art: document.getElementById('fb-art').value, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
                 if(!d.start || !d.ziel) return;
-                let list = JSON.parse(localStorage.getItem('fb_' + this.currentUser.name)) || [];
-                list.unshift(d);
-                localStorage.setItem('fb_' + this.currentUser.name, JSON.stringify(list));
+                let log = JSON.parse(localStorage.getItem('fb_' + this.currentUser.name)) || [];
+                log.unshift(d);
+                localStorage.setItem('fb_' + this.currentUser.name, JSON.stringify(log));
                 this.renderFB();
             },
 
             renderFB: function() {
-                const list = JSON.parse(localStorage.getItem('fb_' + this.currentUser.name)) || [];
-                document.getElementById('fb-list').innerHTML = list.map(x => `<tr><td><small>${x.date}</small></td><td>${x.start} - ${x.ziel}</td><td>${x.km}</td><td>${x.art}</td></tr>`).join('');
-            },
-
-            // Admin Logic
-            renderUserList: function() {
-                document.getElementById('adm-user-list').innerHTML = this.users.map(u => `<tr><td>${u.name}</td><td>${u.role}</td><td>${u.isAdmin ? '' : `<button class="btn btn-sm btn-danger" onclick="app.deleteUser('${u.name}')">Entfernen</button>`}</td></tr>`).join('');
+                const log = JSON.parse(localStorage.getItem('fb_' + this.currentUser.name)) || [];
+                document.getElementById('fb-list').innerHTML = log.map(x => `<tr><td>${x.time}</td><td>${x.start} > ${x.ziel}</td><td class="text-end text-warning small">${x.art}</td></tr>`).join('');
             },
 
             createUser: function() {
-                const name = document.getElementById('adm-new-name').value;
-                const pass = document.getElementById('adm-new-pass').value;
-                const role = document.getElementById('adm-new-role').value;
-                if(!name || !pass) return;
-                this.users.push({ name, pass, role, isAdmin: false });
+                const n = document.getElementById('adm-new-name').value;
+                const p = document.getElementById('adm-new-pass').value;
+                if(!n || !p) return;
+                this.users.push({ name: n, pass: p, isAdmin: false });
                 localStorage.setItem('taxi_users', JSON.stringify(this.users));
                 this.renderUserList();
+            },
+
+            renderUserList: function() {
+                document.getElementById('adm-user-list').innerHTML = this.users.map(u => `<tr><td>${u.name}</td><td class="text-end">${u.isAdmin ? '<i class="fas fa-lock text-muted"></i>' : `<button class="btn btn-sm btn-danger" onclick="app.deleteUser('${u.name}')"><i class="fas fa-trash"></i></button>`}</td></tr>`).join('');
             },
 
             deleteUser: function(name) {
@@ -448,19 +450,17 @@
         };
 
         const ui = {
-            showLogin: () => document.getElementById('login-screen').classList.remove('hidden'),
-            hideLogin: () => document.getElementById('login-screen').classList.add('hidden'),
             tab: (id, el) => {
                 document.querySelectorAll('.main-content > div').forEach(d => d.classList.add('hidden'));
                 document.getElementById('tab-' + id).classList.remove('hidden');
-                document.querySelectorAll('.nav-item-dash').forEach(n => n.classList.remove('active'));
+                document.querySelectorAll('.nav-link-custom').forEach(n => n.classList.remove('active'));
                 el.classList.add('active');
-                if(id === 'rechner') rechner.update();
+                if(id === 'admin') app.renderUserList();
             }
         };
 
         const rechner = {
-            prices: { 'taxi': [0,0,0], 's-klasse': [12000, 22000, 30000], 'stretch': [22000, 40000, 50000], 'patriot': [35000, 50000, 60000] },
+            prices: { 'taxi': [0,0,0], 's-klasse': [12000, 22000, 30000], 'stretch': [20000, 35000, 50000] },
             update: function() {
                 const car = document.getElementById('calc-car').value;
                 const mode = document.getElementById('calc-mode').value;
@@ -468,7 +468,7 @@
                 document.getElementById('inv-user').innerText = app.currentUser.name;
                 document.getElementById('inv-date').innerText = new Date().toLocaleDateString();
                 document.getElementById('inv-total').innerText = total.toLocaleString() + " EUR";
-                document.getElementById('inv-items').innerHTML = `<tr><td>Grundfahrt (${car})</td><td class="text-end">${total.toLocaleString()} EUR</td></tr>`;
+                document.getElementById('inv-items').innerHTML = `<tr><td>Fahrt mit ${car.toUpperCase()}</td><td class="text-end">${total.toLocaleString()} EUR</td></tr>`;
             }
         };
     </script>
