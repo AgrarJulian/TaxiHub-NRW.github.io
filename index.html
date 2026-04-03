@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaxiHub NRW | Integrierte Leitstelle</title>
+    <title>TaxiHub NRW | Vollversion</title>
     <link rel="icon" type="image/png" href="images/bild.png">
     <style>
         :root {
@@ -15,7 +15,7 @@
             --status-1: #2ecc71; /* Grün */
             --status-2: #3498db; /* Blau */
             --status-3: #f1c40f; /* Gelb */
-            --status-4: #f39c12; /* Orange-Gelb */
+            --status-4: #f39c12; /* Orange-Blink */
             --status-6: #e74c3c; /* Rot */
             --sidebar-width: 280px;
             --glow: 0 0 15px rgba(225, 255, 0, 0.3);
@@ -38,83 +38,96 @@
         .ls-box {
             background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 10px; margin-bottom: 20px;
         }
-        .ls-box h4 { margin: 0 0 10px 0; font-size: 12px; color: var(--taxi-yellow); text-transform: uppercase; }
-        .ls-status-text { font-size: 13px; margin-bottom: 10px; display: block; color: #eee; }
+        .ls-box h4 { margin: 0 0 10px 0; font-size: 11px; color: var(--taxi-yellow); text-transform: uppercase; letter-spacing: 1px; }
 
         /* FMS BUTTONS */
-        .fms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .fms-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 15px; }
         .fms-btn { 
-            padding: 15px 5px; border: none; border-radius: 5px; cursor: pointer; 
-            font-weight: bold; font-size: 11px; transition: 0.2s; text-align: center;
+            padding: 10px 2px; border: none; border-radius: 4px; cursor: pointer; 
+            font-weight: bold; font-size: 12px; transition: 0.2s; text-align: center; color: white;
         }
-        .s1 { background: var(--status-1); color: white; }
-        .s2 { background: var(--status-2); color: white; }
-        .s3 { background: var(--status-3); color: black; }
-        .s4 { background: var(--status-4); color: black; animation: blink 1s infinite; }
-        .s6 { background: var(--status-6); color: white; }
-        .fms-btn:hover { opacity: 0.8; transform: scale(1.05); }
-
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .s1 { background: var(--status-1); box-shadow: 0 0 5px var(--status-1); }
+        .s2 { background: var(--status-2); box-shadow: 0 0 5px var(--status-2); }
+        .s3 { background: var(--status-3); color: black; box-shadow: 0 0 5px var(--status-3); }
+        .s4 { background: var(--status-4); color: black; animation: blink 1s infinite; box-shadow: 0 0 5px var(--status-4); }
+        .s6 { background: var(--status-6); box-shadow: 0 0 5px var(--status-6); }
+        
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
         /* DASHBOARD LAYOUT */
         .main-content { flex-grow: 1; padding: 25px; overflow-y: auto; }
-        .dash-grid { display: grid; grid-template-columns: 1.2fr 1fr 0.8fr; gap: 20px; }
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
         .card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid #222; margin-bottom: 20px; }
 
-        /* LISTS */
+        /* UNIT MONITOR */
         .unit-item {
-            display: flex; align-items: center; gap: 12px; padding: 10px; 
-            background: #111; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #555;
+            display: flex; align-items: center; gap: 12px; padding: 12px; 
+            background: #111; border-radius: 8px; margin-bottom: 8px; border-left: 5px solid #444;
         }
         .unit-item.stat-1 { border-left-color: var(--status-1); }
         .unit-item.stat-2 { border-left-color: var(--status-2); }
         .unit-item.stat-3 { border-left-color: var(--status-3); }
-        .unit-item.stat-4 { border-left-color: var(--status-4); border-left-style: dashed; }
-        .unit-item.stat-6 { border-left-color: var(--status-6); opacity: 0.6; }
+        .unit-item.stat-4 { border-left-color: var(--status-4); animation: side-blink 1s infinite; }
+        .unit-item.stat-6 { border-left-color: var(--status-6); opacity: 0.5; }
 
-        .nav-item { padding: 12px; color: var(--text-gray); cursor: pointer; border-radius: 8px; margin-bottom: 5px; }
-        .nav-item.active { background: #1a1a1a; color: var(--taxi-yellow); border-right: 3px solid var(--taxi-yellow); }
+        @keyframes side-blink { 0% { border-left-color: var(--status-4); } 50% { border-left-color: transparent; } 100% { border-left-color: var(--status-4); } }
+
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: left; padding: 12px; border-bottom: 2px solid #333; color: var(--taxi-yellow); text-transform: uppercase; font-size: 11px; }
+        td { padding: 12px; border-bottom: 1px solid #222; color: #eee; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+
+        /* UI ELEMENTS */
+        .nav-item { padding: 12px; color: var(--text-gray); cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.3s; }
+        .nav-item:hover { background: #1a1a1a; color: white; }
+        .nav-item.active { background: #1a1a1a; color: var(--taxi-yellow); border-left: 4px solid var(--taxi-yellow); }
 
         input, select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
-        .btn-yellow { background: var(--taxi-yellow); color: black; border: none; padding: 12px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; }
+        .btn-yellow { background: var(--taxi-yellow); color: black; border: none; padding: 12px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.2s; }
+        .btn-yellow:hover { transform: scale(1.02); box-shadow: var(--glow); }
         
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--taxi-yellow); object-fit: cover; }
+        .user-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--taxi-yellow); object-fit: cover; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div id="login-overlay" style="position:fixed; inset:0; background:var(--bg-black); z-index:1000; display:flex; align-items:center; justify-content:center;">
-        <div class="card" style="width:320px; text-align:center; box-shadow: var(--glow);">
-            <h2 style="color:var(--taxi-yellow)">TaxiHub NRW</h2>
-            <input type="text" id="l-user" placeholder="Name">
-            <input type="password" id="l-pass" placeholder="Passwort">
-            <button class="btn-yellow" onclick="app.login()">SYSTEM STARTEN</button>
+        <div class="card" style="width:340px; text-align:center; border: 1px solid var(--taxi-yellow);">
+            <h1 style="color:var(--taxi-yellow); margin-top:0;">TaxiHub NRW</h1>
+            <input type="text" id="l-user" placeholder="Benutzername">
+            <input type="password" id="l-pass" placeholder="Kennwort">
+            <button class="btn-yellow" onclick="app.login()">EINLOGGEN</button>
         </div>
     </div>
 
     <div class="sidebar">
-        <h2>TaxiHub NRW</h2>
+        <h2>TaxiHub</h2>
         
         <div class="ls-box">
             <h4>🎧 Leitstelle</h4>
-            <span class="ls-status-text" id="ls-display">Aktuell: <i>Keine Besetzung</i></span>
+            <span id="ls-display" style="font-size: 13px; display: block; margin-bottom: 10px;">Status: <i>Unbesetzt</i></span>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
-                <button class="fms-btn s1" style="padding: 5px;" onclick="app.setLS('besetzt')">Eintragen</button>
-                <button class="fms-btn s2" style="padding: 5px;" onclick="app.setLS('ablöse')">Ablöse</button>
-                <button class="fms-btn s6" style="padding: 5px; grid-column: span 2;" onclick="app.setLS('frei')">Dienst beenden</button>
+                <button class="fms-btn s1" style="font-size:10px;" onclick="app.setLS('Dienst')">Dienst</button>
+                <button class="fms-btn s2" style="font-size:10px;" onclick="app.setLS('Ablöse')">Ablöse</button>
+                <button class="fms-btn s6" style="grid-column: span 2; font-size:10px;" onclick="app.setLS('Frei')">Abmelden</button>
             </div>
         </div>
 
         <div class="nav-item active" onclick="app.showPage('dashboard')">📊 Zentrale / FMS</div>
         <div class="nav-item" onclick="app.showPage('fahrtenbuch')">📖 Fahrtenbuch</div>
-        <div id="admin-nav" class="nav-item hidden" onclick="app.showPage('admin')">⚙️ Verwaltung</div>
+        <div class="nav-item" onclick="app.showPage('mitglieder')">👥 Memberliste</div>
+        <div id="admin-nav" class="nav-item hidden" onclick="app.showPage('admin')">⚙️ Administration</div>
 
-        <div style="margin-top: auto; display: flex; align-items: center; gap: 10px; background:#111; padding:10px; border-radius:10px; border: 1px solid #222;">
+        <div style="margin-top: auto; display: flex; align-items: center; gap: 12px; background:#111; padding:12px; border-radius:10px;">
             <img id="side-avatar" src="images/Fahrer.jpg" class="user-avatar">
-            <div><b id="side-name" style="font-size:12px;">Name</b><br><small id="side-rang" style="color:var(--taxi-yellow); font-size:10px;">Rang</small></div>
+            <div style="overflow:hidden;">
+                <b id="side-name" style="font-size:14px; white-space:nowrap;">Name</b><br>
+                <small id="side-rang" style="color:var(--taxi-yellow); font-size:11px;">Rang</small>
+            </div>
         </div>
-        <button onclick="location.reload()" style="background:none; border:none; color:gray; cursor:pointer; font-size:11px; margin-top:10px;">Sitzung beenden</button>
+        <button onclick="location.reload()" style="background:none; border:none; color:gray; cursor:pointer; font-size:11px; margin-top:10px; text-align:left;">➜ Logout</button>
     </div>
 
     <div class="main-content">
@@ -123,76 +136,86 @@
             <h1>Zentrale Status-Monitor</h1>
             <div class="dash-grid">
                 
-                <div>
-                    <div class="card">
-                        <h3>Dein Funk-Status (FMS)</h3>
-                        <div style="text-align: center; margin-bottom: 15px;">
-                            <span id="current-fms-display" style="font-size: 14px; font-weight: bold; padding: 5px 15px; border-radius: 20px; background: #333;">Status 6: Außer Dienst</span>
-                        </div>
-                        <div class="fms-grid">
-                            <button class="fms-btn s1" onclick="app.setFMS(1)">S1</button>
-                            <button class="fms-btn s2" onclick="app.setFMS(2)">S2</button>
-                            <button class="fms-btn s3" onclick="app.setFMS(3)">S3</button>
-                            <button class="fms-btn s4" onclick="app.setFMS(4)">S4</button>
-                            <button class="fms-btn s6" onclick="app.setFMS(6)">S6</button>
-                        </div>
-                        <p style="font-size: 11px; color: gray; margin-top: 15px; line-height: 1.4;">
-                            1: Funkbereit | 2: Zentrale | 3: Anfahrt | 4: Kunde an Bord | 6: Abgemeldet
-                        </p>
+                <div class="card">
+                    <h3>Mein FMS-Status</h3>
+                    <div id="my-status-box" style="text-align:center; padding:15px; border-radius:8px; font-weight:bold; background:#222; margin-bottom:15px;">
+                        STATUS 6
                     </div>
-                    <div class="card">
-                        <h3>Statistik</h3>
-                        <p>Fahrten heute: <b id="personal-drives">0</b></p>
+                    <div class="fms-grid">
+                        <button class="fms-btn s1" onclick="app.setFMS(1)">1</button>
+                        <button class="fms-btn s2" onclick="app.setFMS(2)">2</button>
+                        <button class="fms-btn s3" onclick="app.setFMS(3)">3</button>
+                        <button class="fms-btn s4" onclick="app.setFMS(4)">4</button>
+                        <button class="fms-btn s6" onclick="app.setFMS(6)">6</button>
+                    </div>
+                    <div style="margin-top:20px; font-size:12px; color:gray;">
+                        S1: Frei Funk | S2: Zentrale | S3: Anfahrt | S4: Besetzt | S6: Abgemeldet
                     </div>
                 </div>
 
                 <div class="card">
-                    <h3>🚗 Einheiten-Status</h3>
-                    <div id="fleet-monitor">Lade Einheiten...</div>
+                    <h3>🚗 Aktive Einheiten</h3>
+                    <div id="fleet-monitor"></div>
                 </div>
 
                 <div class="card">
-                    <h3>📜 Letzte Funk-Aktivität</h3>
-                    <div id="drive-feed" style="font-size: 12px;"></div>
+                    <h3>📜 Funk-Logbuch</h3>
+                    <div id="drive-feed" style="max-height:400px; overflow-y:auto;"></div>
                 </div>
 
             </div>
         </div>
 
         <div id="page-fahrtenbuch" class="hidden">
-            <h1>Fahrt dokumentieren</h1>
-            <div class="card" style="max-width: 450px;">
-                <input type="text" id="f-von" placeholder="Start (z.B. Würfelpark)">
-                <input type="text" id="f-nach" placeholder="Ziel (z.B. Krankenhaus)">
+            <h1>Einsatz dokumentieren</h1>
+            <div class="card" style="max-width: 500px;">
+                <label>Abholort</label>
+                <input type="text" id="f-von" placeholder="z.B. Legion Square">
+                <label>Zielort</label>
+                <input type="text" id="f-nach" placeholder="z.B. PD Mission Row">
+                <label>Tarif</label>
                 <select id="f-typ">
-                    <option value="Normal">Normale Fahrt (Kostenlos)</option>
-                    <option value="Heli">Helikopter (Premium)</option>
-                    <option value="Limo">Limosine (Premium)</option>
+                    <option value="Standard">Standardfahrt</option>
+                    <option value="Heli">Helikopter-Service</option>
+                    <option value="Limo">Limosinen-Service</option>
                 </select>
-                <button class="btn-yellow" onclick="app.addDrive()">ABSENDEN & STATUS 1 SETZEN</button>
+                <button class="btn-yellow" style="margin-top:10px;" onclick="app.addDrive()">FAHRT ABSCHLIESSEN (S1)</button>
+            </div>
+        </div>
+
+        <div id="page-mitglieder" class="hidden">
+            <h1>Mitarbeiter Übersicht</h1>
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mitarbeiter</th>
+                            <th>DN</th>
+                            <th>Rang</th>
+                            <th>Gesamt-Fahrten</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="member-table-body"></tbody>
+                </table>
             </div>
         </div>
 
         <div id="page-admin" class="hidden">
-            <h1>Personal-Management</h1>
-            <div class="card">
-                <h3>Mitarbeiter anlegen</h3>
-                <input type="text" id="adm-name" placeholder="Vollständiger Name">
-                <input type="text" id="adm-pass" placeholder="System-Passwort">
-                <input type="text" id="adm-dn" placeholder="Dienstnummer (z.B. 26)">
-                <select id="adm-rang">
-                    <option>Praktikant</option><option>Azubi Fahrer</option><option>Jr. Fahrer</option>
-                    <option selected>Fahrer</option><option>Sr. Fahrer</option>
-                    <option>Stvl. Geschäftsführung</option><option>Geschäftsführung</option>
-                </select>
-                <button class="btn-yellow" onclick="app.createAcc()">ACCOUNT ANLEGEN</button>
-            </div>
-            <div class="card">
-                <h3>Mitgliederliste</h3>
-                <table style="width:100%; text-align:left; font-size:13px;">
-                    <thead><tr><th>Name</th><th>DN</th><th>Rang</th><th>Fahrten</th></tr></thead>
-                    <tbody id="admin-staff-body"></tbody>
-                </table>
+            <h1>Administration</h1>
+            <div class="card" style="max-width:600px;">
+                <h3>Mitarbeiter hinzufügen</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <input type="text" id="adm-name" placeholder="Name">
+                    <input type="text" id="adm-pass" placeholder="Passwort">
+                    <input type="text" id="adm-dn" placeholder="Dienstnummer">
+                    <select id="adm-rang">
+                        <option>Praktikant</option><option>Azubi Fahrer</option><option>Jr. Fahrer</option>
+                        <option selected>Fahrer</option><option>Sr. Fahrer</option>
+                        <option>Stvl. Geschäftsführung</option><option>Geschäftsführung</option>
+                    </select>
+                </div>
+                <button class="btn-yellow" style="margin-top:15px;" onclick="app.createAcc()">ACCOUNT ERSTELLEN</button>
             </div>
         </div>
 
@@ -201,17 +224,16 @@
     <script>
         const app = {
             currentUser: null,
-            users: JSON.parse(localStorage.getItem('th_ils_v4')) || [{
+            users: JSON.parse(localStorage.getItem('th_master_v5')) || [{
                 name: "Maverick Stone", pass: "Bka26r", dn: "01", rang: "Geschäftsführung", 
                 isAdmin: true, drives: 0, status: 6
             }],
-            lsDienst: localStorage.getItem('th_ls_dienst') || "Keine Besetzung",
-            drives: JSON.parse(localStorage.getItem('th_drives_v4')) || [],
+            drives: JSON.parse(localStorage.getItem('th_logs_v5')) || [],
+            lsOwner: localStorage.getItem('th_ls_owner') || "Unbesetzt",
 
             init: function() {
-                this.renderFleet();
-                this.renderFeed();
-                document.getElementById('ls-display').innerHTML = "Aktuell: <b>" + this.lsDienst + "</b>";
+                this.renderAll();
+                document.getElementById('ls-display').innerHTML = "Status: <b>" + this.lsOwner + "</b>";
             },
 
             login: function() {
@@ -223,56 +245,60 @@
                     document.getElementById('login-overlay').classList.add('hidden');
                     if(found.isAdmin) document.getElementById('admin-nav').classList.remove('hidden');
                     this.updateUI();
-                } else { alert("Login fehlgeschlagen!"); }
+                } else { alert("Zugriff verweigert!"); }
             },
 
             updateUI: function() {
                 document.getElementById('side-name').innerText = this.currentUser.name;
                 document.getElementById('side-rang').innerText = this.currentUser.rang;
-                document.getElementById('personal-drives').innerText = this.currentUser.drives;
+                
+                const imgMap = {
+                    "Praktikant": "Praktikant.jpg", "Azubi Fahrer": "Azubi.jpg", "Jr. Fahrer": "Jr.jpg",
+                    "Fahrer": "Fahrer.jpg", "Sr. Fahrer": "Sr. Fahrer.jpg", 
+                    "Stvl. Geschäftsführung": "Stvl.jpg", "Geschäftsführung": "Inhaber.jpg"
+                };
+                document.getElementById('side-avatar').src = "images/" + (imgMap[this.currentUser.rang] || "Fahrer.jpg");
+                
                 this.setFMS(this.currentUser.status);
-                this.renderFleet();
-                this.renderAdminStaff();
+                this.renderAll();
             },
 
             setFMS: function(code) {
                 this.currentUser.status = code;
-                const display = document.getElementById('current-fms-display');
-                const labels = {
-                    1: "Status 1: Funkbereit", 2: "Status 2: Zentrale", 
-                    3: "Status 3: Anfahrt", 4: "Status 4: Kunde an Bord", 6: "Status 6: Abgemeldet"
-                };
-                display.innerText = labels[code];
-                display.style.color = (code === 3 || code === 4) ? "black" : "white";
-                display.style.background = `var(--status-${code})`;
-                if(code === 4) display.style.animation = "blink 1s infinite"; else display.style.animation = "none";
+                const box = document.getElementById('my-status-box');
+                const labels = {1:"STATUS 1 (FREI)", 2:"STATUS 2 (ZENTRALE)", 3:"STATUS 3 (ANFAHRT)", 4:"STATUS 4 (BESETZT)", 6:"STATUS 6 (OFF)"};
+                box.innerText = labels[code];
+                box.style.background = `var(--status-${code})`;
+                box.style.color = (code === 3 || code === 4) ? "black" : "white";
+                if(code === 4) box.classList.add('fms-btn'); // Nutzt die Animation
+                else box.classList.remove('fms-btn');
                 
                 this.save();
                 this.renderFleet();
+                this.renderMembers();
             },
 
-            setLS: function(typ) {
-                if(typ === 'besetzt') this.lsDienst = this.currentUser.name;
-                else if(typ === 'ablöse') this.lsDienst = this.currentUser.name + " (Ablöse)";
-                else this.lsDienst = "Keine Besetzung";
+            setLS: function(val) {
+                if(val === 'Frei') this.lsOwner = "Unbesetzt";
+                else this.lsOwner = this.currentUser.name + " (" + val + ")";
                 
-                localStorage.setItem('th_ls_dienst', this.lsDienst);
-                document.getElementById('ls-display').innerHTML = "Aktuell: <b>" + this.lsDienst + "</b>";
-                this.save();
+                localStorage.setItem('th_ls_owner', this.lsOwner);
+                document.getElementById('ls-display').innerHTML = "Status: <b>" + this.lsOwner + "</b>";
             },
 
             addDrive: function() {
                 const von = document.getElementById('f-von').value || "Zentrale";
-                const nach = document.getElementById('f-nach').value || "Ziel unbekannt";
-                const drive = { fahrer: this.currentUser.name, von, nach, time: new Date().toLocaleTimeString() };
+                const nach = document.getElementById('f-nach').value || "Unbekannt";
+                const log = { fahrer: this.currentUser.name, von, nach, time: new Date().toLocaleTimeString() };
                 
-                this.drives.unshift(drive);
-                if(this.drives.length > 8) this.drives.pop();
+                this.drives.unshift(log);
+                if(this.drives.length > 10) this.drives.pop();
+                
                 this.currentUser.drives++;
-                this.setFMS(1); // Nach der Fahrt automatisch Status 1
+                this.setFMS(1);
                 this.save();
-                this.renderFeed();
-                alert("Dokumentiert! Status wurde auf 1 gesetzt.");
+                this.renderAll();
+                alert("Fahrt protokolliert. Status auf 1 gesetzt.");
                 this.showPage('dashboard');
             },
 
@@ -280,14 +306,31 @@
                 const container = document.getElementById('fleet-monitor');
                 container.innerHTML = "";
                 this.users.forEach(u => {
-                    container.innerHTML += `
-                        <div class="unit-item stat-${u.status}">
-                            <div style="flex-grow:1">
-                                <b>[${u.dn}] ${u.name}</b><br>
-                                <small style="color:gray">${u.rang}</small>
+                    if(u.status !== 6) {
+                        container.innerHTML += `
+                            <div class="unit-item stat-${u.status}">
+                                <div style="flex-grow:1"><b>[${u.dn}] ${u.name}</b><br><small>${u.rang}</small></div>
+                                <b style="font-size:18px;">S${u.status}</b>
                             </div>
-                            <b style="font-size:16px;">S${u.status}</b>
-                        </div>
+                        `;
+                    }
+                });
+                if(container.innerHTML === "") container.innerHTML = "<i style='color:gray'>Keine Einheiten im Dienst.</i>";
+            },
+
+            renderMembers: function() {
+                const body = document.getElementById('member-table-body');
+                body.innerHTML = "";
+                this.users.forEach(u => {
+                    const sTxt = u.status === 6 ? "Offline" : "S"+u.status;
+                    body.innerHTML += `
+                        <tr>
+                            <td><b>${u.name}</b></td>
+                            <td>#${u.dn}</td>
+                            <td>${u.rang}</td>
+                            <td>${u.drives}</td>
+                            <td><span style="color:var(--status-${u.status})">${sTxt}</span></td>
+                        </tr>
                     `;
                 });
             },
@@ -295,33 +338,32 @@
             renderFeed: function() {
                 const container = document.getElementById('drive-feed');
                 container.innerHTML = this.drives.map(d => `
-                    <div style="margin-bottom:10px; border-bottom:1px solid #222; padding-bottom:5px;">
+                    <div style="padding:10px; border-bottom:1px solid #222;">
                         <small style="color:var(--taxi-yellow)">${d.time}</small><br>
-                        <b>${d.fahrer}</b>: ${d.von} -> ${d.nach}
+                        <b>${d.fahrer}</b>: ${d.von} ➜ ${d.nach}
                     </div>
                 `).join("");
             },
 
-            renderAdminStaff: function() {
-                const body = document.getElementById('admin-staff-body');
-                body.innerHTML = this.users.map(u => `
-                    <tr><td>${u.name}</td><td>#${u.dn}</td><td>${u.rang}</td><td>${u.drives}</td></tr>
-                `).join("");
+            renderAll: function() {
+                this.renderFleet();
+                this.renderMembers();
+                this.renderFeed();
             },
 
             createAcc: function() {
-                const name = document.getElementById('adm-name').value;
-                const pass = document.getElementById('adm-pass').value;
-                const dn = document.getElementById('adm-dn').value;
-                const rang = document.getElementById('adm-rang').value;
-                if(name && pass) {
-                    this.users.push({ name, pass, dn, rang, isAdmin:false, drives:0, status:6 });
-                    this.save(); this.renderAdminStaff(); this.renderFleet(); alert("Erfolg!");
+                const n = document.getElementById('adm-name').value;
+                const p = document.getElementById('adm-pass').value;
+                const d = document.getElementById('adm-dn').value;
+                const r = document.getElementById('adm-rang').value;
+                if(n && p) {
+                    this.users.push({ name:n, pass:p, dn:d, rang:r, isAdmin:false, drives:0, status:6 });
+                    this.save(); this.renderMembers(); alert("Account erstellt!");
                 }
             },
 
             showPage: function(id) {
-                ['dashboard', 'fahrtenbuch', 'admin'].forEach(p => {
+                ['dashboard', 'fahrtenbuch', 'mitglieder', 'admin'].forEach(p => {
                     const el = document.getElementById('page-'+p);
                     if(el) el.classList.add('hidden');
                 });
@@ -331,8 +373,8 @@
             },
 
             save: function() { 
-                localStorage.setItem('th_ils_v4', JSON.stringify(this.users));
-                localStorage.setItem('th_drives_v4', JSON.stringify(this.drives));
+                localStorage.setItem('th_master_v5', JSON.stringify(this.users));
+                localStorage.setItem('th_logs_v5', JSON.stringify(this.drives));
             }
         };
         app.init();
