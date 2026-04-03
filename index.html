@@ -3,195 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaxiHub NRW | Ultimate Management</title>
+    <title>TaxiHub NRW | Pro Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --taxi-yellow: #e1ff00;
-            --bg-black: #050505;
-            --card-bg: #111111;
+            --bg-black: #0a0a0a;
+            --card-bg: #161616;
+            --sidebar-bg: #0d0d0d;
+            --text-main: #ffffff;
+            --text-dim: #888888;
             --border: #222;
-            --status-1: #2ecc71; --status-2: #3498db; --status-3: #f1c40f; --status-4: #f39c12; --status-6: #e74c3c;
+            --status-red: #e74c3c;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-black); color: white; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        .light-mode {
+            --bg-black: #f5f5f5;
+            --card-bg: #ffffff;
+            --sidebar-bg: #eeeeee;
+            --text-main: #111111;
+            --text-dim: #555555;
+            --border: #ddd;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-black); color: var(--text-main); margin: 0; display: flex; height: 100vh; transition: 0.3s; }
 
         /* SIDEBAR */
-        .sidebar { width: 280px; background: #080808; border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; }
-        .nav-item { padding: 12px; color: #666; cursor: pointer; border-radius: 4px; margin-bottom: 2px; font-size: 13px; transition: 0.2s; }
-        .nav-item:hover { background: #111; color: white; }
-        .nav-item.active { background: #151515; color: var(--taxi-yellow); border-left: 3px solid var(--taxi-yellow); }
+        .sidebar { width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; transition: 0.3s; overflow: hidden; }
+        .sidebar.collapsed { width: 60px; }
+        .sidebar-header { padding: 20px; font-weight: bold; color: var(--taxi-yellow); display: flex; justify-content: space-between; align-items: center; }
+        
+        .nav-section { padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .nav-section-title { padding: 5px 20px; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .nav-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-dim); }
+        .nav-item:hover, .nav-item.active { color: var(--text-main); background: rgba(225, 255, 0, 0.05); }
+        .nav-item i { width: 20px; text-align: center; }
 
         /* MAIN */
-        .main-content { flex-grow: 1; padding: 30px; overflow-y: auto; position: relative; }
-        .card { background: var(--card-bg); padding: 20px; border-radius: 2px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .main-content { flex-grow: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+
+        /* WIDGETS */
+        .card { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); padding: 20px; position: relative; }
+        .stempeluhr { background: var(--status-red); text-align: center; color: white; }
+        .timer-val { font-size: 32px; font-weight: 800; margin: 10px 0; font-family: monospace; }
         
-        h1, h2, h3 { font-weight: 300; letter-spacing: 1px; text-transform: uppercase; margin-top: 0; }
+        .btn-huge { background: var(--taxi-yellow); color: black; border: none; width: 100%; padding: 40px 20px; border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .btn-huge:hover { filter: brightness(1.1); }
 
-        /* TABLES */
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px; color: #444; border-bottom: 1px solid var(--border); font-size: 10px; text-transform: uppercase; }
-        td { padding: 12px; border-bottom: 1px solid #181818; font-size: 13px; }
+        /* RECHTS UNTEN KONTAKT */
+        .contact-widget { position: fixed; bottom: 20px; right: 20px; background: var(--card-bg); border: 1px solid var(--border); padding: 15px; border-radius: 8px; font-size: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .contact-widget a { color: var(--taxi-yellow); text-decoration: none; display: block; margin-top: 5px; }
 
-        /* INPUTS */
-        input, select, textarea { background: #0a0a0a; border: 1px solid #222; color: white; padding: 10px; width: 100%; box-sizing: border-box; margin-bottom: 10px; font-size: 13px; }
-        input[type="checkbox"] { width: auto; margin-right: 10px; }
-        .btn-yellow { background: var(--taxi-yellow); color: black; border: none; padding: 12px 20px; cursor: pointer; font-weight: bold; width: 100%; }
-        
-        .perm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #0a0a0a; padding: 15px; border: 1px solid #222; margin-bottom: 15px; }
-        .perm-item { font-size: 11px; color: #bbb; display: flex; align-items: center; }
+        /* FOOTER CREDITS */
+        .credits-footer { margin-top: auto; padding-top: 20px; color: white; font-size: 11px; opacity: 0.8; }
 
-        /* FOOTER */
-        .sidebar-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); font-size: 10px; color: #333; line-height: 1.5; }
-        .contact-box { position: fixed; bottom: 20px; right: 20px; background: #080808; padding: 15px; border: 1px solid var(--border); font-size: 11px; z-index: 100; }
-        .contact-box a { color: var(--taxi-yellow); text-decoration: none; font-weight: bold; }
-
-        .status-pill { padding: 4px 8px; border-radius: 2px; font-size: 10px; font-weight: bold; color: black; }
         .hidden { display: none !important; }
+        input, textarea, select { background: #222; border: 1px solid #333; color: white; padding: 10px; border-radius: 4px; width: 100%; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="login-overlay" style="position:fixed; inset:0; background:var(--bg-black); z-index:1000; display:flex; align-items:center; justify-content:center;">
-        <div class="card" style="width:320px; border: 1px solid var(--taxi-yellow);">
-            <h2 style="text-align:center; color:var(--taxi-yellow)">Taxi NRW</h2>
-            <input type="text" id="l-user" placeholder="Vorname Nachname">
+    <div id="login-overlay" style="position:fixed; inset:0; background:var(--bg-black); z-index:2000; display:flex; align-items:center; justify-content:center;">
+        <div class="card" style="width:350px; text-align:center;">
+            <h2 style="color:var(--taxi-yellow)">TAXI KÖLN LOGIN</h2>
+            <input type="text" id="l-user" placeholder="Name">
             <input type="password" id="l-pass" placeholder="Passwort">
-            <button class="btn-yellow" onclick="app.login()">Systemzugriff</button>
+            <button onclick="app.login()" style="background:var(--taxi-yellow); border:none; padding:15px; width:100%; font-weight:bold; cursor:pointer;">ANMELDEN</button>
         </div>
     </div>
 
-    <div class="sidebar">
-        <h2 style="font-size: 18px; margin-bottom: 40px;">TaxiHub <span style="color:var(--taxi-yellow)">NRW</span></h2>
-        
-        <div class="nav-item active" onclick="app.showPage('dashboard')">Zentrale / FMS</div>
-        <div class="nav-item" id="nav-fahrtenbuch" onclick="app.showPage('fahrtenbuch')">Fahrtenbuch</div>
-        <div class="nav-item" onclick="app.showPage('mitglieder')">Mitgliederliste</div>
-        <div class="nav-item" onclick="app.showPage('protokoll')">Dienstbesprechung</div>
-        <div class="nav-item" onclick="app.showPage('board')">Dienstanweisungen</div>
-        <div class="nav-item" id="nav-logs" onclick="app.showPage('logs')">Wochenarchiv</div>
-        <div class="nav-item hidden" id="nav-admin" onclick="app.showPage('admin')">Personalverwaltung</div>
-
-        <div style="margin-top: auto;">
-            <div style="padding: 12px; background: #111; border: 1px solid var(--border); margin-bottom: 10px;">
-                <small id="side-rang" style="color:var(--taxi-yellow); font-size:9px; text-transform:uppercase;"></small><br>
-                <b id="side-name" style="font-size:13px; letter-spacing: 0.5px;"></b>
-            </div>
-            <button onclick="location.reload()" style="width:100%; background:transparent; border:1px solid #333; color:#555; padding:8px; cursor:pointer; font-size:11px;">Abmelden</button>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span id="side-title">Taxi Köln</span>
+            <i class="fas fa-bars" onclick="app.toggleSidebar()" style="cursor:pointer;"></i>
         </div>
 
-        <div class="sidebar-footer">
-            Credit C - Taxi Köln<br>
-            Created by agrar.julian<br>
-            Hosted by Marco Krause
+        <div class="nav-section">
+            <div class="nav-section-title">Allgemein</div>
+            <div class="nav-item active" onclick="app.showPage('dashboard')"><i class="fas fa-th-large"></i> <span>Dashboard</span></div>
+            <div class="nav-item" onclick="app.showPage('profile')"><i class="fas fa-user"></i> <span>Mein Profil</span></div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Verwaltung</div>
+            <div class="nav-item" onclick="app.showPage('mitglieder')"><i class="fas fa-users"></i> <span>Mitglieder</span></div>
+            <div id="admin-nav" class="nav-item hidden" onclick="app.showPage('admin')"><i class="fas fa-cog"></i> <span>Personal-Abteilung</span></div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Features</div>
+            <div class="nav-item" onclick="app.showPage('patchnotes')"><i class="fas fa-code-branch"></i> <span>Patchnotes</span></div>
+            <div class="nav-item" onclick="app.toggleTheme()"><i class="fas fa-adjust"></i> <span>Light/Dark</span></div>
+        </div>
+
+        <div style="margin-top: auto; padding: 20px;">
+            <div style="font-size: 12px; margin-bottom: 10px;">
+                <b id="user-display">Name</b><br>
+                <small id="rang-display" style="color:var(--taxi-yellow)">Rang</small>
+            </div>
+            <button onclick="location.reload()" style="background:#222; color:white; border:none; width:100%; padding:8px; font-size:11px; cursor:pointer;">Abmelden</button>
+            <div class="credits-footer">
+                Credit C - Taxi Köln<br>
+                Created by agrar.julian<br>
+                Hosted by Marco Krause
+            </div>
         </div>
     </div>
 
     <div class="main-content">
-        
         <div id="page-dashboard">
-            <h1>Zentrale</h1>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <h1>Willkommen im Dashboard, <span id="dash-welcome">User</span>!</h1>
+            
+            <div class="grid-container">
+                <div class="card stempeluhr">
+                    <div>Aktuelle Sitzung</div>
+                    <div class="timer-val" id="stempel-timer">00:00:00</div>
+                    <button onclick="app.toggleStempel()" id="stempel-btn" style="background:white; border:none; padding:10px 20px; border-radius:20px; font-weight:bold; cursor:pointer;">EINSTEMPELN</button>
+                </div>
+
+                <div class="card" style="padding:0; border:none;">
+                    <button class="btn-huge" onclick="app.showPage('fahrtenbuch')">
+                        <i class="fas fa-taxi" style="font-size:30px;"></i>
+                        Neue Fahrt erfassen
+                    </button>
+                </div>
+
                 <div class="card">
-                    <h3>Mein Funkstatus</h3>
-                    <div id="status-box" style="padding:20px; text-align:center; font-size:24px; font-weight:bold; margin-bottom:15px; background:#111;">S6</div>
-                    <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap: 8px;">
-                        <button onclick="app.setFMS(1)" style="background:var(--status-1); border:none; padding:12px; cursor:pointer;">S1</button>
-                        <button onclick="app.setFMS(2)" style="background:var(--status-2); border:none; padding:12px; cursor:pointer;">S2</button>
-                        <button onclick="app.setFMS(3)" style="background:var(--status-3); border:none; padding:12px; cursor:pointer;">S3</button>
-                        <button onclick="app.setFMS(4)" style="background:var(--status-4); border:none; padding:12px; cursor:pointer;">S4</button>
-                        <button onclick="app.setFMS(6)" style="background:var(--status-6); border:none; padding:12px; cursor:pointer;">S6</button>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h3>Hauptorte</h3>
+                        <i class="fas fa-plus hidden adm-tool" onclick="app.addOrt()" style="cursor:pointer;"></i>
                     </div>
+                    <div id="orte-list"></div>
                 </div>
+
                 <div class="card">
-                    <h3>Status-Monitor</h3>
-                    <div id="fleet-monitor"></div>
+                    <h3>Letzte Fahrten</h3>
+                    <div id="last-drives" style="font-size: 13px;"></div>
                 </div>
             </div>
         </div>
 
-        <div id="page-fahrtenbuch" class="hidden">
-            <h1>Fahrt erfassen</h1>
-            <div class="card" id="f-form" style="max-width:500px;">
-                <select id="f-art">
-                    <option value="Normal">Normale Fahrt (Kostenlos)</option>
-                    <option value="Heli">Helikopter (Premium)</option>
-                    <option value="Limo">Limusine (Premium)</option>
-                </select>
-                <input type="text" id="f-von" placeholder="Startpunkt">
-                <input type="text" id="f-nach" placeholder="Zielpunkt">
-                <input type="number" id="f-km" placeholder="Kilometerstand">
-                <button class="btn-yellow" onclick="app.addDrive()">Eintragen</button>
+        <div id="page-profile" class="hidden">
+            <h1>Mein Profil bearbeiten</h1>
+            <div class="card" style="max-width:500px;">
+                <label>Profilbild URL</label>
+                <input type="text" id="p-img-url" placeholder="https://...">
+                <label>Biografie</label>
+                <textarea id="p-bio" style="height:100px;"></textarea>
+                <button onclick="app.saveProfile()" style="background:var(--taxi-yellow); border:none; padding:10px; width:100%; font-weight:bold; cursor:pointer; color:black;">ÄNDERUNGEN SPEICHERN</button>
             </div>
-            <div id="f-no-perm" class="card hidden">Sie haben keine Berechtigung, Fahrten einzutragen.</div>
         </div>
 
-        <div id="page-mitglieder" class="hidden">
-            <h1>Mitarbeiterliste</h1>
+        <div id="page-patchnotes" class="hidden">
+            <h1>Patchnotes</h1>
             <div class="card">
-                <table>
-                    <thead>
-                        <tr><th>Name</th><th>Rang</th><th>DN</th><th>Fahrten</th><th>Info / Vermerk</th></tr>
-                    </thead>
-                    <tbody id="member-body"></tbody>
-                </table>
+                <h3>v10.0.0 - Die Zentrale</h3>
+                <p>- Neues Sidebar-System mit Unterteilungen<br>- Stempeluhr-Widget integriert<br>- Self-Profile System aktiviert<br>- Light/Dark Mode Support</p>
             </div>
         </div>
-
-        <div id="page-protokoll" class="hidden">
-            <h1>Besprechungen</h1>
-            <div id="p-editor" class="card hidden">
-                <textarea id="p-text" style="height:100px;" placeholder="Protokoll-Inhalt..."></textarea>
-                <button class="btn-yellow" onclick="app.saveProtokoll()">Protokoll speichern</button>
-            </div>
-            <div id="protokoll-list"></div>
-        </div>
-
-        <div id="page-admin" class="hidden">
-            <h1>Personalverwaltung</h1>
-            <div class="card" style="max-width:700px;">
-                <h3>Mitarbeiter anlegen / Rechte verwalten</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="text" id="a-vor" placeholder="Vorname">
-                    <input type="text" id="a-nach" placeholder="Nachname">
-                    <input type="text" id="a-dn" placeholder="Dienstnummer">
-                    <input type="password" id="a-pass" placeholder="Passwort">
-                    <select id="a-rang" style="grid-column: span 2;">
-                        <option>Praktikant</option><option>Azubi Fahrer</option><option>Jr. Fahrer</option>
-                        <option>Fahrer</option><option>Sr. Fahrer</option><option>Leitung</option>
-                        <option>Geschäftsführung</option>
-                    </select>
-                </div>
-                <p style="font-size:11px; color:var(--taxi-yellow); margin: 15px 0 5px 0;">BERECHTIGUNGEN:</p>
-                <div class="perm-grid">
-                    <div class="perm-item"><input type="checkbox" id="p-f-write" checked> Fahrtenbuch schreiben</div>
-                    <div class="perm-item"><input type="checkbox" id="p-f-del"> Fahrtenbuch löschen</div>
-                    <div class="perm-item"><input type="checkbox" id="p-pers"> Personalverwaltung</div>
-                    <div class="perm-item"><input type="checkbox" id="p-prot-w"> Protokoll schreiben</div>
-                    <div class="perm-item"><input type="checkbox" id="p-prot-d"> Protokoll löschen</div>
-                    <div class="perm-item"><input type="checkbox" id="p-board"> Board verwalten</div>
-                    <div class="perm-item"><input type="checkbox" id="p-logs" checked> Archiv einsehen</div>
-                </div>
-                <button class="btn-yellow" onclick="app.createAcc()">Account anlegen</button>
-            </div>
-        </div>
-
     </div>
 
-    <div class="contact-box">
-        Fehler/Fragen Discord: <b>agrar.julian</b><br>
-        <a href="https://forms.gle/UxSdaw5BFk8mpRPT6" target="_blank">Fehler Formular</a> | 
-        <a href="https://forms.gle/pk3iQFQZaLvPVu3c6" target="_blank">Website Bewerten</a>
+    <div class="contact-widget">
+        Bei Fragen gerne mich per Discord anschreiben <b>agrar.julian</b>
+        <a href="https://forms.gle/UxSdaw5BFk8mpRPT6" target="_blank"><i class="fas fa-bug"></i> Fehler Formular</a>
+        <a href="https://forms.gle/pk3iQFQZaLvPVu3c6" target="_blank"><i class="fas fa-star"></i> Website bewerten</a>
     </div>
 
     <script>
         const app = {
             currentUser: null,
-            users: JSON.parse(localStorage.getItem('th_v9_users')) || [{
-                name: "Maverick Stone", pass: "Bka26r", dn: "01", rang: "Geschäftsführung", 
-                drives: 0, status: 6, info: "-",
-                perms: { f_w:true, f_d:true, pers:true, prot_w:true, prot_d:true, board:true, logs:true }
+            users: JSON.parse(localStorage.getItem('th_v10_users')) || [{
+                name: "Sebastian Retzlaff", pass: "123", rang: "Fahrer", 
+                bio: "", img: "", perms: {admin: true}, drives: []
             }],
-            protokolle: JSON.parse(localStorage.getItem('th_v9_prots')) || [],
+            orte: JSON.parse(localStorage.getItem('th_v10_orte')) || ["Flughafen", "Taxi-Zentrale", "Bundes Polizei"],
+            timer: null, seconds: 0,
 
             login: function() {
                 const u = document.getElementById('l-user').value;
@@ -200,132 +187,66 @@
                 if(found) {
                     this.currentUser = found;
                     document.getElementById('login-overlay').classList.add('hidden');
-                    this.updateUI();
-                } else { alert("Zugriff verweigert."); }
+                    this.initUI();
+                }
             },
 
-            updateUI: function() {
-                document.getElementById('side-name').innerText = this.currentUser.name;
-                document.getElementById('side-rang').innerText = this.currentUser.rang;
+            initUI: function() {
+                document.getElementById('user-display').innerText = this.currentUser.name;
+                document.getElementById('rang-display').innerText = this.currentUser.rang;
+                document.getElementById('dash-welcome').innerText = this.currentUser.name;
+                document.getElementById('p-bio').value = this.currentUser.bio || "";
+                document.getElementById('p-img-url').value = this.currentUser.img || "";
                 
-                // Rechte-Check für UI
-                const p = this.currentUser.perms;
-                if(!p.pers) document.getElementById('nav-admin').classList.add('hidden'); 
-                else document.getElementById('nav-admin').classList.remove('hidden');
-                
-                if(!p.logs) document.getElementById('nav-logs').classList.add('hidden');
-                if(!p.f_w) document.getElementById('f-form').classList.add('hidden'), document.getElementById('f-no-perm').classList.remove('hidden');
-                if(p.prot_w) document.getElementById('p-editor').classList.remove('hidden');
-                
-                this.renderFleet();
-                this.renderMembers();
-                this.renderProts();
+                if(this.currentUser.perms.admin) {
+                    document.getElementById('admin-nav').classList.remove('hidden');
+                    document.querySelectorAll('.adm-tool').forEach(el => el.classList.remove('hidden'));
+                }
+                this.renderOrte();
             },
 
-            setFMS: function(s) {
-                this.currentUser.status = s;
-                const b = document.getElementById('status-box');
-                b.innerText = "S" + s;
-                b.style.background = `var(--status-${s})`;
-                b.style.color = (s === 3 || s === 4) ? "black" : "white";
+            toggleStempel: function() {
+                const btn = document.getElementById('stempel-btn');
+                if(!this.timer) {
+                    this.timer = setInterval(() => {
+                        this.seconds++;
+                        document.getElementById('stempel-timer').innerText = new Date(this.seconds * 1000).toISOString().substr(11, 8);
+                    }, 1000);
+                    btn.innerText = "AUSSTEMPELN";
+                } else {
+                    clearInterval(this.timer);
+                    this.timer = null;
+                    btn.innerText = "EINSTEMPELN";
+                }
+            },
+
+            saveProfile: function() {
+                this.currentUser.bio = document.getElementById('p-bio').value;
+                this.currentUser.img = document.getElementById('p-img-url').value;
                 this.save();
-                this.renderFleet();
+                alert("Profil aktualisiert!");
             },
 
-            addDrive: function() {
-                const km = document.getElementById('f-km').value;
-                if(!km) return alert("Kilometerstand fehlt!");
-                this.currentUser.drives++;
-                this.save();
-                this.setFMS(1);
-                alert("Erfolgreich übermittelt.");
-                this.showPage('dashboard');
-            },
-
-            renderMembers: function() {
-                const body = document.getElementById('member-body');
-                body.innerHTML = "";
-                const canEdit = this.currentUser.perms.pers;
-                this.users.forEach((u, i) => {
-                    body.innerHTML += `
-                        <tr>
-                            <td>${canEdit ? `<input value="${u.name}" onchange="app.edit(${i}, 'name', this.value)">` : u.name}</td>
-                            <td>${canEdit ? `<select onchange="app.edit(${i}, 'rang', this.value)">
-                                <option ${u.rang==='Praktikant'?'selected':''}>Praktikant</option>
-                                <option ${u.rang==='Fahrer'?'selected':''}>Fahrer</option>
-                                <option ${u.rang==='Geschäftsführung'?'selected':''}>Geschäftsführung</option>
-                            </select>` : u.rang}</td>
-                            <td>${canEdit ? `<input value="${u.dn}" style="width:40px" onchange="app.edit(${i}, 'dn', this.value)">` : u.dn}</td>
-                            <td>${u.drives}</td>
-                            <td>${canEdit ? `<input value="${u.info}" onchange="app.edit(${i}, 'info', this.value)">` : u.info}</td>
-                        </tr>
-                    `;
-                });
-            },
-
-            edit: function(i, f, v) { this.users[i][f] = v; this.save(); },
-
-            saveProtokoll: function() {
-                const t = document.getElementById('p-text').value;
-                if(!t) return;
-                this.protokolle.unshift({ id: Date.now(), author: this.currentUser.name, date: new Date().toLocaleString(), text: t });
-                document.getElementById('p-text').value = "";
-                this.save(); this.renderProts();
-            },
-
-            renderProts: function() {
-                const canDel = this.currentUser.perms.prot_d;
-                document.getElementById('protokoll-list').innerHTML = this.protokolle.map(p => `
-                    <div class="card">
-                        <div style="display:flex; justify-content:space-between;">
-                            <small style="color:var(--taxi-yellow)">${p.date} | ${p.author}</small>
-                            ${canDel ? `<button onclick="app.delProt(${p.id})" style="background:none; border:none; color:red; cursor:pointer;">Löschen</button>` : ''}
-                        </div>
-                        <div style="margin-top:10px; white-space:pre-wrap;">${p.text}</div>
+            renderOrte: function() {
+                const list = document.getElementById('orte-list');
+                list.innerHTML = this.orte.map((o, i) => `
+                    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border);">
+                        <span>${o}</span>
+                        ${this.currentUser.perms.admin ? `<i class="fas fa-trash" onclick="app.delOrt(${i})" style="font-size:10px; cursor:pointer; color:red;"></i>` : ''}
                     </div>
                 `).join('');
             },
 
-            delProt: function(id) {
-                this.protokolle = this.protokolle.filter(p => p.id !== id);
-                this.save(); this.renderProts();
+            addOrt: function() {
+                const n = prompt("Name des Ortes:");
+                if(n) { this.orte.push(n); this.save(); this.renderOrte(); }
             },
 
-            createAcc: function() {
-                const vor = document.getElementById('a-vor').value;
-                const nach = document.getElementById('a-nach').value;
-                const pass = document.getElementById('a-pass').value;
-                if(!vor || !pass) return alert("Name/Passwort fehlt!");
-                
-                this.users.push({
-                    name: vor + " " + nach,
-                    pass: pass,
-                    dn: document.getElementById('a-dn').value || "00",
-                    rang: document.getElementById('a-rang').value,
-                    drives: 0, status: 6, info: "-",
-                    perms: {
-                        f_w: document.getElementById('p-f-write').checked,
-                        f_d: document.getElementById('p-f-del').checked,
-                        pers: document.getElementById('p-pers').checked,
-                        prot_w: document.getElementById('p-prot-w').checked,
-                        prot_d: document.getElementById('p-prot-d').checked,
-                        board: document.getElementById('p-board').checked,
-                        logs: document.getElementById('p-logs').checked
-                    }
-                });
-                this.save(); alert("Account erstellt.");
-                this.renderMembers();
-            },
+            delOrt: function(i) { this.orte.splice(i, 1); this.save(); this.renderOrte(); },
 
-            renderFleet: function() {
-                const mon = document.getElementById('fleet-monitor');
-                mon.innerHTML = this.users.filter(u => u.status !== 6).map(u => `
-                    <div style="padding:10px; border-bottom:1px solid #111; display:flex; align-items:center;">
-                        <span style="width:8px; height:8px; border-radius:50%; background:var(--status-${u.status}); margin-right:10px;"></span>
-                        <b>${u.name}</b> <small style="margin-left:auto; color:#444;">S${u.status}</small>
-                    </div>
-                `).join('');
-            },
+            toggleSidebar: function() { document.getElementById('sidebar').classList.toggle('collapsed'); },
+            
+            toggleTheme: function() { document.body.classList.toggle('light-mode'); },
 
             showPage: function(id) {
                 document.querySelectorAll('.main-content > div').forEach(d => d.classList.add('hidden'));
@@ -334,12 +255,11 @@
                 event.currentTarget.classList.add('active');
             },
 
-            save: function() {
-                localStorage.setItem('th_v9_users', JSON.stringify(this.users));
-                localStorage.setItem('th_v9_prots', JSON.stringify(this.protokolle));
+            save: function() { 
+                localStorage.setItem('th_v10_users', JSON.stringify(this.users));
+                localStorage.setItem('th_v10_orte', JSON.stringify(this.orte));
             }
         };
-        app.updateUI(); // Init
     </script>
 </body>
 </html>
