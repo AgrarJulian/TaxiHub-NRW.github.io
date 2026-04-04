@@ -1,121 +1,676 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taxi Köln Dashboard</title>
-<style>
-body {margin:0;font-family:Arial;background:#0b0b0b;color:white;}
-.sidebar {position:fixed;width:220px;height:100%;background:#111;padding:20px;}
-.sidebar h2{color:#ffd700}
-.sidebar button{width:100%;margin:8px 0;padding:10px;background:#ffd700;border:none;border-radius:6px;cursor:pointer}
-.main {margin-left:240px;padding:20px}
-.card{background:#1a1a1a;padding:20px;border-radius:12px;margin-bottom:20px}
-.timer{font-size:40px;color:red}
-input,select{padding:8px;margin:5px;border-radius:6px;border:none}
-button.action{background:#ffd700;color:black;padding:10px;border:none;border-radius:8px}
-ul{list-style:none;padding:0}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Köln | Global Enterprise Management V10.0</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        :root {
+            --bg: #050505;
+            --bg-card: rgba(18, 18, 20, 0.98);
+            --sidebar: #000000;
+            --border: rgba(255, 255, 255, 0.12);
+            --yellow: #ffcc00;
+            --yellow-hover: #ffdb4d;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --radius: 22px;
+            --success: #00ff66;
+            --danger: #ff4444;
+            --info: #00d4ff;
+        }
+
+        * { box-sizing: border-box; outline: none !important; }
+        
+        body {
+            margin: 0; background-color: var(--bg); color: var(--text-main);
+            font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden;
+        }
+
+        /* --- AUTH SCREEN --- */
+        #login-overlay {
+            position: fixed; inset: 0; 
+            background: radial-gradient(circle at center, #1a1a1a, #000);
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
+        }
+        .auth-card {
+            width: 450px; padding: 50px; background: var(--bg-card); 
+            border: 1px solid var(--yellow); border-radius: 40px; text-align: center;
+            box-shadow: 0 20px 80px rgba(255, 204, 0, 0.1);
+        }
+
+        /* --- LAYOUT --- */
+        .sidebar {
+            width: 320px; background: var(--sidebar); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; padding: 30px; z-index: 100;
+        }
+        .main-view { 
+            flex: 1; overflow-y: auto; padding: 40px; 
+            background: radial-gradient(circle at top right, #111, #050505); 
+        }
+
+        /* --- NAVIGATION --- */
+        .nav-label { font-size: 0.75rem; font-weight: 800; color: var(--yellow); text-transform: uppercase; letter-spacing: 2px; margin: 25px 0 10px 10px; opacity: 0.6; }
+        .nav-item {
+            width: 100%; display: flex; align-items: center; gap: 15px; padding: 15px 20px;
+            border-radius: 18px; color: var(--text-muted); background: transparent; border: none;
+            transition: 0.3s; text-align: left; font-weight: 600; margin-bottom: 6px;
+        }
+        .nav-item i { font-size: 1.3rem; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-item.active { background: var(--yellow); color: #000; box-shadow: 0 8px 25px rgba(255, 204, 0, 0.3); }
+
+        /* --- CARDS & UI --- */
+        .glass-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 30px; margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .btn-taxi {
+            background: var(--yellow); color: #000; font-weight: 800; border: none;
+            padding: 16px; border-radius: 14px; transition: 0.3s; width: 100%;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-taxi:hover { background: var(--yellow-hover); transform: translateY(-3px); }
+
+        .form-control, .form-select {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff !important;
+            padding: 14px; border-radius: 14px;
+        }
+        label { color: var(--yellow); font-weight: 700; font-size: 0.85rem; margin-bottom: 8px; display: block; }
+
+        /* --- PAGES --- */
+        .page-node { display: none; }
+        .page-node.active { display: block; animation: pageIn 0.5s ease; }
+        @keyframes pageIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        /* --- LEITSTELLE --- */
+        .ls-row {
+            background: rgba(255,255,255,0.03); border-radius: 18px; padding: 20px;
+            margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
+            border-left: 6px solid var(--yellow); transition: 0.3s;
+        }
+        .ls-row:hover { background: rgba(255,255,255,0.06); }
+        .status-pill { padding: 6px 16px; border-radius: 50px; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; border: 1px solid currentColor; }
+
+        /* --- RECHNUNG (DESIGN AUS BILD) --- */
+        #rechnung-doc {
+            background: white; color: #000; padding: 60px; border-radius: 4px;
+            min-height: 900px; font-family: 'Inter', sans-serif; position: relative;
+        }
+        .inv-top { border-bottom: 3px solid #000; padding-bottom: 30px; margin-bottom: 40px; }
+        .total-box { font-size: 4.5rem; font-weight: 900; color: #000; letter-spacing: -3px; line-height: 1; }
+
+        /* --- LOGS & ARCHIV --- */
+        .log-container {
+            height: 500px; overflow-y: auto; background: #000; border-radius: 20px;
+            padding: 25px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; 
+            border: 1px solid var(--border); color: var(--success);
+        }
+        .archive-table { width: 100%; color: #fff; border-collapse: separate; border-spacing: 0 8px; }
+        .archive-table tr { background: rgba(255,255,255,0.03); }
+        .archive-table td { padding: 15px; }
+
+        /* --- ZEUGNIS --- */
+        #zeugnis-doc {
+            background: white; color: black; padding: 80px; min-height: 1000px;
+            font-family: 'Times New Roman', serif; line-height: 1.8; font-size: 1.1rem;
+        }
+    </style>
 </head>
 <body>
 
-<div class="sidebar">
-<h2>Taxi Köln</h2>
-<button onclick="tab('dash')">Dashboard</button>
-<button onclick="tab('leit')">Leitstelle</button>
-<button onclick="tab('calc')">Rechner</button>
-<button onclick="tab('book')">Fahrtenbuch</button>
-<button onclick="tab('staff')">Mitarbeiter</button>
-<button onclick="tab('logs')">Logs</button>
-<button onclick="logout()">Logout</button>
-</div>
+    <div id="login-overlay">
+        <div class="auth-card">
+            <h1 class="fw-900 text-warning" style="font-size: 3rem; letter-spacing: -1px;">TAXI KÖLN</h1>
+            <p class="text-white-50 mb-5 fw-bold">MANAGEMENT ENTERPRISE V10.0</p>
+            <div class="text-start mb-3">
+                <label>Benutzeridentifikation</label>
+                <input type="text" id="l-user" class="form-control" placeholder="Vollständiger Name">
+            </div>
+            <div class="text-start mb-4">
+                <label>Sicherheitsschlüssel</label>
+                <input type="password" id="l-pass" class="form-control" placeholder="••••••••">
+            </div>
+            <button class="btn-taxi" onclick="tryLogin()">Systemzugang autorisieren</button>
+            <p id="l-err" class="text-danger mt-3 d-none fw-bold small">ZUGRIFF VERWEIGERT: Falsche Anmeldedaten.</p>
+        </div>
+    </div>
 
-<div class="main">
+    <aside class="sidebar">
+        <div class="mb-4 px-2">
+            <h3 class="fw-900 text-warning m-0">TAXI KÖLN</h3>
+            <span class="text-white-50 small fw-bold">CHAUFFEUR SERVICE</span>
+        </div>
 
-<div id="dash" class="card">
-<h2>Stempeluhr</h2>
-<div class="timer" id="timer">00:00:00</div>
-<button class="action" onclick="start()">Einstempeln</button>
-<button class="action" onclick="stop()">Ausstempeln</button>
-<p>Letzte Sitzung: <span id="last">0</span></p>
-<p>Gesamt: <span id="total">0</span></p>
+        <div class="overflow-auto flex-grow-1">
+            <div class="nav-label">Betrieb</div>
+            <button class="nav-item active" onclick="nav('dash', this)"><i class="bi bi-cpu"></i> Dashboard</button>
+            <button class="nav-item" onclick="nav('ls', this)"><i class="bi bi-broadcast-pin"></i> Leitstelle</button>
+            <button class="nav-item" onclick="nav('calc', this)"><i class="bi bi-calculator-fill"></i> Fahrtenrechner</button>
+            <button class="nav-item" onclick="nav('book', this)"><i class="bi bi-journal-check"></i> Fahrtenbuch</button>
+            
+            <div class="nav-label">Personal & Recht</div>
+            <button class="nav-item" onclick="nav('akte', this)"><i class="bi bi-person-vcard"></i> Personalakte</button>
+            <button class="nav-item" onclick="nav('archive', this)"><i class="bi bi-archive"></i> Personalarchiv</button>
+            <button class="nav-item" onclick="nav('zeugnis', this)"><i class="bi bi-file-earmark-pdf"></i> Zeugniserstellung</button>
+            
+            <div class="nav-label">System</div>
+            <button class="nav-item" onclick="nav('admin', this)"><i class="bi bi-shield-lock"></i> Admin Panel</button>
+            <button class="nav-item" onclick="nav('logs', this)"><i class="bi bi-terminal"></i> System-Logs</button>
+        </div>
 
-<select id="status">
-<option>Einsatzbereit</option>
-<option>Im Auftrag</option>
-<option>Pause</option>
-<option>Zentrale</option>
-</select>
-</div>
+        <div class="pt-3 border-top border-secondary mt-3">
+            <div id="u-name" class="fw-bold">Gast-Nutzer</div>
+            <div id="u-rank" class="text-warning small fw-bold">Unbekannter Rang</div>
+            <button class="btn btn-sm btn-outline-danger w-100 mt-3 border-0" onclick="location.reload()">System verlassen</button>
+        </div>
+    </aside>
 
-<div id="leit" class="card" style="display:none">
-<h2>Leitstelle</h2>
-<p>Besetzt von: <span id="leitUser">Niemand</span></p>
-<button onclick="claimLeit()">Besetzen</button>
-<button onclick="kickLeit()">Freigeben</button>
-</div>
+    <main class="main-view">
+        
+        <div id="p-dash" class="page-node active">
+            <h1 class="fw-900 mb-4">Zentrale Dashboard</h1>
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="glass-card text-center py-5">
+                        <label class="mb-3">LAUFENDE DIENSTZEIT</label>
+                        <div id="clock" class="display-1 fw-900 text-warning mb-5" style="font-family: 'JetBrains Mono';">00:00:00</div>
+                        <div class="row g-3 px-5">
+                            <div class="col-6"><button id="btn-on" class="btn btn-success btn-lg w-100 fw-bold py-3" onclick="dutyOn()">DIENST START</button></div>
+                            <div class="col-6"><button id="btn-off" class="btn btn-danger btn-lg w-100 fw-bold py-3" onclick="dutyOff()" disabled>DIENST ENDE</button></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="glass-card">
+                        <label>STATUS-MANAGEMENT</label>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-success text-start px-4 py-3" onclick="setStatus('Frei', '#00ff66')"><i class="bi bi-circle-fill me-2"></i> Einsatzbereit</button>
+                            <button class="btn btn-outline-danger text-start px-4 py-3" onclick="setStatus('Besetzt', '#ff4444')"><i class="bi bi-circle-fill me-2"></i> Im Auftrag</button>
+                            <button class="btn btn-outline-warning text-start px-4 py-3" onclick="setStatus('Pause', '#ffcc00')"><i class="bi bi-circle-fill me-2"></i> Pause / Essen</button>
+                            <button class="btn btn-outline-info text-start px-4 py-3" onclick="setStatus('Zentrale', '#00d4ff')"><i class="bi bi-circle-fill me-2"></i> An der Zentrale</button>
+                        </div>
+                        <hr class="border-secondary my-4">
+                        <div class="text-center">
+                            <span class="text-white-50 small d-block mb-1">Aktueller Systemstatus</span>
+                            <h3 id="curr-st" class="fw-bold text-danger">Außer Dienst</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div id="calc" class="card" style="display:none">
-<h2>Fahrten Rechner</h2>
-<select id="car">
-<option value="12000">S-Klasse</option>
-<option value="22000">Stretch</option>
-<option value="35000">Patriot</option>
-</select>
-<input id="km" placeholder="KM">
-<button onclick="calc()">Berechnen</button>
-<p>Preis: <span id="price">0</span> €</p>
-</div>
+        <div id="p-ls" class="page-node">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="fw-900 m-0">Live-Leitstelle</h1>
+                <div class="badge bg-warning text-black p-2 px-3 fw-bold">Echtzeit-Überwachung</div>
+            </div>
+            <div class="glass-card" id="ls-list">
+                </div>
+        </div>
 
-<div id="book" class="card" style="display:none">
-<h2>Fahrtenbuch</h2>
-<input id="from" placeholder="Start">
-<input id="to" placeholder="Ziel">
-<input id="dist" placeholder="KM">
-<button onclick="addRide()">Speichern</button>
-<ul id="rides"></ul>
-</div>
+        <div id="p-calc" class="page-node">
+            <h1 class="fw-900 mb-4">Enterprise Fahrtenrechner</h1>
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <div class="glass-card">
+                        <div class="row g-3">
+                            <div class="col-12"><label>Fahrzeugklasse</label>
+                                <select id="c-car" class="form-select" onchange="runCalc()">
+                                    <option value="s-klasse">Extended S-Klasse (W223)</option>
+                                    <option value="stretch">Lincoln Stretch-Limousine</option>
+                                    <option value="patriot">Patriot Super-Limo</option>
+                                </select>
+                            </div>
+                            <div class="col-12"><label>Tarifmodell</label>
+                                <select id="c-mode" class="form-select" onchange="runCalc()">
+                                    <option value="0">Einfache Fahrt</option>
+                                    <option value="1">Hin- & Rückfahrt</option>
+                                    <option value="2">1 Std. VIP-Exklusiv (Paket)</option>
+                                </select>
+                            </div>
+                            <div class="col-6"><label>Zusatzzeit (á 15m)</label><input type="number" id="c-extra" class="form-control" value="0" oninput="runCalc()"></div>
+                            <div class="col-6"><label>Stopps (ab 4.)</label><input type="number" id="c-stops" class="form-control" value="0" oninput="runCalc()"></div>
+                            <div class="col-6"><label>Standzeit (á 15m)</label><input type="number" id="c-wait" class="form-control" value="0" oninput="runCalc()"></div>
+                            <div class="col-6"><label>Rabatt (%)</label><input type="number" id="c-disc" class="form-control" value="0" oninput="runCalc()"></div>
+                            
+                            <div class="col-12 mt-3">
+                                <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="c-out" onchange="runCalc()"><label class="ms-2">Außerhalb Kerngebiet (+ Fixum)</label></div>
+                                <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="c-spont" onchange="runCalc()"><label class="ms-2">Spontanbuchung (+25% / Min. Aufschlag)</label></div>
+                                <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="c-kol" onchange="runCalc()"><label class="ms-2">Kolonnenfahrt (+20% / Min. Aufschlag)</label></div>
+                            </div>
+                            <button class="btn-taxi mt-4" onclick="printInv()">Rechnung als PDF generieren</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div id="rechnung-doc">
+                        <div class="inv-top d-flex justify-content-between align-items-start">
+                            <div>
+                                <h1 class="fw-900 m-0">TAXI KÖLN</h1>
+                                <p class="text-muted small">Exklusiv-Chauffeurservice & Limousinen-Zentrale<br>Flughafentransfer | VIP | Event</p>
+                            </div>
+                            <div class="text-end">
+                                <h2 class="fw-bold">RECHNUNG</h2>
+                                <p class="m-0">Datum: <span id="r-date">--</span></p>
+                                <p class="m-0">Beleg-Nr: <span id="r-num">--</span></p>
+                            </div>
+                        </div>
+                        <table class="table table-borderless">
+                            <thead class="border-bottom border-dark"><tr><th>Position</th><th class="text-end">Einzelpreis</th></tr></thead>
+                            <tbody id="r-items"></tbody>
+                        </table>
+                        <div class="text-end mt-5">
+                            <p class="small fw-bold text-muted mb-0">RECHNUNGSBETRAG (Brutto)</p>
+                            <div class="total-box" id="r-total">0 EUR</div>
+                        </div>
+                        <div style="margin-top: 100px;" class="border-top pt-3 small text-muted">
+                            <p>Bearbeitet durch: <span id="r-sign" class="fw-bold"></span></p>
+                            <p class="text-center mt-5">Vielen Dank für Ihre Buchung bei Taxi Köln!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div id="staff" class="card" style="display:none">
-<h2>Mitarbeiter</h2>
-<ul id="staffList"></ul>
-</div>
+        <div id="p-book" class="page-node">
+            <h1 class="fw-900 mb-4">Fahrtenbuch</h1>
+            <div class="glass-card">
+                <div class="row g-3">
+                    <div class="col-md-3"><label>Startpunkt</label><input type="text" id="b-start" class="form-control"></div>
+                    <div class="col-md-3"><label>Zielpunkt</label><input type="text" id="b-end" class="form-control"></div>
+                    <div class="col-md-2"><label>Distanz (KM)</label><input type="number" id="b-km" class="form-control"></div>
+                    <div class="col-md-2"><label>Fahrgast</label><input type="text" id="b-guest" class="form-control"></div>
+                    <div class="col-md-2"><label>Aktion</label><button class="btn-taxi" onclick="addBook()">Speichern</button></div>
+                </div>
+            </div>
+            <div class="glass-card">
+                <table class="archive-table" id="book-table">
+                    <thead><tr><th>Zeit</th><th>Route</th><th>Distanz</th><th>Fahrer</th><th>Gast</th></tr></thead>
+                    <tbody id="book-body"></tbody>
+                </table>
+            </div>
+        </div>
 
-<div id="logs" class="card" style="display:none">
-<h2>Logs</h2>
-<ul id="logList"></ul>
-</div>
+        <div id="p-akte" class="page-node">
+            <h1 class="fw-900 mb-4">Personalakte</h1>
+            <div class="glass-card">
+                <div class="row align-items-center">
+                    <div class="col-md-4 border-end border-secondary text-center">
+                        <div class="display-1 text-warning mb-2"><i class="bi bi-person-circle"></i></div>
+                        <h1 class="fw-900 m-0" id="ak-name">--</h1>
+                        <p class="h5 text-white-50" id="ak-rank">--</p>
+                    </div>
+                    <div class="col-md-8 px-5">
+                        <div class="row text-center g-4">
+                            <div class="col-4"><label>DIENSTNUMMER</label><h2 id="ak-dn" class="fw-bold">--</h2></div>
+                            <div class="col-4"><label>GESAMTZEIT</label><h2 id="ak-total" class="fw-bold">00:00</h2></div>
+                            <div class="col-4"><label>EINSÄTZE</label><h2 id="ak-trips" class="fw-bold">0</h2></div>
+                            <div class="col-4"><label>STATUS</label><h2 class="text-success fw-bold">AKTIV</h2></div>
+                            <div class="col-4"><label>PROVISION</label><h2 class="text-warning fw-bold">15%</h2></div>
+                            <div class="col-4"><label>ERFAHRUNG</label><h2 class="fw-bold">PRO</h2></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-</div>
+        <div id="p-archive" class="page-node">
+            <h1 class="fw-900 mb-4">Personalarchiv</h1>
+            <div class="glass-card">
+                <div class="mb-3 d-flex gap-2">
+                    <input type="text" class="form-control" placeholder="Mitarbeiter suchen..." style="max-width: 300px;">
+                    <button class="btn btn-warning fw-bold px-4">Suchen</button>
+                </div>
+                <table class="archive-table">
+                    <thead><tr><th>DN</th><th>Mitarbeiter</th><th>Rang</th><th>Gesamtzeit</th><th>Status</th></tr></thead>
+                    <tbody id="arch-body"></tbody>
+                </table>
+            </div>
+        </div>
 
-<script>
-let sec=0,interval;
-let total=localStorage.getItem('total')||0;
+        <div id="p-zeugnis" class="page-node">
+            <h1 class="fw-900 mb-4">Arbeitszeugnis-Generator</h1>
+            <div class="glass-card">
+                <div class="row g-3">
+                    <div class="col-md-4"><label>Mitarbeiter Name</label><input type="text" id="z-name" class="form-control"></div>
+                    <div class="col-md-4"><label>Austrittsdatum</label><input type="date" id="z-date" class="form-control"></div>
+                    <div class="col-md-4"><label>Bewertung</label>
+                        <select id="z-rate" class="form-select">
+                            <option value="Sehr Gut">Sehr Gut (Note 1)</option>
+                            <option value="Gut">Gut (Note 2)</option>
+                            <option value="Befriedigend">Befriedigend (Note 3)</option>
+                        </select>
+                    </div>
+                    <div class="col-12"><button class="btn-taxi mt-2" onclick="genZeugnis()">Dokument erstellen & Vorschau</button></div>
+                </div>
+            </div>
+            <div id="z-view" class="d-none">
+                <div id="zeugnis-doc"></div>
+                <button class="btn btn-light btn-lg w-100 mt-3 fw-bold" onclick="printZeugnis()">PDF HERUNTERLADEN</button>
+            </div>
+        </div>
 
-function format(s){let h=Math.floor(s/3600),m=Math.floor((s%3600)/60),se=s%60;return h+":"+m+":"+se}
+        <div id="p-admin" class="page-node">
+            <h1 class="fw-900 mb-4">Systemadministration</h1>
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <div class="glass-card">
+                        <h5 class="text-warning fw-bold mb-4">Neuen Account anlegen</h5>
+                        <div class="row g-3">
+                            <div class="col-md-12"><label>Vollständiger Name</label><input type="text" id="adm-n" class="form-control"></div>
+                            <div class="col-md-6"><label>Dienstnummer (DN)</label><input type="text" id="adm-dn" class="form-control"></div>
+                            <div class="col-md-6"><label>Rang</label><input type="text" id="adm-r" class="form-control"></div>
+                            <div class="col-md-12"><label>Passwort</label><input type="password" id="adm-p" class="form-control"></div>
+                            <div class="col-12"><button class="btn-taxi mt-3" onclick="addUser()">Nutzer registrieren</button></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="glass-card">
+                        <h5 class="text-warning fw-bold mb-4">Nutzerverwaltung</h5>
+                        <table class="table table-dark table-hover">
+                            <thead><tr><th>DN</th><th>Name</th><th>Rang</th><th>Optionen</th></tr></thead>
+                            <tbody id="adm-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-function start(){interval=setInterval(()=>{sec++;timer.innerText=format(sec)},1000);log("Eingestempelt")}
-function stop(){clearInterval(interval);last.innerText=format(sec);total=parseInt(total)+sec;localStorage.setItem('total',total);document.getElementById('total').innerText=format(total);sec=0;log("Ausgestempelt")}
+        <div id="p-logs" class="page-node">
+            <h1 class="fw-900 mb-4">System-Protokolle (Realtime)</h1>
+            <div class="log-container" id="log-box"></div>
+        </div>
 
-function tab(id){document.querySelectorAll('.card').forEach(x=>x.style.display='none');document.getElementById(id).style.display='block'}
+    </main>
 
-function claimLeit(){leitUser.innerText="Du";log("Leitstelle besetzt")}
-function kickLeit(){leitUser.innerText="Niemand";log("Leitstelle freigegeben")}
+    <script>
+        // DATENBANK-STRUKTUR
+        let db = JSON.parse(localStorage.getItem('tk_enterprise_db')) || [
+            {dn: "01", name: "Chris Schreiner", pass: "Bka26r", rank: "Geschäftsführung", total: 0, trips: 0, duty: false, status: "Offline", color: "#666"},
+            {dn: "28", name: "Maverick Stone", pass: "taxi28", rank: "Azubi", total: 0, trips: 0, duty: false, status: "Offline", color: "#666"}
+        ];
+        let trips = JSON.parse(localStorage.getItem('tk_trips_archive')) || [];
 
-function calc(){let base=document.getElementById('car').value;let km=document.getElementById('km').value;let price=base*1+km*100;document.getElementById('price').innerText=price}
+        const pricing = {
+            's-klasse': { base: [12000, 22000, 30000], extra: 8000, stop: 3000, wait: 5000, out: 10000, minSpontan: 8000, minKol: 10000 },
+            'stretch': { base: [22000, 40000, 50000], extra: 12000, stop: 5000, wait: 8000, out: 15000, minSpontan: 12000, minKol: 15000 },
+            'patriot': { base: [35000, 50000, 60000], extra: 15000, stop: 6000, wait: 10000, out: 20000, minSpontan: 15000, minKol: 20000 }
+        };
 
-function addRide(){let r={from:from.value,to:to.value,km:dist.value};let list=JSON.parse(localStorage.getItem('rides')||"[]");list.push(r);localStorage.setItem('rides',JSON.stringify(list));render();log("Fahrt gespeichert")}
+        let current = null;
+        let timerInterval = null;
+        let sessionSeconds = 0;
 
-function render(){let list=document.getElementById('rides');list.innerHTML="";JSON.parse(localStorage.getItem('rides')||"[]").forEach(r=>{let li=document.createElement('li');li.innerText=r.from+" → "+r.to+" ("+r.km+"KM)";list.appendChild(li)})}
+        // AUTH
+        function tryLogin() {
+            const userVal = document.getElementById('l-user').value;
+            const passVal = document.getElementById('l-pass').value;
+            const found = db.find(u => u.name === userVal && u.pass === passVal);
 
-function log(text){let logs=JSON.parse(localStorage.getItem('logs')||"[]");logs.push(text);localStorage.setItem('logs',JSON.stringify(logs));renderLogs()}
+            if(found) {
+                current = found;
+                document.getElementById('login-overlay').style.display = 'none';
+                initSystem();
+                logMsg("System-Login erfolgreich durchgeführt.");
+            } else {
+                document.getElementById('l-err').classList.remove('d-none');
+            }
+        }
 
-function renderLogs(){let l=document.getElementById('logList');if(!l)return;l.innerHTML="";JSON.parse(localStorage.getItem('logs')||"[]").forEach(x=>{let li=document.createElement('li');li.innerText=x;l.appendChild(li)})}
+        function initSystem() {
+            document.getElementById('u-name').innerText = current.name;
+            document.getElementById('u-rank').innerText = current.rank;
+            document.getElementById('ak-name').innerText = current.name;
+            document.getElementById('ak-rank').innerText = current.rank;
+            document.getElementById('ak-dn').innerText = current.dn;
+            document.getElementById('r-sign').innerText = current.name;
+            updateAkte();
+            renderLS();
+            renderAdmin();
+            renderBook();
+            renderArchive();
+            runCalc();
+        }
 
-function logout(){localStorage.clear();location.reload()}
+        // TIMER & DIENST
+        function dutyOn() {
+            current.duty = true;
+            document.getElementById('btn-on').disabled = true;
+            document.getElementById('btn-off').disabled = false;
+            setStatus('Frei', '#00ff66');
+            timerInterval = setInterval(() => {
+                sessionSeconds++;
+                document.getElementById('clock').innerText = formatFullTime(sessionSeconds);
+            }, 1000);
+            logMsg("Dienstantritt registriert.");
+        }
 
-window.onload=()=>{document.getElementById('total').innerText=format(total);render();renderLogs()}
-</script>
+        function dutyOff() {
+            clearInterval(timerInterval);
+            current.duty = false;
+            current.total += sessionSeconds;
+            sessionSeconds = 0;
+            document.getElementById('clock').innerText = "00:00:00";
+            document.getElementById('btn-on').disabled = false;
+            document.getElementById('btn-off').disabled = true;
+            setStatus('Offline', '#666');
+            save();
+            updateAkte();
+            renderArchive();
+            logMsg("Dienstende protokolliert. Zeit archiviert.");
+        }
 
+        function setStatus(txt, col) {
+            if(!current.duty && txt !== 'Offline') return alert("Bitte zuerst Dienst starten!");
+            current.status = txt;
+            current.color = col;
+            document.getElementById('curr-st').innerText = txt;
+            document.getElementById('curr-st').style.color = col;
+            renderLS();
+            renderArchive();
+        }
+
+        // LEITSTELLE
+        function renderLS() {
+            const list = document.getElementById('ls-list');
+            list.innerHTML = '';
+            const active = db.filter(u => u.duty);
+            if(active.length === 0) {
+                list.innerHTML = '<div class="text-center py-4 text-muted">Keine Einheiten im Dienst.</div>';
+                return;
+            }
+            active.forEach(u => {
+                list.innerHTML += `
+                    <div class="ls-row">
+                        <div>
+                            <h5 class="fw-bold mb-1">${u.name}</h5>
+                            <span class="text-white-50 small fw-bold">DN ${u.dn} | ${u.rank}</span>
+                        </div>
+                        <div class="status-pill" style="color: ${u.color}">${u.status}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // RECHNER
+        function runCalc() {
+            const car = document.getElementById('c-car').value;
+            const mode = parseInt(document.getElementById('c-mode').value);
+            const extra = parseInt(document.getElementById('c-extra').value) || 0;
+            const stops = parseInt(document.getElementById('c-stops').value) || 0;
+            const wait = parseInt(document.getElementById('c-wait').value) || 0;
+            const disc = parseInt(document.getElementById('c-disc').value) || 0;
+
+            const p = pricing[car];
+            let total = p.base[mode];
+            let html = `<tr><td><b>Basispreis (${car})</b></td><td class="text-end">${total.toLocaleString()} EUR</td></tr>`;
+
+            if(extra > 0) { 
+                let cost = extra * p.extra; total += cost;
+                html += `<tr><td>Zusatzzeit (${extra}x 15m)</td><td class="text-end">${cost.toLocaleString()} EUR</td></tr>`;
+            }
+            if(stops > 0) { 
+                let cost = stops * p.stop; total += cost;
+                html += `<tr><td>Zusatzstopps (${stops}x)</td><td class="text-end">${cost.toLocaleString()} EUR</td></tr>`;
+            }
+            if(wait > 0) { 
+                let cost = wait * p.wait; total += cost;
+                html += `<tr><td>Standzeit (${wait}x 15m)</td><td class="text-end">${cost.toLocaleString()} EUR</td></tr>`;
+            }
+            if(document.getElementById('c-out').checked) {
+                total += p.out;
+                html += `<tr><td>Zuschlag: Außerhalb Kerngebiet</td><td class="text-end">${p.out.toLocaleString()} EUR</td></tr>`;
+            }
+            if(document.getElementById('c-spont').checked) {
+                let fee = Math.max(total * 0.25, p.minSpontan); total += fee;
+                html += `<tr><td>Aufschlag: Spontanbuchung (25%)</td><td class="text-end">${Math.round(fee).toLocaleString()} EUR</td></tr>`;
+            }
+            if(document.getElementById('c-kol').checked) {
+                let fee = Math.max(total * 0.20, p.minKol); total += fee;
+                html += `<tr><td>Aufschlag: Kolonnenfahrt (20%)</td><td class="text-end">${Math.round(fee).toLocaleString()} EUR</td></tr>`;
+            }
+            if(disc > 0) {
+                let saved = total * (disc/100); total -= saved;
+                html += `<tr class="text-danger"><td>Sonderrabatt (${disc}%)</td><td class="text-end">-${Math.round(saved).toLocaleString()} EUR</td></tr>`;
+            }
+
+            document.getElementById('r-items').innerHTML = html;
+            document.getElementById('r-total').innerText = Math.round(total).toLocaleString() + " EUR";
+            document.getElementById('r-date').innerText = new Date().toLocaleDateString();
+            document.getElementById('r-num').innerText = "INV-" + Math.floor(1000 + Math.random() * 9000);
+        }
+
+        // FAHRTENBUCH
+        function addBook() {
+            const s = document.getElementById('b-start').value;
+            const e = document.getElementById('b-end').value;
+            const k = document.getElementById('b-km').value;
+            const g = document.getElementById('b-guest').value;
+            if(!s || !e || !k) return alert("Alle Felder füllen!");
+
+            const entry = { time: new Date().toLocaleTimeString(), route: s + " -> " + e, km: k, driver: current.name, guest: g };
+            trips.unshift(entry);
+            current.trips++;
+            save(); renderBook(); updateAkte();
+            document.getElementById('b-start').value = ""; document.getElementById('b-end').value = "";
+            logMsg("Fahrt von " + s + " nach " + e + " im Buch gespeichert.");
+        }
+
+        function renderBook() {
+            const body = document.getElementById('book-body');
+            body.innerHTML = '';
+            trips.forEach(t => {
+                body.innerHTML += `<tr><td>${t.time}</td><td>${t.route}</td><td>${t.km} KM</td><td>${t.driver}</td><td>${t.guest}</td></tr>`;
+            });
+        }
+
+        // ARCHIV
+        function renderArchive() {
+            const body = document.getElementById('arch-body');
+            body.innerHTML = '';
+            db.forEach(u => {
+                body.innerHTML += `<tr><td>${u.dn}</td><td>${u.name}</td><td>${u.rank}</td><td>${formatFullTime(u.total)}</td><td><span style="color:${u.color}">${u.status}</span></td></tr>`;
+            });
+        }
+
+        // ZEUGNIS
+        function genZeugnis() {
+            const name = document.getElementById('z-name').value;
+            const date = document.getElementById('z-date').value;
+            const rate = document.getElementById('z-rate').value;
+            if(!name) return;
+
+            document.getElementById('z-view').classList.remove('d-none');
+            const doc = document.getElementById('zeugnis-doc');
+            doc.innerHTML = `
+                <div class="text-center mb-5">
+                    <h1 style="font-size: 3rem; font-weight: bold;">ARBEITSZEUGNIS</h1>
+                </div>
+                <p>Herr/Frau <b>${name}</b>, geboren am [Datum einfügen], war in unserem Unternehmen <b>Taxi Köln</b> bis zum ${date} als Chauffeur im Bereich exklusiver Limousinenservice tätig.</p>
+                <p>Das Aufgabengebiet umfasste im Wesentlichen:</p>
+                <ul>
+                    <li>Sichere und pünktliche Beförderung unserer VIP-Gäste</li>
+                    <li>Eigenständige Routenplanung und Terminkoordination</li>
+                    <li>Pflege und Wartung der hochwertigen Fahrzeugflotte (S-Klasse, Stretch-Limousinen)</li>
+                    <li>Repräsentation unseres Unternehmens gegenüber anspruchsvollen Kunden</li>
+                </ul>
+                <p>Herr/Frau ${name} verfügte über ein fundiertes Fachwissen und zeigte eine stets überdurchschnittliche Einsatzbereitschaft. Die ihm/ihr übertragenen Aufgaben wurden jederzeit zu unserer <b>${rate}</b> Zufriedenheit ausgeführt.</p>
+                <p>Sein/Ihr Verhalten gegenüber Vorgesetzten, Kollegen und insbesondere unseren Kunden war stets vorbildlich.</p>
+                <p>Wir danken für die geleistete Arbeit und wünschen für die Zukunft alles Gute und weiterhin viel Erfolg.</p>
+                <div class="mt-5 pt-5">
+                    <p>Köln, den ${new Date().toLocaleDateString()}</p>
+                    <br><br>
+                    <div style="width: 250px; border-top: 1px solid #000;">Geschäftsführung Taxi Köln</div>
+                </div>
+            `;
+            logMsg("Arbeitszeugnis für " + name + " generiert.");
+        }
+
+        // ADMIN
+        function addUser() {
+            const n = document.getElementById('adm-n').value;
+            const d = document.getElementById('adm-dn').value;
+            const r = document.getElementById('adm-r').value;
+            const p = document.getElementById('adm-p').value;
+            if(!n || !p) return alert("Fehlende Daten!");
+
+            db.push({dn: d, name: n, pass: p, rank: r, total: 0, trips: 0, duty: false, status: "Offline", color: "#666"});
+            save(); renderAdmin(); renderArchive();
+            logMsg("Neuer Benutzeraccount erstellt: " + n);
+        }
+
+        function renderAdmin() {
+            const table = document.getElementById('adm-table');
+            table.innerHTML = '';
+            db.forEach((u, index) => {
+                table.innerHTML += `<tr><td>${u.dn}</td><td>${u.name}</td><td>${u.rank}</td><td><button class="btn btn-sm btn-danger" onclick="deleteUser(${index})">Entfernen</button></td></tr>`;
+            });
+        }
+
+        function deleteUser(i) {
+            logMsg("Benutzer gelöscht: " + db[i].name);
+            db.splice(i, 1);
+            save(); renderAdmin(); renderArchive();
+        }
+
+        // HELPERS
+        function save() { localStorage.setItem('tk_enterprise_db', JSON.stringify(db)); localStorage.setItem('tk_trips_archive', JSON.stringify(trips)); }
+        function formatFullTime(s) { 
+            const h = Math.floor(s/3600); const m = Math.floor((s%3600)/60); const sec = s%60;
+            return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+        }
+        function updateAkte() { 
+            document.getElementById('ak-total').innerText = formatFullTime(current.total); 
+            document.getElementById('ak-trips').innerText = current.trips;
+        }
+        function logMsg(m) {
+            const box = document.getElementById('log-box');
+            box.innerHTML = `<div>[${new Date().toLocaleTimeString()}] > ${m}</div>` + box.innerHTML;
+        }
+        function nav(id, btn) {
+            document.querySelectorAll('.page-node').forEach(p => p.classList.remove('active'));
+            document.getElementById('p-'+id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        function printInv() {
+            const el = document.getElementById('rechnung-doc');
+            html2pdf().from(el).set({ margin: 10, filename: 'TaxiRechnung_Koeln.pdf', html2canvas: { scale: 3 } }).save();
+        }
+        function printZeugnis() {
+            const el = document.getElementById('zeugnis-doc');
+            html2pdf().from(el).set({ margin: 15, filename: 'Arbeitszeugnis.pdf', html2canvas: { scale: 3 } }).save();
+        }
+    </script>
 </body>
 </html>
