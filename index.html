@@ -3,155 +3,435 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Köln | NRW RP</title>
+    <title>Taxi Köln | Management System & Website</title>
     
     <link rel="icon" type="image/png" href="images/logo.png">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
     <style>
-        /* --- STYLES DER HAUPTSEITE --- */
+        /* ==========================================================================
+           1. GLOBALE VARIABLEN & BASIS-STYLING
+           ========================================================================== */
         :root {
             --taxi-yellow: #ffcc00;
-            --taxi-black: #1a1a1a;
-            --taxi-dark-gray: #1e1e1e;
-            --taxi-deep-black: #000000;
-            --text-light: #ffffff;
-            --text-dark: #000000;
-            --accent-gray: #f4f4f4;
+            --taxi-yellow-hover: #e6b800;
+            --bg-dark: #0c0c0c;
+            --card-bg: #1a1a1a;
+            --sidebar-bg: #000000;
+            --text-gray: #a0a0a0;
+            --timer-red: #d92d2d;
+            --calc-input-bg: #2a2a2a;
+            --border-color: #333;
         }
 
         body { 
-            background-color: #1a1a1a; 
+            background-color: var(--bg-dark); 
             color: white; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0;
+            min-height: 100vh;
         }
 
-        .navbar { background-color: #ffcc00 !important; }
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: var(--taxi-yellow); border-radius: 4px; }
+
+        /* ==========================================================================
+           2. STYLES FÜR DIE ÖFFENTLICHE SEITE (1.html)
+           ========================================================================== */
+        .navbar { 
+            background-color: var(--taxi-yellow) !important; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
         .navbar-brand, .nav-link { color: black !important; font-weight: bold; }
+        .nav-link:hover { color: #333 !important; }
         
         .hero-section { 
-            background: url('images/banner.png') no-repeat center center; 
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('images/banner.png') no-repeat center center; 
             background-size: cover; 
-            height: 400px; 
+            height: 450px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            border-bottom: 5px solid #ffcc00; 
+            border-bottom: 5px solid var(--taxi-yellow); 
         }
         
-        .card { background-color: #2a2a2a; border: 1px solid #ffcc00; color: white; margin-bottom: 20px; }
-        .btn-yellow { background-color: #ffcc00; color: black; font-weight: bold; border: none; }
-        .btn-yellow:hover { background-color: #e6b800; }
-        .price-img { max-width: 100%; height: auto; border-radius: 10px; border: 2px solid #ffcc00; }
-        .footer { padding: 40px 0; background-color: #111; text-align: center; border-top: 2px solid #ffcc00; }
-        .accent { color: #ffcc00; }
+        .public-card { 
+            background-color: var(--card-bg); 
+            border: 1px solid var(--taxi-yellow); 
+            color: white; 
+            margin-bottom: 20px; 
+            transition: transform 0.3s;
+        }
+        .public-card:hover { transform: translateY(-5px); }
 
-        /* --- STYLES FÜR DEN MITARBEITER-BEREICH (DEIN ORIGINAL-DESIGN) --- */
-        #employee-area {
-            display: none; /* Standardmäßig versteckt */
+        .btn-yellow { 
+            background-color: var(--taxi-yellow); 
+            color: black; 
+            font-weight: bold; 
+            border: none; 
+            padding: 12px 25px;
+        }
+        .btn-yellow:hover { background-color: var(--taxi-yellow-hover); color: black; }
+        
+        .price-img { 
+            max-width: 100%; 
+            height: auto; 
+            border-radius: 10px; 
+            border: 3px solid var(--taxi-yellow); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
-        .main-content-calc {
-            display: flex;
-            justify-content: center;
-            padding: 20px;
+        .footer-public { 
+            padding: 60px 0; 
+            background-color: #050505; 
+            text-align: center; 
+            border-top: 2px solid var(--taxi-yellow); 
         }
+        .accent { color: var(--taxi-yellow); }
 
-        .calc-container {
-            width: 100%;
-            max-width: 900px;
-            background-color: var(--taxi-dark-gray);
-            border-radius: 12px;
+        /* ==========================================================================
+           3. MITARBEITER DASHBOARD LAYOUT (Screenshot-Design)
+           ========================================================================== */
+        #employee-area { 
+            display: none; 
+            height: 100vh; 
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-            border: 1px solid #333;
         }
 
-        .header-bar-calc {
+        .dashboard-container { 
+            display: flex; 
+            height: 100%; 
+            width: 100%;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 100;
+        }
+
+        /* Die gelbe vertikale Linie aus dem Screenshot */
+        .sidebar::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
             background-color: var(--taxi-yellow);
-            padding: 0; 
+        }
+
+        .sidebar-brand {
+            padding: 30px 25px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--taxi-yellow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-nav {
+            flex-grow: 1;
+            padding: 10px 0;
+        }
+
+        .nav-group-label {
+            padding: 20px 25px 10px;
+            font-size: 0.7rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: bold;
+        }
+
+        .nav-item-emp {
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            color: #efefef;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-item-emp i {
+            margin-right: 15px;
+            font-size: 1.1rem;
+            width: 20px;
             text-align: center;
         }
 
-        .logo-image-calc {
-            width: 100%; 
-            height: auto; 
+        .nav-item-emp:hover, .nav-item-emp.active {
+            background-color: rgba(255, 204, 0, 0.1);
+            color: var(--taxi-yellow);
+        }
+
+        .sidebar-user {
+            padding: 20px;
+            background-color: #050505;
+            border-top: 1px solid #222;
+        }
+
+        .user-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .user-avatar-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #444;
+        }
+
+        .user-details .u-name {
             display: block;
+            font-weight: bold;
+            font-size: 0.9rem;
         }
 
-        .content-calc {
-            padding: 30px;
+        .user-details .u-role {
+            font-size: 0.75rem;
+            color: var(--text-gray);
         }
 
-        .grid-calc {
+        .btn-logout-emp {
+            width: 100%;
+            background-color: #2d2663; /* Dunkles Lila/Blau wie im Screenshot */
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+
+        /* Main Content Dashboard */
+        .dashboard-main {
+            flex-grow: 1;
+            background-color: var(--bg-dark);
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .dash-heading {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+        }
+
+        /* Dashboard Grid Layout */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 25px;
+        }
+
+        .dash-col-left { grid-column: span 3; display: flex; flex-direction: column; gap: 25px; }
+        .dash-col-mid-kunden { grid-column: span 3; }
+        .dash-col-mid-orte { grid-column: span 3; }
+        .dash-col-right { grid-column: span 3; }
+
+        /* Card Styles */
+        .dash-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid #222;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Die dünne gelbe Linie rechts an den Karten */
+        .dash-card::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 15px;
+            bottom: 15px;
+            width: 3px;
+            background-color: var(--taxi-yellow);
+        }
+
+        .dash-card-title {
+            padding: 15px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            border-bottom: 1px solid #222;
+        }
+
+        /* Stempeluhr-Inhalt */
+        .stempel-body {
+            padding: 30px 20px;
+            text-align: center;
+            background-color: var(--timer-red); /* Rot wie im Screenshot */
+        }
+
+        .stempel-label { font-size: 0.8rem; margin-bottom: 5px; opacity: 0.9; }
+        .stempel-time { font-size: 2.8rem; font-weight: 800; font-family: monospace; margin-bottom: 5px; }
+        .stempel-total { font-size: 0.85rem; font-weight: bold; }
+
+        .stempel-controls {
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            background: #111;
+        }
+
+        /* Fahrt Erfassen Button Card */
+        .btn-new-ride-card {
+            background-color: #e6f041; /* Hellgelb/Grünlich wie im Screenshot */
+            color: black;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: center;
+            padding: 20px;
+        }
+        .btn-new-ride-card:hover { background-color: #d4dc36; }
+
+        /* Tabellen & Listen in Cards */
+        .dash-search-wrap { padding: 12px; }
+        .dash-search-input {
+            width: 100%;
+            background: #2a2a2a;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .dash-table {
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .dash-table th {
+            padding: 10px 15px;
+            color: var(--text-gray);
+            font-weight: normal;
+            border-bottom: 1px solid #333;
+            text-align: left;
+        }
+
+        .dash-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #222;
+        }
+
+        .ride-history-item {
+            padding: 15px;
+            border-bottom: 1px solid #222;
+        }
+
+        .ride-route { font-weight: bold; font-size: 0.9rem; margin-bottom: 3px; }
+        .ride-date { color: var(--text-gray); font-size: 0.8rem; }
+
+        .btn-adjust-dash {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            background-color: #d9e652;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* ==========================================================================
+           4. TAXI-RECHNER & RECHNUNG (2.html)
+           ========================================================================== */
+        #calc-view { display: none; }
+
+        .calc-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .calc-header-img {
+            width: 100%;
+            max-height: 150px;
+            object-fit: contain;
+            background-color: var(--taxi-yellow);
+        }
+
+        .calc-content { padding: 30px; }
+
+        .calc-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-        }
-
-        .input-group-calc {
             margin-bottom: 20px;
         }
 
-        .input-group-calc label {
+        .calc-input-group label {
             display: block;
             margin-bottom: 8px;
             color: var(--taxi-yellow);
             font-weight: bold;
-            font-size: 14px;
+            font-size: 0.85rem;
         }
 
-        .input-group-calc select, .input-group-calc input {
+        .calc-input-group input, .calc-input-group select {
             width: 100%;
             padding: 12px;
-            border-radius: 6px;
+            background: var(--calc-input-bg);
             border: 1px solid #444;
-            background-color: #2a2a2a;
             color: white;
-            font-size: 16px;
-            box-sizing: border-box;
+            border-radius: 6px;
         }
 
-        .name-input-calc {
-            border: 2px solid var(--taxi-yellow) !important;
-            margin-bottom: 20px;
-        }
-
-        .checkbox-container-calc {
-            background: #2a2a2a;
-            padding: 15px;
+        .calc-check-container {
+            background: #222;
+            padding: 20px;
             border-radius: 8px;
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-bottom: 30px;
         }
 
-        .checkbox-item-calc {
+        .calc-check-item {
             display: flex;
             align-items: center;
+            gap: 12px;
             cursor: pointer;
-            font-size: 15px;
         }
 
-        .checkbox-item-calc input {
-            width: auto;
-            margin-right: 12px;
-        }
-
-        /* RECHNUNG DESIGN */
-        #invoice {
+        /* Rechnung-Design */
+        #invoice-box {
             margin-top: 40px;
             background: white;
             color: #333;
-            padding: 50px;
+            padding: 40px;
             border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        .invoice-head {
+        .invoice-top {
             display: flex;
             justify-content: space-between;
             border-bottom: 2px solid #eee;
@@ -159,83 +439,60 @@
             margin-bottom: 30px;
         }
 
-        .invoice-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
+        .invoice-table { width: 100%; border-collapse: collapse; }
+        .invoice-table th { background: #f8f8f8; padding: 12px; text-align: left; }
+        .invoice-table td { padding: 12px; border-bottom: 1px solid #eee; }
 
-        .invoice-table th {
-            text-align: left;
-            background-color: var(--accent-gray);
-            padding: 12px;
-            border-bottom: 2px solid #ddd;
-        }
-
-        .invoice-table td {
-            padding: 15px 12px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .total-section {
+        .invoice-total-row {
             display: flex;
             justify-content: flex-end;
-            border-top: 2px solid #000;
+            margin-top: 20px;
             padding-top: 20px;
+            border-top: 2px solid #000;
         }
 
-        .total-amount {
-            font-size: 32px;
-            font-weight: 800;
-            color: #000;
-        }
+        .invoice-total-amount { font-size: 2rem; font-weight: 800; }
 
-        .btn-print-calc {
-            background: var(--taxi-yellow);
-            color: black;
-            border: none;
-            padding: 18px;
-            width: 100%;
-            font-weight: bold;
-            font-size: 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        /* STEMPELUHR DESIGN */
-        .stempeluhr-card {
-            background: #1a1a1a;
-            border: 2px solid #ffcc00;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .timer-display {
-            font-size: 48px;
-            font-family: monospace;
-            color: #ffcc00;
-            margin: 10px 0;
-        }
-
-        /* PRINT SETTINGS */
+        /* Print Settings */
         @media print {
             .no-print { display: none !important; }
-            body { background: white; }
             #employee-area { display: block !important; }
-            .calc-container { box-shadow: none; border: none; }
-            #invoice { margin: 0; padding: 20px; }
+            .sidebar { display: none !important; }
+            .dashboard-main { padding: 0; }
+            #calc-view { display: block !important; }
+            .calc-wrapper { border: none; }
+            .calc-content > .no-print { display: none !important; }
+            #invoice-box { display: block !important; margin: 0; padding: 0; }
         }
+
+        /* ==========================================================================
+           5. LOGIN-SCREEN
+           ========================================================================== */
+        #login-view {
+            display: none;
+            height: 80vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            background: var(--card-bg);
+            border: 1px solid var(--taxi-yellow);
+            border-radius: 12px;
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg sticky-top no-print">
+    <nav class="navbar navbar-expand-lg sticky-top no-print" id="public-navbar">
         <div class="container">
             <a class="navbar-brand" href="#" onclick="showSection('public')">
-                <img src="images/logo.png" alt="Logo" width="40" class="d-inline-block align-text-top"> TAXI KÖLN
+                <img src="images/logo.png" alt="Logo" width="40"> TAXI KÖLN
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -247,367 +504,559 @@
                     <li class="nav-item"><a class="nav-link" href="#team">Team</a></li>
                     <li class="nav-item"><a class="nav-link" href="#karriere">Karriere</a></li>
                     <li class="nav-item">
-                        <button class="btn btn-dark ms-lg-3 fw-bold" onclick="showLogin()">Mitarbeiter Login</button>
+                        <button class="btn btn-dark ms-lg-3 fw-bold" onclick="showSection('login')">
+                            <i class="bi bi-lock-fill"></i> Mitarbeiter Login
+                        </button>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div id="public-area">
+    <div id="public-view">
         <header class="hero-section">
-            <div class="text-center" style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 15px;">
-                <h1 class="display-3 fw-bold">Sicher durch <span class="accent">Kölle.</span></h1>
-                <p class="lead">Dein zuverlässiger Partner im NRW RP</p>
-                <a href="https://discord.gg/yxgbeyARDr" target="_blank" class="btn btn-yellow btn-lg">Jetzt Funk rufen (Discord)</a>
+            <div class="text-center" style="background: rgba(0,0,0,0.7); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,204,0,0.3);">
+                <h1 class="display-2 fw-bold">Sicher durch <span class="accent">Kölle.</span></h1>
+                <p class="lead fs-3">Dein exklusiver Chauffeur-Dienst im NRW RP</p>
+                <div class="mt-4">
+                    <a href="https://discord.gg/yxgbeyARDr" target="_blank" class="btn btn-yellow btn-lg">
+                        <i class="bi bi-discord"></i> Jetzt Funk rufen
+                    </a>
+                </div>
             </div>
         </header>
 
         <div class="container mt-5">
-            <section id="preise" class="mb-5">
-                <h2 class="text-center mb-4"><span class="accent">Unsere</span> Tarife</h2>
+            <section id="preise" class="py-5">
+                <div class="text-center mb-5">
+                    <h2 class="display-5 fw-bold"><span class="accent">Unsere</span> Tarife</h2>
+                    <p class="text-gray">Transparente Preise für maximalen Komfort</p>
+                </div>
                 <div class="row justify-content-center">
-                    <div class="col-md-8 text-center">
-                        <p>Vom Standard-Taxi bis zum exklusiven Limousinenservice – wir bringen dich stilvoll ans Ziel.</p>
-                        <img src="images/preise.png" alt="Preisliste Taxi Köln" class="price-img shadow-lg">
+                    <div class="col-lg-10">
+                        <img src="images/preise.png" alt="Preisliste Taxi Köln" class="price-img">
                     </div>
                 </div>
             </section>
 
-            <hr class="accent">
+            <hr class="accent opacity-25 my-5">
 
             <section id="fuhrpark" class="py-5">
-                <h2 class="text-center mb-4">Unser <span class="accent">Fuhrpark</span></h2>
-                <div class="row">
+                <h2 class="text-center mb-5 display-5 fw-bold">Unser <span class="accent">Fuhrpark</span></h2>
+                <div class="row g-4">
                     <div class="col-md-4">
-                        <div class="card p-3">
+                        <div class="card public-card p-4 text-center">
+                            <i class="bi bi-car-front-fill accent mb-3" style="font-size: 3rem;"></i>
                             <h3>Extended S-Klasse</h3>
-                            <p>Luxus pur für wichtige Geschäftstermine.</p>
-                            <span class="badge bg-warning text-dark">Premium</span>
+                            <p class="text-gray">Luxus pur für wichtige Geschäftstermine und stilvolle Auftritte.</p>
+                            <span class="badge bg-warning text-dark py-2">Premium Klasse</span>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card p-3">
+                        <div class="card public-card p-4 text-center">
+                            <i class="bi bi-stars accent mb-3" style="font-size: 3rem;"></i>
                             <h3>Stretch-Limousine</h3>
-                            <p>Perfekt für Hochzeiten oder Club-Auftritte.</p>
-                            <span class="badge bg-warning text-dark">Exklusiv</span>
+                            <p class="text-gray">Perfekt für Hochzeiten, Junggesellenabschiede oder Club-Nächte.</p>
+                            <span class="badge bg-warning text-dark py-2">Exklusiv</span>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card p-3">
+                        <div class="card public-card p-4 text-center">
+                            <i class="bi bi-shield-check accent mb-3" style="font-size: 3rem;"></i>
                             <h3>Patriot Limousine</h3>
-                            <p>Der auffälligste Auftritt im Staat.</p>
-                            <span class="badge bg-warning text-dark">VIP</span>
+                            <p class="text-gray">Der sicherste und auffälligste Auftritt im gesamten Staat.</p>
+                            <span class="badge bg-warning text-dark py-2">VIP Service</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section id="team" class="py-5">
-                <h2 class="text-center mb-4">Die <span class="accent">Geschäftsführung</span></h2>
-                <div class="row justify-content-center">
-                    <div class="col-md-4 text-center">
-                        <div class="card p-4">
-                            <h4 class="accent">Chris Schreiner</h4>
-                            <p>Geschäftsführer / Chef</p>
+            <section id="team" class="py-5 bg-black rounded-4 p-4 mb-5">
+                <h2 class="text-center mb-5">Die <span class="accent">Geschäftsführung</span></h2>
+                <div class="row justify-content-center g-4">
+                    <div class="col-md-5">
+                        <div class="card public-card p-4 text-center border-0" style="background: #111;">
+                            <h3 class="accent">Chris Schreiner</h3>
+                            <p class="mb-0">Geschäftsführer / Inhaber</p>
+                            <small class="text-gray">Rufname: Schreiner</small>
                         </div>
                     </div>
-                    <div class="col-md-4 text-center">
-                        <div class="card p-4">
-                            <h4 class="accent">Marco Krause</h4>
-                            <p>Stellv. Geschäftsführer</p>
+                    <div class="col-md-5">
+                        <div class="card public-card p-4 text-center border-0" style="background: #111;">
+                            <h3 class="accent">Marco Krause</h3>
+                            <p class="mb-0">Stellvertretender Geschäftsführer</p>
+                            <small class="text-gray">Rufname: Krause</small>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section id="karriere" class="text-center py-5">
-                <div class="card p-5 border-warning">
-                    <h2 class="mb-3">Werde Teil der <span class="accent">Familie!</span></h2>
-                    <p>Wir suchen ständig motivierte Fahrer für den Standort Köln. Bewirb dich jetzt über unser Funk-System.</p>
-                    <a href="https://discord.gg/yxgbeyARDr" target="_blank" class="btn btn-yellow btn-lg">Jetzt Bewerben</a>
+            <section id="karriere" class="text-center py-5 mb-5">
+                <div class="card p-5 border-warning bg-dark shadow-lg">
+                    <h2 class="display-5 fw-bold mb-3">Werde Teil der <span class="accent">Familie!</span></h2>
+                    <p class="lead mb-4">Wir suchen motivierte Fahrer, die Köln und seine Bürger lieben.</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="https://discord.gg/yxgbeyARDr" target="_blank" class="btn btn-yellow btn-lg">Jetzt bewerben</a>
+                    </div>
                 </div>
             </section>
         </div>
 
-        <footer class="footer">
+        <footer class="footer-public">
             <div class="container">
-                <img src="images/logo.png" width="60" alt="Taxi Köln Logo"><br><br>
-                <p>&copy; 2026 Taxi Köln - NRW RP. Alle Rechte vorbehalten.</p>
+                <img src="images/logo.png" width="80" alt="Logo" class="mb-4">
+                <h3 class="accent mb-3">TAXI KÖLN</h3>
+                <p class="text-gray mb-4">Dein Partner für Mobilität im NRW RP seit 2024.</p>
+                <div class="social-links mb-4">
+                    <i class="bi bi-discord fs-3 mx-2"></i>
+                    <i class="bi bi-instagram fs-3 mx-2"></i>
+                </div>
+                <p class="small text-secondary">&copy; 2026 Taxi Köln - Alle Rechte vorbehalten. | <span class="text-gray">Roleplay Project</span></p>
             </div>
         </footer>
     </div>
 
-    <div id="login-area" class="container mt-5 no-print" style="display:none;">
-        <div class="row justify-content-center">
-            <div class="col-md-4">
-                <div class="card p-4">
-                    <h3 class="text-center accent">Mitarbeiter Login</h3>
-                    <div class="mt-3">
-                        <label>Passwort:</label>
-                        <input type="password" id="loginPass" class="form-control bg-dark text-white border-warning">
-                        <button class="btn btn-yellow w-100 mt-3" onclick="checkLogin()">Einloggen</button>
-                        <p id="loginError" class="text-danger mt-2" style="display:none;">Falsches Passwort!</p>
-                    </div>
-                </div>
+    <div id="login-view">
+        <div class="login-card">
+            <img src="images/logo.png" width="70" class="mb-3">
+            <h2 class="accent mb-4">Mitarbeiter Login</h2>
+            <div class="mb-3 text-start">
+                <label class="form-label text-gray small">Dienst-Passwort</label>
+                <input type="password" id="loginPass" class="form-control bg-dark text-white border-secondary" placeholder="••••••••">
             </div>
+            <button class="btn btn-yellow w-100 py-2 mt-2" onclick="processLogin()">Einloggen</button>
+            <p id="loginError" class="text-danger mt-3 small" style="display:none;">
+                <i class="bi bi-exclamation-triangle"></i> Zugriff verweigert! Passwort falsch.
+            </p>
+            <button class="btn btn-link btn-sm text-gray mt-3 no-print" onclick="showSection('public')">Zurück zur Website</button>
         </div>
     </div>
 
     <div id="employee-area">
-        <div class="container mt-4">
-            <div class="row no-print">
-                <div class="col-12 text-end">
-                    <button class="btn btn-outline-danger btn-sm" onclick="logout()">Abmelden</button>
+        <div class="dashboard-container">
+            <aside class="sidebar no-print">
+                <div class="sidebar-brand">
+                    <img src="images/logo.png" width="35">
+                    <span>Taxi Köln</span>
                 </div>
-            </div>
 
-            <div class="row justify-content-center no-print">
-                <div class="col-md-6">
-                    <div class="stempeluhr-card">
-                        <h2 class="accent">Stempeluhr</h2>
-                        <div id="timer" class="timer-display">00:00:00</div>
-                        <div class="d-flex gap-2 justify-content-center">
-                            <button id="startBtn" class="btn btn-success px-4" onclick="startTimer()">Schicht Beginn</button>
-                            <button id="stopBtn" class="btn btn-danger px-4" onclick="stopTimer()" disabled>Schicht Ende</button>
+                <div class="sidebar-nav">
+                    <div class="nav-group-label">Allgemein</div>
+                    <a class="nav-item-emp active" onclick="switchDashTab('main')">
+                        <i class="bi bi-grid-1x2-fill"></i> Dashboard
+                    </a>
+
+                    <div class="nav-group-label">Verwaltung</div>
+                    <a class="nav-item-emp">
+                        <i class="bi bi-person-badge-fill"></i> Personalakte
+                    </a>
+
+                    <div class="nav-group-label">Features</div>
+                    <a class="nav-item-emp">
+                        <i class="bi bi-sticky-fill"></i> Patchnotes
+                    </a>
+                    <a class="nav-item-emp">
+                        <i class="bi bi-chat-square-dots-fill"></i> Feedback & Bugs
+                    </a>
+                </div>
+
+                <div class="sidebar-footer">
+                    <div class="user-box">
+                        <img src="images/logo.png" class="user-avatar-img">
+                        <div class="user-details">
+                            <span class="u-name">Sebastian Retzlaff</span>
+                            <span class="u-role">Fahrer</span>
                         </div>
                     </div>
+                    <button class="btn-logout-emp" onclick="logout()">Abmelden</button>
                 </div>
-            </div>
+            </aside>
 
-            <div class="main-content-calc">
-                <div class="calc-container">
-                    <div class="header-bar-calc no-print">
-                        <img src="images/logo.png" alt="Taxi Köln Banner" class="logo-image-calc" style="background-color: #ffcc00; max-height: 150px; object-fit: contain;">
+            <main class="dashboard-main">
+                
+                <div id="dash-tab-main">
+                    <h1 class="dash-heading">Willkommen im Dashboard, Sebastian Retzlaff!</h1>
+
+                    <div class="dash-grid">
+                        
+                        <div class="dash-col-left">
+                            <div class="dash-card">
+                                <div class="dash-card-title">Stempeluhr</div>
+                                <div class="stempel-body">
+                                    <div class="stempel-label">Aktuelle Sitzung</div>
+                                    <div id="timerDisplay" class="stempel-time">00:00:00</div>
+                                    <div class="stempel-total">Gesamt heute: <span class="accent">00:41:54</span></div>
+                                </div>
+                                <div class="stempel-controls no-print">
+                                    <button class="btn btn-success btn-sm w-100 fw-bold" id="startBtn" onclick="startWork()">BEGINN</button>
+                                    <button class="btn btn-danger btn-sm w-100 fw-bold" id="stopBtn" onclick="stopWork()" disabled>ENDE</button>
+                                </div>
+                            </div>
+
+                            <div class="dash-card">
+                                <div class="dash-card-title">Fahrt erfassen</div>
+                                <div class="btn-new-ride-card" onclick="switchDashTab('calc')">
+                                    Neue Fahrt erfassen
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dash-col-mid-kunden">
+                            <div class="dash-card h-100">
+                                <div class="dash-card-title">Kunden</div>
+                                <div class="dash-search-wrap">
+                                    <input type="text" class="dash-search-input" placeholder="Suchen...">
+                                </div>
+                                <table class="dash-table">
+                                    <thead>
+                                        <tr><th>Vorname</th><th>Nachname</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Heinrich</td><td>Heinemann</td></tr>
+                                        <tr><td>Heinrich</td><td>Heinemann</td></tr>
+                                        <tr><td>Leon</td><td>Hammer</td></tr>
+                                        <tr><td>Eddi</td><td>walker</td></tr>
+                                        <tr><td>Tammi</td><td>Nolan</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="dash-col-mid-orte">
+                            <div class="dash-card h-100">
+                                <div class="dash-card-title">Orte</div>
+                                <div class="dash-search-wrap">
+                                    <input type="text" class="dash-search-input" placeholder="Suchen...">
+                                </div>
+                                <table class="dash-table">
+                                    <thead>
+                                        <tr><th>PLZ</th><th>Bezeichnung</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>7326</td><td>-</td></tr>
+                                        <tr><td>7354</td><td>Gefängnis</td></tr>
+                                        <tr><td>6050</td><td>Würfelpark</td></tr>
+                                        <tr><td>7194</td><td>aa</td></tr>
+                                        <tr><td>3053</td><td>Bundes Polizei</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="dash-col-right">
+                            <div class="dash-card h-100">
+                                <div class="dash-card-title">Letzte Fahrten</div>
+                                <div class="ride-history-item">
+                                    <div class="ride-route">Straße (Alle) &rarr; Taxi-Zentrale</div>
+                                    <div class="ride-date">17.8.2025, 00:40:00</div>
+                                </div>
+                                <div class="ride-history-item">
+                                    <div class="ride-route">Straße (Alle) &rarr; Bundes Polizei</div>
+                                    <div class="ride-date">16.8.2025, 22:45:00</div>
+                                </div>
+                                <div class="ride-history-item">
+                                    <div class="ride-route">Straße (Alle) &rarr; Flughafen</div>
+                                    <div class="ride-date">16.8.2025, 22:40:00</div>
+                                </div>
+                                <div class="ride-history-item">
+                                    <div class="ride-route">Taxi-Zentrale &rarr; Justizministerium</div>
+                                    <div class="ride-date">16.8.2025, 22:25:00</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <button class="btn-adjust-dash no-print">Dashboard anpassen</button>
+                </div>
+
+                <div id="dash-tab-calc" style="display:none;">
+                    <div class="mb-4 no-print">
+                        <button class="btn btn-outline-warning" onclick="switchDashTab('main')">
+                            <i class="bi bi-arrow-left"></i> Zurück zum Dashboard
+                        </button>
                     </div>
 
-                    <div class="content-calc">
+                    <div class="calc-wrapper">
                         <div class="no-print">
-                            <div class="input-group-calc">
-                                <label for="userName">Dein Name (Erforderlich für Rechnung)</label>
-                                <input type="text" id="userName" class="name-input-calc" placeholder="Vorname Nachname" oninput="checkName()">
-                            </div>
-
-                            <div class="grid-calc">
-                                <div class="input-group-calc">
-                                    <label>Fahrzeugmodell</label>
-                                    <select id="car" onchange="calc()">
-                                        <option value="s-klasse">Extended S-Klasse</option>
-                                        <option value="stretch">Stretch-Limousine</option>
-                                        <option value="patriot">Patriot Limousine</option>
-                                    </select>
-                                </div>
-                                <div class="input-group-calc">
-                                    <label>Fahrt-Modus</label>
-                                    <select id="type" onchange="calc()">
-                                        <option value="0">Einfache Fahrt</option>
-                                        <option value="1">Hin- und Rückfahrt</option>
-                                        <option value="2">1 Stunde exklusiv</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="grid-calc">
-                                <div class="input-group-calc">
-                                    <label>Zusatzzeit (Einheit: 15 Min)</label>
-                                    <input type="number" id="time" value="0" min="0" oninput="calc()">
-                                </div>
-                                <div class="input-group-calc">
-                                    <label>Zusatz-Stopps (ab 4. Ziel)</label>
-                                    <input type="number" id="stops" value="0" min="0" oninput="calc()">
-                                </div>
-                            </div>
-
-                            <label>Zusatzoptionen</label>
-                            <div class="checkbox-container-calc">
-                                <label class="checkbox-item-calc"><input type="checkbox" id="outside" onchange="calc()"> Außerhalb Kerngebiet</label>
-                                <label class="checkbox-item-calc"><input type="checkbox" id="spontan" onchange="calc()"> Spontanbuchung (&lt; 3 Std.)</label>
-                                <label class="checkbox-item-calc"><input type="checkbox" id="kolonne" onchange="calc()"> Kolonnenfahrt (+20%)</label>
-                            </div>
-
-                            <button id="printBtn" class="btn-print-calc" onclick="window.print()" disabled>Rechnung drucken</button>
-                            <p id="nameWarning" style="color: #ff4444; font-size: 12px; margin-top: 5px;">Bitte Namen eingeben, um drucken zu können.</p>
+                            <img src="images/logo.png" class="calc-header-img p-3" alt="Taxi Köln">
                         </div>
 
-                        <div id="invoice">
-                            <div class="invoice-head">
-                                <div>
-                                    <strong style="font-size: 20px;">Taxi Köln</strong><br>
-                                    <span>Chauffeur- & Limousinenservice</span>
+                        <div class="calc-content">
+                            <div class="no-print">
+                                <h2 class="accent mb-4">Fahrpreis-Kalkulator</h2>
+                                
+                                <div class="calc-input-group mb-4">
+                                    <label for="calcUserName">Dein Name (Pflichtfeld für Rechnung)</label>
+                                    <input type="text" id="calcUserName" placeholder="Vorname Nachname" oninput="validateCalcName()">
                                 </div>
-                                <div style="text-align: right;">
-                                    <h2 style="margin:0; color: black;">RECHNUNG</h2>
-                                    <span>Datum: <span id="date">--.--.----</span></span>
+
+                                <div class="calc-grid">
+                                    <div class="calc-input-group">
+                                        <label>Fahrzeugmodell</label>
+                                        <select id="calcCar" onchange="runCalculation()">
+                                            <option value="s-klasse">Extended S-Klasse</option>
+                                            <option value="stretch">Stretch-Limousine</option>
+                                            <option value="patriot">Patriot Limousine</option>
+                                        </select>
+                                    </div>
+                                    <div class="calc-input-group">
+                                        <label>Fahrt-Modus</label>
+                                        <select id="calcMode" onchange="runCalculation()">
+                                            <option value="0">Einfache Fahrt</option>
+                                            <option value="1">Hin- und Rückfahrt</option>
+                                            <option value="2">1 Stunde exklusiv</option>
+                                        </select>
+                                    </div>
                                 </div>
+
+                                <div class="calc-grid">
+                                    <div class="calc-input-group">
+                                        <label>Zusatzzeit (Einheit: 15 Min)</label>
+                                        <input type="number" id="calcTime" value="0" min="0" oninput="runCalculation()">
+                                    </div>
+                                    <div class="calc-input-group">
+                                        <label>Zusatz-Stopps (ab 4. Ziel)</label>
+                                        <input type="number" id="calcStops" value="0" min="0" oninput="runCalculation()">
+                                    </div>
+                                </div>
+
+                                <label class="accent small fw-bold mb-2">Zusatzoptionen</label>
+                                <div class="calc-check-container">
+                                    <label class="calc-check-item"><input type="checkbox" id="optOutside" onchange="runCalculation()"> Außerhalb Kerngebiet (+ Festpreis)</label>
+                                    <label class="calc-check-item"><input type="checkbox" id="optSpontan" onchange="runCalculation()"> Spontanbuchung (&lt; 3 Std.) (+25%)</label>
+                                    <label class="calc-check-item"><input type="checkbox" id="optKolonne" onchange="runCalculation()"> Kolonnenfahrt (+20%)</label>
+                                </div>
+
+                                <button id="calcPrintBtn" class="btn btn-yellow w-100 py-3 mb-2" onclick="window.print()" disabled>
+                                    <i class="bi bi-printer"></i> Rechnung drucken
+                                </button>
+                                <p id="calcWarning" class="text-danger small text-center">Bitte gib deinen Namen ein, um die Rechnung zu finalisieren.</p>
                             </div>
 
-                            <table class="invoice-table">
-                                <thead>
-                                    <tr>
-                                        <th>Leistungsbeschreibung</th>
-                                        <th style="text-align: right;">Betrag</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="items"></tbody>
-                            </table>
-
-                            <div class="total-section">
-                                <div style="text-align: right;">
-                                    <span style="color: #888; text-transform: uppercase; font-size: 12px;">Gesamtbetrag</span><br>
-                                    <span class="total-amount"><span id="total">0</span> EUR</span>
+                            <div id="invoice-box">
+                                <div class="invoice-top">
+                                    <div>
+                                        <h4 class="mb-0 fw-bold">TAXI KÖLN</h4>
+                                        <p class="small text-muted mb-0">Chauffeur- & Limousinenservice</p>
+                                        <p class="small text-muted">Staat NRW - Roleplay</p>
+                                    </div>
+                                    <div class="text-end">
+                                        <h2 class="mb-0 fw-bold">RECHNUNG</h2>
+                                        <p class="mb-0">Datum: <span id="invDate">--.--.----</span></p>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div id="processedArea" style="margin-top: 30px; font-style: italic; font-size: 14px; color: #555; border-left: 3px solid #ffcc00; padding-left: 10px;">
-                                Bearbeitet von: <span id="displayUserName">________________</span>
-                            </div>
-                            
-                            <div style="margin-top: 40px; font-size: 10px; color: #aaa; text-align: center;">
-                                Dies ist eine automatisch erstellte Rechnung des TaxiRechners Köln.
+                                <table class="invoice-table mb-4">
+                                    <thead>
+                                        <tr>
+                                            <th>Leistungsbeschreibung</th>
+                                            <th class="text-end">Betrag</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="invItems">
+                                        </tbody>
+                                </table>
+
+                                <div class="invoice-total-row">
+                                    <div class="text-end">
+                                        <p class="small text-muted text-uppercase mb-0">Gesamtbetrag</p>
+                                        <div class="invoice-total-amount"><span id="invTotal">0</span> EUR</div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-5 p-3 border-start border-warning border-3 bg-light">
+                                    <p class="mb-0 small">Chauffeur: <strong id="invDriverName">________________</strong></p>
+                                </div>
+
+                                <div class="text-center mt-5 text-muted small">
+                                    <p>Vielen Dank für Ihre Fahrt mit Taxi Köln!<br>Dies ist ein RP-Dokument.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+            </main>
         </div>
     </div>
 
     <script>
-        // --- NAVIGATION & LOGIN ---
-        function showSection(section) {
-            document.getElementById('public-area').style.display = (section === 'public') ? 'block' : 'none';
-            document.getElementById('login-area').style.display = (section === 'login') ? 'block' : 'none';
-            document.getElementById('employee-area').style.display = (section === 'employee') ? 'block' : 'none';
+        /* 1. Navigations-Logik */
+        function showSection(id) {
+            // Views ausblenden
+            document.getElementById('public-view').style.display = 'none';
+            document.getElementById('login-view').style.display = 'none';
+            document.getElementById('employee-area').style.display = 'none';
+            document.getElementById('public-navbar').style.display = 'none';
+
+            // Ziel einblenden
+            if (id === 'public') {
+                document.getElementById('public-view').style.display = 'block';
+                document.getElementById('public-navbar').style.display = 'block';
+            } else if (id === 'login') {
+                document.getElementById('login-view').style.display = 'flex';
+                document.getElementById('public-navbar').style.display = 'block';
+            } else if (id === 'employee') {
+                document.getElementById('employee-area').style.display = 'block';
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
         }
 
-        function showLogin() {
-            showSection('login');
-        }
-
-        function checkLogin() {
+        /* 2. Login-Logik */
+        function processLogin() {
             const pass = document.getElementById('loginPass').value;
-            if (pass === "taxi123") { // Hier dein gewünschtes Passwort
+            const error = document.getElementById('loginError');
+
+            if (pass === "taxi123") {
+                error.style.display = 'none';
                 showSection('employee');
             } else {
-                document.getElementById('loginError').style.display = 'block';
+                error.style.display = 'block';
             }
         }
 
         function logout() {
-            location.reload();
+            window.location.reload();
         }
 
-        // --- STEMPELUHR LOGIK ---
-        let startTime;
-        let timerInterval;
+        /* 3. Dashboard Tab-Switch */
+        function switchDashTab(tab) {
+            document.getElementById('dash-tab-main').style.display = 'none';
+            document.getElementById('dash-tab-calc').style.display = 'none';
 
-        function startTimer() {
-            startTime = Date.now();
+            if (tab === 'main') {
+                document.getElementById('dash-tab-main').style.display = 'block';
+            } else if (tab === 'calc') {
+                document.getElementById('dash-tab-calc').style.display = 'block';
+                runCalculation(); // Init Rechner
+            }
+        }
+
+        /* 4. Stempeluhr-Logik */
+        let workStartTime;
+        let timerTicker;
+
+        function startWork() {
+            workStartTime = Date.now();
             document.getElementById('startBtn').disabled = true;
             document.getElementById('stopBtn').disabled = false;
-            timerInterval = setInterval(updateTimer, 1000);
+            
+            timerTicker = setInterval(updateWorkTimer, 1000);
         }
 
-        function stopTimer() {
-            clearInterval(timerInterval);
+        function stopWork() {
+            clearInterval(timerTicker);
             document.getElementById('startBtn').disabled = false;
             document.getElementById('stopBtn').disabled = true;
-            alert("Schicht beendet! Dauer: " + document.getElementById('timer').innerText);
-            document.getElementById('timer').innerText = "00:00:00";
+            alert("Schicht beendet. Dauer: " + document.getElementById('timerDisplay').innerText);
+            document.getElementById('timerDisplay').innerText = "00:00:00";
         }
 
-        function updateTimer() {
+        function updateWorkTimer() {
             const now = Date.now();
-            const diff = now - startTime;
+            const diff = now - workStartTime;
+            
             const h = Math.floor(diff / 3600000);
             const m = Math.floor((diff % 3600000) / 60000);
             const s = Math.floor((diff % 60000) / 1000);
-            document.getElementById('timer').innerText = 
+            
+            document.getElementById('timerDisplay').innerText = 
                 (h < 10 ? "0"+h : h) + ":" + 
                 (m < 10 ? "0"+m : m) + ":" + 
                 (s < 10 ? "0"+s : s);
         }
 
-        // --- RECHNER LOGIK (DEIN ORIGINAL CODE) ---
-        const config = {
+        /* 5. Rechner-Logik (aus 2.html) */
+        const prices = {
             's-klasse': { base: [12000, 22000, 30000], time: 8000, stop: 3000, out: 10000, minSpontan: 8000, minKol: 10000 },
             'stretch':  { base: [22000, 40000, 50000], time: 12000, stop: 5000, out: 15000, minSpontan: 12000, minKol: 15000 },
             'patriot':  { base: [35000, 50000, 60000], time: 15000, stop: 6000, out: 20000, minSpontan: 15000, minKol: 20000 }
         };
 
-        function checkName() {
-            const nameInput = document.getElementById('userName').value.trim();
-            const printBtn = document.getElementById('printBtn');
-            const nameWarning = document.getElementById('nameWarning');
-            const displayUserName = document.getElementById('displayUserName');
+        function validateCalcName() {
+            const name = document.getElementById('calcUserName').value.trim();
+            const btn = document.getElementById('calcPrintBtn');
+            const warn = document.getElementById('calcWarning');
+            const display = document.getElementById('invDriverName');
 
-            if (nameInput.length > 2) {
-                printBtn.disabled = false;
-                nameWarning.style.display = 'none';
-                displayUserName.innerText = nameInput;
+            if (name.length > 3) {
+                btn.disabled = false;
+                warn.style.display = 'none';
+                display.innerText = name;
             } else {
-                printBtn.disabled = true;
-                nameWarning.style.display = 'block';
-                displayUserName.innerText = "________________";
+                btn.disabled = true;
+                warn.style.display = 'block';
+                display.innerText = "________________";
             }
         }
 
-        function calc() {
-            const carKey = document.getElementById('car').value;
-            const typeIdx = document.getElementById('type').value;
-            const extraTime = parseInt(document.getElementById('time').value) || 0;
-            const extraStops = parseInt(document.getElementById('stops').value) || 0;
-            const isOut = document.getElementById('outside').checked;
-            const isSpontan = document.getElementById('spontan').checked;
-            const isKol = document.getElementById('kolonne').checked;
-
-            const p = config[carKey];
-            let total = 0;
-            let html = '';
-
-            const bPrice = p.base[typeIdx];
-            const carLabel = document.getElementById('car').options[document.getElementById('car').selectedIndex].text;
-            const typeLabel = document.getElementById('type').options[document.getElementById('type').selectedIndex].text;
+        function runCalculation() {
+            const car = document.getElementById('calcCar').value;
+            const mode = parseInt(document.getElementById('calcMode').value);
+            const time = parseInt(document.getElementById('calcTime').value) || 0;
+            const stops = parseInt(document.getElementById('calcStops').value) || 0;
             
-            total += bPrice;
-            html += `<tr><td><strong>Grundpauschale</strong><br><small>${carLabel} | ${typeLabel}</small></td><td style="text-align: right;">${bPrice.toLocaleString()} EUR</td></tr>`;
+            const isOut = document.getElementById('optOutside').checked;
+            const isSpontan = document.getElementById('optSpontan').checked;
+            const isKol = document.getElementById('optKolonne').checked;
 
-            if(extraTime > 0) {
-                let cost = extraTime * p.time;
+            const p = prices[car];
+            let total = 0;
+            let rows = '';
+
+            // Grundpreis
+            const basePrice = p.base[mode];
+            const carLabel = document.getElementById('calcCar').options[document.getElementById('calcCar').selectedIndex].text;
+            const modeLabel = document.getElementById('calcMode').options[document.getElementById('calcMode').selectedIndex].text;
+            
+            total += basePrice;
+            rows += `<tr><td><strong>Grundpauschale</strong><br><small>${carLabel} | ${modeLabel}</small></td><td class="text-end">${basePrice.toLocaleString()} EUR</td></tr>`;
+
+            // Zusatzzeit
+            if(time > 0) {
+                let cost = time * p.time;
                 total += cost;
-                html += `<tr><td>Zusatzzeit (${extraTime} x 15 Min)</td><td style="text-align: right;">${cost.toLocaleString()} EUR</td></tr>`;
+                rows += `<tr><td>Zusatzzeit (${time} x 15 Min)</td><td class="text-end">${cost.toLocaleString()} EUR</td></tr>`;
             }
 
-            if(extraStops > 0) {
-                let cost = extraStops * p.stop;
+            // Stopps
+            if(stops > 0) {
+                let cost = stops * p.stop;
                 total += cost;
-                html += `<tr><td>Zusätzliche Stopps (${extraStops})</td><td style="text-align: right;">${cost.toLocaleString()} EUR</td></tr>`;
+                rows += `<tr><td>Zusätzliche Stopps (${stops})</td><td class="text-end">${cost.toLocaleString()} EUR</td></tr>`;
             }
 
+            // Gebiete
             if(isOut) {
                 total += p.out;
-                html += `<tr><td>Anfahrt außerhalb Kerngebiet</td><td style="text-align: right;">${p.out.toLocaleString()} EUR</td></tr>`;
+                rows += `<tr><td>Anfahrt außerhalb Kerngebiet</td><td class="text-end">${p.out.toLocaleString()} EUR</td></tr>`;
             }
 
+            // Aufschläge
             if(isSpontan) {
                 let sur = Math.max(total * 0.25, p.minSpontan);
                 total += sur;
-                html += `<tr><td>Servicegebühr Spontanbuchung</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
+                rows += `<tr><td>Servicegebühr Spontanbuchung (25%)</td><td class="text-end">${sur.toLocaleString()} EUR</td></tr>`;
             }
 
             if(isKol) {
                 let sur = Math.max(total * 0.20, p.minKol);
                 total += sur;
-                html += `<tr><td>Aufschlag Kolonnenfahrt</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
+                rows += `<tr><td>Aufschlag Kolonnenfahrt (20%)</td><td class="text-end">${sur.toLocaleString()} EUR</td></tr>`;
             }
 
-            document.getElementById('items').innerHTML = html;
-            document.getElementById('total').innerText = total.toLocaleString();
-            document.getElementById('date').innerText = new Date().toLocaleDateString('de-DE');
+            document.getElementById('invItems').innerHTML = rows;
+            document.getElementById('invTotal').innerText = total.toLocaleString();
+            document.getElementById('invDate').innerText = new Date().toLocaleDateString('de-DE');
         }
 
-        // Initialer Aufruf für den Rechner
-        calc();
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', () => {
+            // Startseite anzeigen
+            showSection('public');
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
