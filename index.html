@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Köln | Management System & Website</title>
+    <title>Taxi Köln | Management System & Leitstelle</title>
     
     <link rel="icon" type="image/png" href="images/logo.png">
 
@@ -12,7 +12,7 @@
     
     <style>
         /* ==========================================================================
-           1. GLOBALE VARIABLEN & BASIS-STYLING
+           1. CORE STYLES & THEME
            ========================================================================== */
         :root {
             --taxi-yellow: #ffcc00;
@@ -21,739 +21,541 @@
             --card-bg: #1a1a1a;
             --sidebar-bg: #000000;
             --text-gray: #a0a0a0;
-            --timer-red: #d92d2d;
-            --calc-input-bg: #2a2a2a;
             --border-color: #333;
-            --admin-color: #ff4444; /* Farbe für Administrator-Rechte */
+            
+            /* Status Farben */
+            --status-frei: #28a745;
+            --status-besetzt: #dc3545;
+            --status-pause: #ffc107;
+            --status-ls: #007bff;
+            --status-ablöse: #6f42c1;
         }
 
         body { 
             background-color: var(--bg-dark); 
             color: white; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
             margin: 0;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Scrollbar Styling */
+        /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #111; }
         ::-webkit-scrollbar-thumb { background: var(--taxi-yellow); border-radius: 4px; }
 
         /* ==========================================================================
-           2. STYLES FÜR DIE ÖFFENTLICHE SEITE (Startseite)
-           ========================================================================== */
-        .navbar { 
-            background-color: var(--taxi-yellow) !important; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-        .navbar-brand, .nav-link { color: black !important; font-weight: bold; }
-        .nav-link:hover { color: #333 !important; }
-        
-        .hero-section { 
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('images/banner.png') no-repeat center center; 
-            background-size: cover; 
-            height: 450px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border-bottom: 5px solid var(--taxi-yellow); 
-        }
-        
-        .public-card { 
-            background-color: var(--card-bg); 
-            border: 1px solid var(--taxi-yellow); 
-            color: white; 
-            margin-bottom: 20px; 
-            transition: transform 0.3s;
-        }
-        .public-card:hover { transform: translateY(-5px); }
-
-        .btn-yellow { 
-            background-color: var(--taxi-yellow); 
-            color: black; 
-            font-weight: bold; 
-            border: none; 
-            padding: 12px 25px;
-        }
-        .btn-yellow:hover { background-color: var(--taxi-yellow-hover); color: black; }
-        
-        .price-img { 
-            max-width: 100%; 
-            height: auto; 
-            border-radius: 10px; 
-            border: 3px solid var(--taxi-yellow); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
-
-        .footer-public { 
-            padding: 60px 0; 
-            background-color: #050505; 
-            text-align: center; 
-            border-top: 2px solid var(--taxi-yellow); 
-        }
-        .accent { color: var(--taxi-yellow); }
-
-        /* ==========================================================================
-           3. LOGIN-SCREEN (BENUTZERNAME + PASSWORT)
+           2. LOGIN SCREEN
            ========================================================================== */
         #login-view {
-            display: none;
-            height: 85vh;
+            display: flex;
+            height: 100vh;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            background: radial-gradient(circle, #1a1a1a 0%, #0c0c0c 100%);
+            z-index: 1000;
+            position: fixed;
+            top: 0; left: 0; width: 100%;
         }
 
         .login-card {
             width: 100%;
-            max-width: 450px;
+            max-width: 420px;
             padding: 50px;
             background: var(--card-bg);
             border: 1px solid var(--taxi-yellow);
-            border-radius: 15px;
+            border-radius: 20px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7);
         }
 
-        .login-card img {
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 10px rgba(255, 204, 0, 0.3));
-        }
+        .login-logo { width: 90px; margin-bottom: 25px; filter: drop-shadow(0 0 10px rgba(255,204,0,0.2)); }
 
         .form-control-taxi {
             background: #222 !important;
             border: 1px solid #444 !important;
             color: white !important;
-            padding: 12px !important;
-            margin-bottom: 15px;
+            padding: 15px !important;
+            margin-bottom: 20px;
+            border-radius: 10px;
         }
-
-        .form-control-taxi:focus {
-            border-color: var(--taxi-yellow) !important;
-            box-shadow: 0 0 0 0.25rem rgba(255, 204, 0, 0.1) !important;
-        }
+        .form-control-taxi:focus { border-color: var(--taxi-yellow); box-shadow: 0 0 10px rgba(255,204,0,0.1); }
 
         /* ==========================================================================
-           4. MITARBEITER DASHBOARD LAYOUT (Screenshot-Design)
+           3. DASHBOARD MAIN LAYOUT
            ========================================================================== */
-        #employee-area { 
-            display: none; 
-            height: 100vh; 
-            overflow: hidden;
-        }
+        #employee-area { display: none; height: 100vh; width: 100vw; display: flex; }
+        .dashboard-container { display: flex; width: 100%; height: 100%; }
 
-        .dashboard-container { 
-            display: flex; 
-            height: 100%; 
-            width: 100%;
-        }
-
-        /* Sidebar Styling */
+        /* Sidebar */
         .sidebar {
-            width: 280px;
+            width: 300px;
             background-color: var(--sidebar-bg);
             display: flex;
             flex-direction: column;
-            position: relative;
-            z-index: 100;
-        }
-
-        .sidebar::after {
-            content: "";
-            position: absolute;
-            right: 0; top: 0; bottom: 0;
-            width: 2px;
-            background-color: var(--taxi-yellow);
+            border-right: 2px solid var(--taxi-yellow);
+            flex-shrink: 0;
         }
 
         .sidebar-brand {
-            padding: 30px 25px;
-            font-size: 1.5rem;
-            font-weight: 800;
+            padding: 40px 30px;
+            font-size: 1.8rem;
+            font-weight: 900;
             color: var(--taxi-yellow);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            letter-spacing: -1px;
+            text-transform: uppercase;
         }
 
-        .sidebar-nav { flex-grow: 1; padding: 10px 0; }
-
         .nav-group-label {
-            padding: 20px 25px 10px;
-            font-size: 0.7rem;
-            color: var(--text-gray);
+            padding: 25px 30px 10px;
+            font-size: 0.75rem;
+            color: #555;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: bold;
+            letter-spacing: 2px;
+            font-weight: 800;
         }
 
         .nav-item-emp {
-            padding: 12px 25px;
+            padding: 15px 30px;
             display: flex;
             align-items: center;
-            color: #efefef;
+            color: #ccc;
             text-decoration: none;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-size: 1rem;
+            border-left: 4px solid transparent;
         }
 
-        .nav-item-emp i { margin-right: 15px; font-size: 1.1rem; width: 20px; text-align: center; }
+        .nav-item-emp:hover {
+            background: rgba(255, 204, 0, 0.05);
+            color: white;
+        }
 
-        .nav-item-emp:hover, .nav-item-emp.active {
-            background-color: rgba(255, 204, 0, 0.1);
+        .nav-item-emp.active {
+            background: rgba(255, 204, 0, 0.1);
             color: var(--taxi-yellow);
+            border-left-color: var(--taxi-yellow);
+            font-weight: bold;
         }
 
-        .sidebar-user { padding: 20px; background-color: #050505; border-top: 1px solid #222; }
+        .nav-item-emp i { margin-right: 18px; font-size: 1.2rem; width: 25px; text-align: center; }
 
-        .user-box { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
-
-        .user-avatar-img {
-            width: 45px; height: 45px; border-radius: 8px; object-fit: cover; border: 1px solid #444;
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 25px;
+            background: #050505;
+            border-top: 1px solid #1a1a1a;
         }
 
-        .user-details .u-name { display: block; font-weight: bold; font-size: 0.9rem; }
-        .user-details .u-role { font-size: 0.75rem; color: var(--text-gray); }
+        .user-info-box { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .user-avatar { width: 50px; height: 50px; border-radius: 12px; background: var(--taxi-yellow); color: black; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
 
-        .btn-logout-emp {
+        .btn-logout {
             width: 100%;
-            background-color: #2d2663; /* Dunkles Lila/Blau aus Screenshot */
+            background: #d92d2d;
             color: white;
             border: none;
-            padding: 10px;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: opacity 0.2s;
-        }
-        .btn-logout-emp:hover { opacity: 0.8; }
-
-        /* Main Content Dashboard */
-        .dashboard-main {
-            flex-grow: 1;
-            background-color: var(--bg-dark);
-            padding: 40px;
-            overflow-y: auto;
-        }
-
-        .dash-heading { font-size: 1.8rem; font-weight: 700; margin-bottom: 40px; }
-
-        /* Grid Layout */
-        .dash-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 25px; }
-        .dash-col-left { grid-column: span 3; display: flex; flex-direction: column; gap: 25px; }
-        .dash-col-mid-kunden { grid-column: span 3; }
-        .dash-col-mid-orte { grid-column: span 3; }
-        .dash-col-right { grid-column: span 3; }
-
-        /* Card Styles */
-        .dash-card {
-            background-color: var(--card-bg);
+            padding: 12px;
             border-radius: 8px;
+            font-weight: 800;
+            transition: 0.3s;
+        }
+        .btn-logout:hover { background: #ff3c3c; }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            padding: 50px;
+            overflow-y: auto;
+            background: #080808;
+        }
+
+        .page-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 40px; }
+
+        /* ==========================================================================
+           4. DASHBOARD TABS & CARDS
+           ========================================================================== */
+        .dash-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 30px; }
+        
+        .dash-card {
+            background: var(--card-bg);
+            border-radius: 15px;
             border: 1px solid #222;
-            position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        .dash-card::after {
-            content: ""; position: absolute; right: 0; top: 15px; bottom: 15px;
-            width: 3px; background-color: var(--taxi-yellow);
+        .card-header-taxi {
+            padding: 15px 20px;
+            background: #111;
+            border-bottom: 1px solid #222;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .dash-card-title {
-            padding: 15px; text-align: center; font-size: 0.85rem;
-            color: var(--text-gray); border-bottom: 1px solid #222;
+        /* Leitstelle Status Buttons */
+        .status-container { padding: 25px; display: flex; flex-direction: column; gap: 12px; }
+        
+        .btn-status {
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 800;
+            text-align: center;
+            transition: 0.3s;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        .btn-status:hover { filter: brightness(1.2); transform: translateY(-2px); }
+
+        .s-frei { background-color: var(--status-frei); box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2); }
+        .s-besetzt { background-color: var(--status-besetzt); box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2); }
+        .s-pause { background-color: var(--status-pause); color: black; box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2); }
+        .s-ls { background-color: var(--status-ls); box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2); }
+        .s-ablöse { background-color: var(--status-ablöse); box-shadow: 0 4px 15px rgba(111, 66, 193, 0.2); }
+
+        /* Fahrt-Historie */
+        .history-list { flex-grow: 1; }
+        .history-empty { padding: 60px 20px; text-align: center; color: #444; font-style: italic; font-size: 1.1rem; }
+        
+        .history-item {
+            padding: 20px;
+            border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.02);
+            transition: 0.2s;
+        }
+        .history-item:hover { background: rgba(255,255,255,0.05); }
+
+        /* ==========================================================================
+           5. NEUES FAHRT-INTERFACE
+           ========================================================================== */
+        .ride-form-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
         }
 
-        /* Stempeluhr-Inhalt */
-        .stempel-body { padding: 30px 20px; text-align: center; background-color: var(--timer-red); }
-        .stempel-label { font-size: 0.8rem; margin-bottom: 5px; opacity: 0.9; }
-        .stempel-time { font-size: 2.8rem; font-weight: 800; font-family: monospace; margin-bottom: 5px; }
-        .stempel-total { font-size: 0.85rem; font-weight: bold; }
-
-        .stempel-controls { padding: 15px; display: flex; gap: 10px; background: #111; }
-
-        /* Fahrt Erfassen Button Card */
-        .btn-new-ride-card {
-            background-color: #e6f041; color: black; height: 180px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 1.2rem; cursor: pointer;
-            transition: background 0.2s; text-align: center; padding: 20px;
-        }
-        .btn-new-ride-card:hover { background-color: #d4dc36; }
-
-        /* Tabellen & Listen */
-        .dash-search-wrap { padding: 12px; }
-        .dash-search-input {
-            width: 100%; background: #2a2a2a; border: none; color: white;
-            padding: 8px 12px; border-radius: 4px; font-size: 0.9rem;
+        .taxi-label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--taxi-yellow);
+            font-weight: 800;
+            font-size: 0.8rem;
+            text-transform: uppercase;
         }
 
-        .dash-table { width: 100%; font-size: 0.9rem; }
-        .dash-table th { padding: 10px 15px; color: var(--text-gray); font-weight: normal; border-bottom: 1px solid #333; text-align: left; }
-        .dash-table td { padding: 12px 15px; border-bottom: 1px solid #222; }
+        .taxi-input {
+            width: 100%;
+            background: #252525;
+            border: 1px solid #444;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-size: 1rem;
+        }
+        .taxi-input:focus { border-color: var(--taxi-yellow); outline: none; background: #2a2a2a; }
+        .taxi-input[readonly] { background: #111; color: #666; cursor: not-allowed; }
 
-        .ride-history-item { padding: 15px; border-bottom: 1px solid #222; }
-        .ride-route { font-weight: bold; font-size: 0.9rem; margin-bottom: 3px; }
-        .ride-date { color: var(--text-gray); font-size: 0.8rem; }
+        .btn-save-ride {
+            width: 100%;
+            padding: 18px;
+            background: var(--taxi-yellow);
+            color: black;
+            border: none;
+            border-radius: 10px;
+            font-weight: 900;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+        .btn-save-ride:hover { background: var(--taxi-yellow-hover); transform: scale(1.02); }
 
-        .btn-adjust-dash {
-            position: fixed; bottom: 30px; right: 40px; background-color: #d9e652;
-            color: black; border: none; padding: 10px 20px; border-radius: 8px;
-            font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        /* ==========================================================================
+           6. FEEDBACK & SUPPORT
+           ========================================================================== */
+        .supp-grid { display: flex; flex-direction: column; gap: 20px; max-width: 800px; margin: 0 auto; }
+        .supp-card {
+            background: #111;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #222;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.3s;
+        }
+        .supp-card:hover { border-color: var(--taxi-yellow); }
+        .supp-icon { font-size: 3rem; color: var(--taxi-yellow); margin-right: 25px; }
+        .discord-tag {
+            background: #5865F2;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
         }
 
         /* ==========================================================================
-           5. TAXI-RECHNER & RECHNUNG (Integrierter Rechner)
+           7. RECHNUNGS-DRUCK (INVOICE)
            ========================================================================== */
-        .calc-wrapper {
-            max-width: 900px; margin: 0 auto; background-color: var(--card-bg);
-            border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color);
+        #invoice-result {
+            display: none;
+            background: white;
+            color: black;
+            padding: 50px;
+            border-radius: 5px;
+            margin-top: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
-
-        .calc-header-img {
-            width: 100%; max-height: 150px; object-fit: contain; background-color: var(--taxi-yellow);
-        }
-
-        .calc-content { padding: 30px; }
-
-        .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-
-        .calc-input-group label {
-            display: block; margin-bottom: 8px; color: var(--taxi-yellow); font-weight: bold; font-size: 0.85rem;
-        }
-
-        .calc-input-group input, .calc-input-group select {
-            width: 100%; padding: 12px; background: var(--calc-input-bg);
-            border: 1px solid #444; color: white; border-radius: 6px;
-        }
-
-        .calc-check-container {
-            background: #222; padding: 20px; border-radius: 8px; display: grid; gap: 15px; margin-bottom: 30px;
-        }
-
-        .calc-check-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-
-        /* Rechnung-Design */
-        #invoice-box { margin-top: 40px; background: white; color: #333; padding: 40px; border-radius: 8px; }
-
-        .invoice-top {
-            display: flex; justify-content: space-between; border-bottom: 2px solid #eee;
-            padding-bottom: 20px; margin-bottom: 30px;
-        }
-
-        .invoice-table { width: 100%; border-collapse: collapse; }
-        .invoice-table th { background: #f8f8f8; padding: 12px; text-align: left; }
-        .invoice-table td { padding: 12px; border-bottom: 1px solid #eee; }
-
-        .invoice-total-row {
-            display: flex; justify-content: flex-end; margin-top: 20px; padding-top: 20px; border-top: 2px solid #000;
-        }
-
-        .invoice-total-amount { font-size: 2rem; font-weight: 800; }
-
-        /* Print Settings */
+        
         @media print {
             .no-print { display: none !important; }
             #employee-area { display: block !important; }
             .sidebar { display: none !important; }
-            .dashboard-main { padding: 0; }
-            #dash-tab-calc { display: block !important; }
-            #dash-tab-main { display: none !important; }
-            .calc-wrapper { border: none; }
-            .calc-content > .no-print { display: none !important; }
-            #invoice-box { display: block !important; margin: 0; padding: 0; }
+            .main-content { padding: 0; background: white; }
+            #tab-calc { display: block !important; }
+            .ride-form-container { display: none !important; }
+            #invoice-result { display: block !important; box-shadow: none; margin: 0; }
         }
 
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg sticky-top no-print" id="public-navbar">
-        <div class="container">
-            <a class="navbar-brand" href="#" onclick="showSection('public')">
-                <img src="images/logo.png" alt="Logo" width="40"> TAXI KÖLN
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#preise">Tarife</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#fuhrpark">Fuhrpark</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#team">Team</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#karriere">Karriere</a></li>
-                    <li class="nav-item">
-                        <button class="btn btn-dark ms-lg-3 fw-bold" onclick="showSection('login')">
-                            <i class="bi bi-lock-fill"></i> Mitarbeiter Login
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div id="public-view">
-        <header class="hero-section">
-            <div class="text-center" style="background: rgba(0,0,0,0.7); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,204,0,0.3);">
-                <h1 class="display-2 fw-bold">Sicher durch <span class="accent">Kölle.</span></h1>
-                <p class="lead fs-3">Dein exklusiver Chauffeur-Dienst im NRW RP</p>
-                <div class="mt-4">
-                    <a href="https://discord.gg/yxgbeyARDr" target="_blank" class="btn btn-yellow btn-lg">
-                        <i class="bi bi-discord"></i> Jetzt Funk rufen
-                    </a>
-                </div>
-            </div>
-        </header>
-
-        <div class="container mt-5">
-            <section id="preise" class="py-5">
-                <div class="text-center mb-5">
-                    <h2 class="display-5 fw-bold"><span class="accent">Unsere</span> Tarife</h2>
-                    <p class="text-gray">Transparente Preise für maximalen Komfort</p>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-lg-10">
-                        <img src="images/preise.png" alt="Preisliste Taxi Köln" class="price-img">
-                    </div>
-                </div>
-            </section>
-
-            <hr class="accent opacity-25 my-5">
-
-            <section id="fuhrpark" class="py-5">
-                <h2 class="text-center mb-5 display-5 fw-bold">Unser <span class="accent">Fuhrpark</span></h2>
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <div class="card public-card p-4 text-center">
-                            <i class="bi bi-car-front-fill accent mb-3" style="font-size: 3rem;"></i>
-                            <h3>Extended S-Klasse</h3>
-                            <p class="text-gray">Luxus pur für wichtige Geschäftstermine und stilvolle Auftritte.</p>
-                            <span class="badge bg-warning text-dark py-2">Premium Klasse</span>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card public-card p-4 text-center">
-                            <i class="bi bi-stars accent mb-3" style="font-size: 3rem;"></i>
-                            <h3>Stretch-Limousine</h3>
-                            <p class="text-gray">Perfekt für Hochzeiten, Junggesellenabschiede oder Club-Nächte.</p>
-                            <span class="badge bg-warning text-dark py-2">Exklusiv</span>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card public-card p-4 text-center">
-                            <i class="bi bi-shield-check accent mb-3" style="font-size: 3rem;"></i>
-                            <h3>Patriot Limousine</h3>
-                            <p class="text-gray">Der sicherste und auffälligste Auftritt im gesamten Staat.</p>
-                            <span class="badge bg-warning text-dark py-2">VIP Service</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="team" class="py-5 bg-black rounded-4 p-4 mb-5">
-                <h2 class="text-center mb-5">Die <span class="accent">Geschäftsführung</span></h2>
-                <div class="row justify-content-center g-4">
-                    <div class="col-md-5">
-                        <div class="card public-card p-4 text-center border-0" style="background: #111;">
-                            <h3 class="accent">Chris Schreiner</h3>
-                            <p class="mb-0">Geschäftsführer / Inhaber</p>
-                            <small class="text-gray">Rufname: Schreiner</small>
-                        </div>
-                    </div>
-                    <div class="col-md-5">
-                        <div class="card public-card p-4 text-center border-0" style="background: #111;">
-                            <h3 class="accent">Marco Krause</h3>
-                            <p class="mb-0">Stellvertretender Geschäftsführer</p>
-                            <small class="text-gray">Rufname: Krause</small>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="karriere" class="text-center py-5 mb-5">
-                <div class="card p-5 border-warning bg-dark shadow-lg">
-                    <h2 class="display-5 fw-bold mb-3">Werde Teil der <span class="accent">Familie!</span></h2>
-                    <p class="lead mb-4">Wir suchen motivierte Fahrer, die Köln und seine Bürger lieben.</p>
-                    <div class="d-flex justify-content-center gap-3">
-                        <a href="https://discord.gg/yxgbeyARDr" target="_blank" class="btn btn-yellow btn-lg">Jetzt bewerben</a>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <footer class="footer-public">
-            <div class="container">
-                <img src="images/logo.png" width="80" alt="Logo" class="mb-4">
-                <h3 class="accent mb-3">TAXI KÖLN</h3>
-                <p class="text-gray mb-4">Dein Partner für Mobilität im NRW RP seit 2024.</p>
-                <p class="small text-secondary">&copy; 2026 Taxi Köln - Alle Rechte vorbehalten. | <span class="text-gray">Roleplay Project</span></p>
-            </div>
-        </footer>
-    </div>
-
     <div id="login-view">
         <div class="login-card">
-            <img src="images/logo.png" width="80">
-            <h2 class="accent mb-2">Mitarbeiter Login</h2>
-            <p class="text-gray small mb-4">Bitte identifiziere dich mit deinen Dienstdaten.</p>
+            <img src="images/logo.png" class="login-logo" alt="Logo">
+            <h2 class="fw-bold mb-2">Service Login</h2>
+            <p class="text-gray small mb-4">Taxi Köln Management Portal</p>
             
-            <div class="text-start mb-3">
-                <label class="small text-gray ms-1 mb-1">Benutzername</label>
-                <input type="text" id="loginUser" class="form-control form-control-taxi" placeholder="z.B. Chris Schreiner">
-                
-                <label class="small text-gray ms-1 mb-1">Passwort</label>
-                <input type="password" id="loginPass" class="form-control form-control-taxi" placeholder="••••••••">
+            <input type="text" id="userInput" class="form-control form-control-taxi" placeholder="Benutzername">
+            <input type="password" id="passInput" class="form-control form-control-taxi" placeholder="Passwort">
+            
+            <button class="btn btn-warning w-100 py-3 fw-bold" onclick="attemptLogin()">SYSTEM LOGIN</button>
+            
+            <div id="loginError" class="text-danger mt-3 small" style="display:none;">
+                <i class="bi bi-exclamation-triangle-fill"></i> Zugriff verweigert!
             </div>
-
-            <button class="btn btn-yellow w-100 py-3 mt-2 fw-bold" onclick="processLogin()">
-                SYSTEM-ZUGRIFF
-            </button>
-
-            <div id="loginError" class="text-danger mt-3 small" style="display:none; background: rgba(255,0,0,0.1); padding: 10px; border-radius: 5px;">
-                <i class="bi bi-shield-slash-fill"></i> Zugriff verweigert! Name oder Passwort inkorrekt.
-            </div>
-
-            <button class="btn btn-link btn-sm text-gray mt-4 no-print" onclick="showSection('public')">
-                <i class="bi bi-arrow-left"></i> Zurück zur Startseite
-            </button>
         </div>
     </div>
 
     <div id="employee-area">
         <div class="dashboard-container">
+            
             <aside class="sidebar no-print">
-                <div class="sidebar-brand">
-                    <img src="images/logo.png" width="35">
-                    <span>Taxi Köln</span>
-                </div>
+                <div class="sidebar-brand">Taxi Köln</div>
+                
+                <div class="nav-group-label">Zentrale</div>
+                <a class="nav-item-emp active" id="nav-dash" onclick="showTab('dash')">
+                    <i class="bi bi-grid-1x2-fill"></i> Dashboard
+                </a>
+                <a class="nav-item-emp" id="nav-calc" onclick="showTab('calc')">
+                    <i class="bi bi-plus-circle-fill"></i> Neue Fahrt erfassen
+                </a>
 
-                <div class="sidebar-nav">
-                    <div class="nav-group-label">Allgemein</div>
-                    <a class="nav-item-emp active" onclick="switchDashTab('main')">
-                        <i class="bi bi-grid-1x2-fill"></i> Dashboard
-                    </a>
+                <div class="nav-group-label">Verwaltung</div>
+                <a class="nav-item-emp" onclick="alert('Fehler: Keine Berechtigung für Personalakten.')">
+                    <i class="bi bi-person-badge"></i> Personalakte
+                </a>
+                <a class="nav-item-emp" onclick="alert('Admin Panel ist aktuell gesperrt.')">
+                    <i class="bi bi-shield-lock"></i> Admin Panel
+                </a>
 
-                    <div class="nav-group-label">Verwaltung</div>
-                    <a class="nav-item-emp">
-                        <i class="bi bi-person-badge-fill"></i> Personalakte
-                    </a>
-                    <a class="nav-item-emp" id="admin-panel-link">
-                        <i class="bi bi-shield-lock-fill"></i> Admin Panel
-                    </a>
-
-                    <div class="nav-group-label">Features</div>
-                    <a class="nav-item-emp">
-                        <i class="bi bi-sticky-fill"></i> Patchnotes
-                    </a>
-                    <a class="nav-item-emp">
-                        <i class="bi bi-chat-square-dots-fill"></i> Feedback & Bugs
-                    </a>
-                </div>
+                <div class="nav-group-label">Support</div>
+                <a class="nav-item-emp" id="nav-supp" onclick="showTab('supp')">
+                    <i class="bi bi-chat-square-text"></i> Feedback & Bugs
+                </a>
+                <a class="nav-item-emp" onclick="alert('Patchnotes 1.4.2 folgen in Kürze.')">
+                    <i class="bi bi-journal-text"></i> Patchnotes
+                </a>
 
                 <div class="sidebar-footer">
-                    <div class="sidebar-user">
-                        <div class="user-box">
-                            <img src="images/logo.png" class="user-avatar-img" id="sidebar-avatar">
-                            <div class="user-details">
-                                <span class="u-name" id="user-display-name">Gast</span>
-                                <span class="u-role" id="user-display-role">Fahrer</span>
-                            </div>
+                    <div class="user-info-box">
+                        <div class="user-avatar">CS</div>
+                        <div>
+                            <div class="u-name" id="sideUserName">Chris Schreiner</div>
+                            <div class="small" id="statusIndicator" style="color: var(--status-frei);">● Verfügbar</div>
                         </div>
-                        <button class="btn-logout-emp" onclick="logout()">
-                            <i class="bi bi-box-arrow-right"></i> ABMELDEN
-                        </button>
                     </div>
+                    <button class="btn-logout" onclick="location.reload()">ABMELDEN</button>
                 </div>
             </aside>
 
-            <main class="dashboard-main">
+            <main class="main-content">
                 
-                <div id="dash-tab-main">
-                    <h1 class="dash-heading">Willkommen im Dashboard, <span id="welcome-name">Mitarbeiter</span>!</h1>
-
+                <div id="tab-dash">
+                    <h1 class="page-title">Hallo, <span id="welcomeName">Fahrer</span>!</h1>
+                    
                     <div class="dash-grid">
                         
-                        <div class="dash-col-left">
+                        <div style="grid-column: span 4;">
                             <div class="dash-card">
-                                <div class="dash-card-title">Stempeluhr</div>
-                                <div class="stempel-body">
-                                    <div class="stempel-label">Aktuelle Sitzung</div>
-                                    <div id="timerDisplay" class="stempel-time">00:00:00</div>
-                                    <div class="stempel-total">Gesamt heute: <span class="accent">00:41:54</span></div>
-                                </div>
-                                <div class="stempel-controls no-print">
-                                    <button class="btn btn-success btn-sm w-100 fw-bold" id="startBtn" onclick="startWork()">BEGINN</button>
-                                    <button class="btn btn-danger btn-sm w-100 fw-bold" id="stopBtn" onclick="stopWork()" disabled>ENDE</button>
-                                </div>
-                            </div>
-
-                            <div class="dash-card">
-                                <div class="dash-card-title">Fahrt erfassen</div>
-                                <div class="btn-new-ride-card" onclick="switchDashTab('calc')">
-                                    Neue Fahrt erfassen
+                                <div class="card-header-taxi">Status-Zentrale</div>
+                                <div class="status-container">
+                                    <label class="taxi-label">Mein Status</label>
+                                    <button class="btn-status s-frei" onclick="updateWorkStatus('Frei', 'var(--status-frei)')">FREI / BEREIT</button>
+                                    <button class="btn-status s-besetzt" onclick="updateWorkStatus('Besetzt', 'var(--status-besetzt)')">BESETZT / FAHRT</button>
+                                    <button class="btn-status s-pause" onclick="updateWorkStatus('Pause', 'var(--status-pause)')">PAUSE</button>
+                                    
+                                    <hr style="border-color: #333; margin: 10px 0;">
+                                    
+                                    <label class="taxi-label">Dienst-Modus</label>
+                                    <button class="btn-status s-ls" onclick="alert('Du hast die Leitstelle offiziell übernommen!')">Leitstelle Besetzen</button>
+                                    <button class="btn-status s-ablöse" onclick="alert('Ablöse-Modus aktiviert.')">Als Ablöse eintragen</button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="dash-col-mid-kunden">
+                        <div style="grid-column: span 8;">
                             <div class="dash-card h-100">
-                                <div class="dash-card-title">Kunden</div>
-                                <div class="dash-search-wrap">
-                                    <input type="text" class="dash-search-input" placeholder="Suchen...">
+                                <div class="card-header-taxi">Letzte Fahrten</div>
+                                <div id="historyContainer" class="history-list">
+                                    <div class="history-empty">Keine Fahrten in der aktuellen Sitzung.</div>
                                 </div>
-                                <table class="dash-table">
-                                    <thead><tr><th>Vorname</th><th>Nachname</th></tr></thead>
-                                    <tbody>
-                                        <tr><td>Heinrich</td><td>Heinemann</td></tr>
-                                        <tr><td>Heinrich</td><td>Heinemann</td></tr>
-                                        <tr><td>Leon</td><td>Hammer</td></tr>
-                                        <tr><td>Eddi</td><td>walker</td></tr>
-                                        <tr><td>Tammi</td><td>Nolan</td></tr>
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
 
-                        <div class="dash-col-mid-orte">
-                            <div class="dash-card h-100">
-                                <div class="dash-card-title">Orte</div>
-                                <div class="dash-search-wrap">
-                                    <input type="text" class="dash-search-input" placeholder="Suchen...">
-                                </div>
-                                <table class="dash-table">
-                                    <thead><tr><th>PLZ</th><th>Bezeichnung</th></tr></thead>
-                                    <tbody>
-                                        <tr><td>7326</td><td>Zentrale</td></tr>
-                                        <tr><td>7354</td><td>Gefängnis</td></tr>
-                                        <tr><td>6050</td><td>Würfelpark</td></tr>
-                                        <tr><td>7194</td><td>Krankenhaus</td></tr>
-                                        <tr><td>3053</td><td>Bundes Polizei</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="dash-col-right">
-                            <div class="dash-card h-100">
-                                <div class="dash-card-title">Letzte Fahrten</div>
-                                <div class="ride-history-item">
-                                    <div class="ride-route">Straße (Alle) &rarr; Taxi-Zentrale</div>
-                                    <div class="ride-date">Heute, 00:40:00</div>
-                                </div>
-                                <div class="ride-history-item">
-                                    <div class="ride-route">Straße (Alle) &rarr; Bundes Polizei</div>
-                                    <div class="ride-date">Gestern, 22:45:00</div>
-                                </div>
-                                <div class="ride-history-item">
-                                    <div class="ride-route">Taxi-Zentrale &rarr; Justizministerium</div>
-                                    <div class="ride-date">Gestern, 22:25:00</div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                    <button class="btn-adjust-dash no-print">Dashboard anpassen</button>
                 </div>
 
-                <div id="dash-tab-calc" style="display:none;">
-                    <div class="mb-4 no-print">
-                        <button class="btn btn-outline-warning" onclick="switchDashTab('main')">
-                            <i class="bi bi-arrow-left"></i> Zurück zum Dashboard
-                        </button>
+                <div id="tab-calc" style="display:none;">
+                    <div class="ride-form-container no-print">
+                        <h2 class="fw-bold mb-4">Fahrt protokollieren</h2>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="taxi-label">Name des Chauffeurs</label>
+                                <input type="text" id="f-name" class="taxi-input" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="taxi-label">Startpunkt</label>
+                                <input type="text" id="f-start" class="taxi-input" placeholder="z.B. Zentrale">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="taxi-label">Zielort</label>
+                                <input type="text" id="f-ziel" class="taxi-input" placeholder="z.B. Krankenhaus">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="taxi-label">Strecke in KM</label>
+                                <input type="number" id="f-km" class="taxi-input" value="0">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="taxi-label">Fahrzeug</label>
+                                <select id="f-car" class="taxi-input">
+                                    <option value="S-Klasse">S-Klasse</option>
+                                    <option value="Stretch">Stretch-Limo</option>
+                                    <option value="Patriot">Patriot Limo</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button class="btn-save-ride" onclick="saveAndPrint()">FAHRT SPEICHERN & RECHNUNG</button>
                     </div>
 
-                    <div class="calc-wrapper">
-                        <div class="no-print">
-                            <img src="images/logo.png" class="calc-header-img p-3" alt="Taxi Köln">
-                        </div>
-
-                        <div class="calc-content">
-                            <div class="no-print">
-                                <h2 class="accent mb-4">Fahrpreis-Kalkulator</h2>
-                                
-                                <div class="calc-input-group mb-4">
-                                    <label>Chauffeur (Wird automatisch gesetzt)</label>
-                                    <input type="text" id="calcUserName" readonly style="background: #111; color: #888;">
-                                </div>
-
-                                <div class="calc-grid">
-                                    <div class="calc-input-group">
-                                        <label>Fahrzeugmodell</label>
-                                        <select id="calcCar" onchange="runCalculation()">
-                                            <option value="s-klasse">Extended S-Klasse</option>
-                                            <option value="stretch">Stretch-Limousine</option>
-                                            <option value="patriot">Patriot Limousine</option>
-                                        </select>
-                                    </div>
-                                    <div class="calc-input-group">
-                                        <label>Fahrt-Modus</label>
-                                        <select id="calcMode" onchange="runCalculation()">
-                                            <option value="0">Einfache Fahrt</option>
-                                            <option value="1">Hin- und Rückfahrt</option>
-                                            <option value="2">1 Stunde exklusiv</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="calc-grid">
-                                    <div class="calc-input-group">
-                                        <label>Zusatzzeit (Einheit: 15 Min)</label>
-                                        <input type="number" id="calcTime" value="0" min="0" oninput="runCalculation()">
-                                    </div>
-                                    <div class="calc-input-group">
-                                        <label>Zusatz-Stopps (ab 4. Ziel)</label>
-                                        <input type="number" id="calcStops" value="0" min="0" oninput="runCalculation()">
-                                    </div>
-                                </div>
-
-                                <label class="accent small fw-bold mb-2">Zusatzoptionen</label>
-                                <div class="calc-check-container">
-                                    <label class="calc-check-item"><input type="checkbox" id="optOutside" onchange="runCalculation()"> Außerhalb Kerngebiet (+ Festpreis)</label>
-                                    <label class="calc-check-item"><input type="checkbox" id="optSpontan" onchange="runCalculation()"> Spontanbuchung (&lt; 3 Std.) (+25%)</label>
-                                    <label class="calc-check-item"><input type="checkbox" id="optKolonne" onchange="runCalculation()"> Kolonnenfahrt (+20%)</label>
-                                </div>
-
-                                <button class="btn btn-yellow w-100 py-3 mb-2" onclick="window.print()">
-                                    <i class="bi bi-printer"></i> Rechnung drucken
-                                </button>
+                    <div id="invoice-result">
+                        <div class="d-flex justify-content-between border-bottom pb-4 mb-4">
+                            <div>
+                                <h1 class="fw-bold mb-0">TAXI KÖLN</h1>
+                                <p class="text-muted">Offizieller Fahrbeleg - Roleplay</p>
                             </div>
-
-                            <div id="invoice-box">
-                                <div class="invoice-top">
-                                    <div>
-                                        <h4 class="mb-0 fw-bold">TAXI KÖLN</h4>
-                                        <p class="small text-muted mb-0">Chauffeur- & Limousinenservice</p>
-                                        <p class="small text-muted">Staat NRW - Roleplay</p>
-                                    </div>
-                                    <div class="text-end">
-                                        <h2 class="mb-0 fw-bold">RECHNUNG</h2>
-                                        <p class="mb-0">Datum: <span id="invDate">--.--.----</span></p>
-                                    </div>
-                                </div>
-
-                                <table class="invoice-table mb-4">
-                                    <thead>
-                                        <tr><th>Leistungsbeschreibung</th><th class="text-end">Betrag</th></tr>
-                                    </thead>
-                                    <tbody id="invItems"></tbody>
-                                </table>
-
-                                <div class="invoice-total-row">
-                                    <div class="text-end">
-                                        <p class="small text-muted text-uppercase mb-0">Gesamtbetrag</p>
-                                        <div class="invoice-total-amount"><span id="invTotal">0</span> EUR</div>
-                                    </div>
-                                </div>
-
-                                <div class="mt-5 p-3 border-start border-warning border-3 bg-light">
-                                    <p class="mb-0 small">Chauffeur: <strong id="invDriverName">Chris Schreiner</strong></p>
-                                </div>
-
-                                <div class="text-center mt-5 text-muted small">
-                                    <p>Vielen Dank für Ihre Fahrt mit Taxi Köln!<br>Dies ist ein RP-Dokument.</p>
-                                </div>
+                            <div class="text-end">
+                                <h3 class="fw-bold">RECHNUNG</h3>
+                                <p id="inv-date"></p>
                             </div>
                         </div>
+
+                        <div class="row mb-5">
+                            <div class="col-6">
+                                <p class="mb-1 text-muted">CHAUFFEUR</p>
+                                <p class="fw-bold" id="inv-driver"></p>
+                            </div>
+                            <div class="col-6">
+                                <p class="mb-1 text-muted">FAHRZEUG</p>
+                                <p class="fw-bold" id="inv-car"></p>
+                            </div>
+                        </div>
+
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr><th>Beschreibung der Leistung</th><th class="text-end">Betrag</th></tr>
+                            </thead>
+                            <tbody id="inv-items"></tbody>
+                        </table>
+
+                        <div class="text-end mt-5">
+                            <p class="mb-0 text-muted">GESAMTBETRAG</p>
+                            <h1 class="fw-bold" style="font-size: 3.5rem;"><span id="inv-total">0</span> EUR</h1>
+                        </div>
+
+                        <div class="mt-5 pt-5 border-top text-center small text-muted">
+                            Vielen Dank für Ihre Fahrt mit Taxi Köln!<br>Besuchen Sie uns auf Discord: agrar.julian
+                        </div>
+                        
+                        <div class="mt-4 no-print">
+                            <button class="btn btn-dark w-100" onclick="window.print()">JETZT DRUCKEN / ALS PDF</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-supp" style="display:none;">
+                    <h1 class="page-title">Support & Formulare</h1>
+                    <div class="supp-grid">
+                        
+                        <div class="supp-card">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-discord supp-icon"></i>
+                                <div>
+                                    <h4 class="mb-1">Discord Kontakt</h4>
+                                    <p class="mb-0 text-muted">Direktnachricht an den Inhaber</p>
+                                </div>
+                            </div>
+                            <div class="discord-tag">agrar.julian</div>
+                        </div>
+
+                        <div class="supp-card">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-bug-fill supp-icon"></i>
+                                <div>
+                                    <h4 class="mb-1">Fehler melden</h4>
+                                    <p class="mb-0 text-muted">Hilf uns das System zu verbessern</p>
+                                </div>
+                            </div>
+                            <a href="https://forms.gle/rvwLTAJSh3B57oYF8" target="_blank" class="btn btn-warning fw-bold px-4">ZUM FORMULAR</a>
+                        </div>
+
+                        <div class="supp-card">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-star-fill supp-icon"></i>
+                                <div>
+                                    <h4 class="mb-1">Bewertung</h4>
+                                    <p class="mb-0 text-muted">Gib uns Feedback zu deiner Arbeit</p>
+                                </div>
+                            </div>
+                            <a href="https://forms.gle/1UD6Y8R2UjqWZyki6" target="_blank" class="btn btn-warning fw-bold px-4">BEWERTEN</a>
+                        </div>
+
                     </div>
                 </div>
 
@@ -762,161 +564,107 @@
     </div>
 
     <script>
-        /* 1. Navigations-Logik */
-        function showSection(id) {
-            document.getElementById('public-view').style.display = 'none';
-            document.getElementById('login-view').style.display = 'none';
-            document.getElementById('employee-area').style.display = 'none';
-            document.getElementById('public-navbar').style.display = 'none';
+        let sessionRides = [];
+        let userName = "";
 
-            if (id === 'public') {
-                document.getElementById('public-view').style.display = 'block';
-                document.getElementById('public-navbar').style.display = 'block';
-            } else if (id === 'login') {
-                document.getElementById('login-view').style.display = 'flex';
-                document.getElementById('public-navbar').style.display = 'block';
-            } else if (id === 'employee') {
-                document.getElementById('employee-area').style.display = 'block';
-            }
-            window.scrollTo(0, 0);
-        }
+        // Login Logik
+        function attemptLogin() {
+            const u = document.getElementById('userInput').value;
+            const p = document.getElementById('passInput').value;
+            const err = document.getElementById('loginError');
 
-        /* 2. Login-Logik mit Benutzername & Passwort */
-        function processLogin() {
-            const user = document.getElementById('loginUser').value.trim();
-            const pass = document.getElementById('loginPass').value;
-            const error = document.getElementById('loginError');
-
-            // Vorinstallierter Account: Chris Schreiner / Bka26r
-            if (user === "Chris Schreiner" && pass === "Bka26r") {
-                error.style.display = 'none';
-                
-                // Login-Daten im Dashboard setzen
-                document.getElementById('user-display-name').innerText = "Chris Schreiner";
-                document.getElementById('user-display-role').innerText = "Inhaber / Admin";
-                document.getElementById('user-display-role').style.color = "var(--admin-color)";
-                document.getElementById('welcome-name').innerText = "Chris Schreiner";
-                document.getElementById('calcUserName').value = "Chris Schreiner";
-                document.getElementById('invDriverName').innerText = "Chris Schreiner";
-                
-                showSection('employee');
+            if(u === "Chris Schreiner" && p === "Bka26r") {
+                userName = u;
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('employee-area').style.display = 'flex';
+                document.getElementById('welcomeName').innerText = u;
+                document.getElementById('sideUserName').innerText = u;
+                document.getElementById('f-name').value = u;
             } else {
-                error.style.display = 'block';
+                err.style.display = 'block';
             }
         }
 
-        function logout() {
-            window.location.reload();
-        }
-
-        /* 3. Dashboard Tab-Switch */
-        function switchDashTab(tab) {
-            document.getElementById('dash-tab-main').style.display = 'none';
-            document.getElementById('dash-tab-calc').style.display = 'none';
-
-            if (tab === 'main') {
-                document.getElementById('dash-tab-main').style.display = 'block';
-            } else if (tab === 'calc') {
-                document.getElementById('dash-tab-calc').style.display = 'block';
-                runCalculation();
-            }
-        }
-
-        /* 4. Stempeluhr-Logik */
-        let workStartTime;
-        let timerTicker;
-
-        function startWork() {
-            workStartTime = Date.now();
-            document.getElementById('startBtn').disabled = true;
-            document.getElementById('stopBtn').disabled = false;
-            timerTicker = setInterval(updateWorkTimer, 1000);
-        }
-
-        function stopWork() {
-            clearInterval(timerTicker);
-            document.getElementById('startBtn').disabled = false;
-            document.getElementById('stopBtn').disabled = true;
-            alert("Schicht beendet. Dauer: " + document.getElementById('timerDisplay').innerText);
-            document.getElementById('timerDisplay').innerText = "00:00:00";
-        }
-
-        function updateWorkTimer() {
-            const diff = Date.now() - workStartTime;
-            const h = Math.floor(diff / 3600000);
-            const m = Math.floor((diff % 3600000) / 60000);
-            const s = Math.floor((diff % 60000) / 1000);
-            document.getElementById('timerDisplay').innerText = 
-                (h < 10 ? "0"+h : h) + ":" + (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
-        }
-
-        /* 5. Rechner-Logik */
-        const prices = {
-            's-klasse': { base: [12000, 22000, 30000], time: 8000, stop: 3000, out: 10000, minSpontan: 8000, minKol: 10000 },
-            'stretch':  { base: [22000, 40000, 50000], time: 12000, stop: 5000, out: 15000, minSpontan: 12000, minKol: 15000 },
-            'patriot':  { base: [35000, 50000, 60000], time: 15000, stop: 6000, out: 20000, minSpontan: 15000, minKol: 20000 }
-        };
-
-        function runCalculation() {
-            const car = document.getElementById('calcCar').value;
-            const mode = parseInt(document.getElementById('calcMode').value);
-            const time = parseInt(document.getElementById('calcTime').value) || 0;
-            const stops = parseInt(document.getElementById('calcStops').value) || 0;
-            const isOut = document.getElementById('optOutside').checked;
-            const isSpontan = document.getElementById('optSpontan').checked;
-            const isKol = document.getElementById('optKolonne').checked;
-
-            const p = prices[car];
-            let total = 0;
-            let rows = '';
-
-            const basePrice = p.base[mode];
-            const carLabel = document.getElementById('calcCar').options[document.getElementById('calcCar').selectedIndex].text;
-            const modeLabel = document.getElementById('calcMode').options[document.getElementById('calcMode').selectedIndex].text;
+        // Tab Management
+        function showTab(id) {
+            document.getElementById('tab-dash').style.display = 'none';
+            document.getElementById('tab-calc').style.display = 'none';
+            document.getElementById('tab-supp').style.display = 'none';
             
-            total += basePrice;
-            rows += `<tr><td><strong>Grundpauschale</strong><br><small>${carLabel} | ${modeLabel}</small></td><td class="text-end">${basePrice.toLocaleString()} EUR</td></tr>`;
-
-            if(time > 0) {
-                let cost = time * p.time;
-                total += cost;
-                rows += `<tr><td>Zusatzzeit (${time} x 15 Min)</td><td class="text-end">${cost.toLocaleString()} EUR</td></tr>`;
-            }
-
-            if(stops > 0) {
-                let cost = stops * p.stop;
-                total += cost;
-                rows += `<tr><td>Zusätzliche Stopps (${stops})</td><td class="text-end">${cost.toLocaleString()} EUR</td></tr>`;
-            }
-
-            if(isOut) {
-                total += p.out;
-                rows += `<tr><td>Anfahrt außerhalb Kerngebiet</td><td class="text-end">${p.out.toLocaleString()} EUR</td></tr>`;
-            }
-
-            if(isSpontan) {
-                let sur = Math.max(total * 0.25, p.minSpontan);
-                total += sur;
-                rows += `<tr><td>Servicegebühr Spontanbuchung (25%)</td><td class="text-end">${sur.toLocaleString()} EUR</td></tr>`;
-            }
-
-            if(isKol) {
-                let sur = Math.max(total * 0.20, p.minKol);
-                total += sur;
-                rows += `<tr><td>Aufschlag Kolonnenfahrt (20%)</td><td class="text-end">${sur.toLocaleString()} EUR</td></tr>`;
-            }
-
-            document.getElementById('invItems').innerHTML = rows;
-            document.getElementById('invTotal').innerText = total.toLocaleString();
-            document.getElementById('invDate').innerText = new Date().toLocaleDateString('de-DE');
+            document.querySelectorAll('.nav-item-emp').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById('tab-' + id).style.display = 'block';
+            document.getElementById('nav-' + id).classList.add('active');
+            
+            if(id !== 'calc') document.getElementById('invoice-result').style.display = 'none';
         }
 
-        // Init
-        document.addEventListener('DOMContentLoaded', () => {
-            showSection('public');
-        });
+        // Status Update
+        function updateWorkStatus(stat, color) {
+            const ind = document.getElementById('statusIndicator');
+            ind.innerText = "● " + stat;
+            ind.style.color = color;
+            alert("Dein Status ist nun: " + stat);
+        }
+
+        // Fahrt verarbeiten
+        function saveAndPrint() {
+            const start = document.getElementById('f-start').value;
+            const ziel = document.getElementById('f-ziel').value;
+            const km = parseFloat(document.getElementById('f-km').value);
+            const car = document.getElementById('f-car').value;
+
+            if(!start || !ziel || km <= 0) return alert("Fehler: Bitte alle Felder korrekt ausfüllen!");
+
+            // Kalkulation (Preise pro KM)
+            let base = 5000;
+            let kmPrice = 1200;
+            if(car === 'Stretch') { base = 12000; kmPrice = 1800; }
+            if(car === 'Patriot') { base = 20000; kmPrice = 2500; }
+            
+            let total = base + (km * kmPrice);
+
+            const ride = {
+                route: start + " ➔ " + ziel,
+                price: total,
+                time: new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'})
+            };
+
+            sessionRides.unshift(ride);
+            updateHistoryUI();
+
+            // Rechnung befüllen
+            document.getElementById('inv-date').innerText = new Date().toLocaleDateString('de-DE');
+            document.getElementById('inv-driver').innerText = userName;
+            document.getElementById('inv-car').innerText = car;
+            document.getElementById('inv-items').innerHTML = `
+                <tr><td>Grundpauschale ${car}</td><td class="text-end">${base.toLocaleString()} EUR</td></tr>
+                <tr><td>Streckenpauschale (${km} KM x ${kmPrice} EUR)</td><td class="text-end">${(km*kmPrice).toLocaleString()} EUR</td></tr>
+            `;
+            document.getElementById('inv-total').innerText = total.toLocaleString();
+            
+            document.getElementById('invoice-result').style.display = 'block';
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        function updateHistoryUI() {
+            const cont = document.getElementById('historyContainer');
+            if(sessionRides.length === 0) return;
+
+            cont.innerHTML = "";
+            sessionRides.forEach(r => {
+                cont.innerHTML += `
+                    <div class="history-item">
+                        <div>
+                            <div class="fw-bold">${r.route}</div>
+                            <div class="small text-muted">${r.time} Uhr</div>
+                        </div>
+                        <div class="text-warning fw-bold fs-5">${r.price.toLocaleString()}€</div>
+                    </div>
+                `;
+            });
+        }
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
