@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Köln | Enterprise OS V5 Full</title>
+    <title>Taxi Köln | Management Enterprise V5 Full</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -14,107 +14,105 @@
 
         :root {
             --bg: #050505;
-            --bg-card: rgba(20, 20, 22, 0.98);
+            --bg-card: rgba(18, 18, 20, 0.98);
             --sidebar: #000000;
-            --border: rgba(255, 255, 255, 0.12);
+            --border: rgba(255, 255, 255, 0.15);
             --yellow: #ffcc00;
             --yellow-hover: #ffdb4d;
-            --text: #ffffff; 
-            --muted: #b0b0b5;
-            --radius: 18px;
+            --text-main: #ffffff;
+            --text-muted: #cccccc;
+            --radius: 20px;
         }
 
         * { box-sizing: border-box; outline: none !important; }
         body {
             margin: 0;
             background-color: var(--bg);
-            color: var(--text);
+            color: var(--text-main);
             font-family: 'Inter', sans-serif;
             height: 100vh;
             display: flex;
             overflow: hidden;
         }
 
-        /* --- LOGIN OVERLAY --- */
+        /* --- LOGIN SCREEN --- */
         #login-overlay {
             position: fixed; inset: 0; 
             background: radial-gradient(circle at center, #1a1a1a, #000);
             z-index: 9999; display: flex; align-items: center; justify-content: center;
         }
         .auth-card {
-            width: 420px; padding: 45px; background: var(--bg-card); 
+            width: 450px; padding: 50px; background: var(--bg-card); 
             border: 2px solid var(--yellow); border-radius: 30px; text-align: center;
-            box-shadow: 0 0 50px rgba(255, 204, 0, 0.1);
+            box-shadow: 0 0 60px rgba(255, 204, 0, 0.15);
         }
 
         /* --- LAYOUT --- */
         .sidebar {
-            width: 300px; background: var(--sidebar); border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; padding: 25px; z-index: 100;
+            width: 320px; background: var(--sidebar); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; padding: 30px; z-index: 100;
         }
         .main-view { flex: 1; overflow-y: auto; padding: 40px; background: #080808; }
 
-        /* --- NAVIGATION --- */
-        .nav-group { margin-bottom: 25px; }
+        /* --- NAV --- */
         .nav-label {
-            font-size: 0.7rem; font-weight: 800; color: var(--yellow);
-            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; padding-left: 10px;
+            font-size: 0.75rem; font-weight: 800; color: var(--yellow);
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px;
         }
         .nav-item {
-            width: 100%; display: flex; align-items: center; gap: 15px; padding: 14px 18px;
-            border-radius: 14px; color: var(--muted); background: transparent; border: none;
-            transition: all 0.2s ease; text-align: left; font-weight: 500; margin-bottom: 6px;
+            width: 100%; display: flex; align-items: center; gap: 15px; padding: 15px 20px;
+            border-radius: 15px; color: var(--text-muted); background: transparent; border: none;
+            transition: 0.2s; text-align: left; font-weight: 600; margin-bottom: 8px;
         }
-        .nav-item i { font-size: 1.2rem; }
+        .nav-item i { font-size: 1.3rem; }
         .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
-        .nav-item.active { background: var(--yellow); color: #000; font-weight: 700; }
+        .nav-item.active { background: var(--yellow); color: #000; }
 
-        /* --- KOMPONENTEN --- */
+        /* --- CARDS & FORMS --- */
         .glass-card {
             background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: var(--radius); padding: 30px; margin-bottom: 25px;
+            border-radius: var(--radius); padding: 35px; margin-bottom: 30px;
         }
         .btn-taxi {
             background: var(--yellow); color: #000; font-weight: 800; border: none;
-            padding: 14px 25px; border-radius: 12px; transition: 0.3s; width: 100%;
+            padding: 15px; border-radius: 12px; transition: 0.3s; width: 100%;
         }
         .btn-taxi:hover { background: var(--yellow-hover); transform: translateY(-2px); }
 
         .form-control, .form-select {
-            background: #121212; border: 1px solid var(--border); color: #fff !important;
-            padding: 12px; border-radius: 10px;
+            background: #111; border: 1px solid var(--border); color: #fff !important;
+            padding: 14px; border-radius: 12px; font-weight: 500;
         }
         .form-control:focus { background: #181818; border-color: var(--yellow); box-shadow: none; }
         
-        /* Lesbarkeit Fix für Dropdowns */
-        select option { background: #121212; color: #fff; }
+        select option { background: #111; color: #fff; }
 
         /* --- PAGES --- */
         .page-node { display: none; }
-        .page-node.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .page-node.active { display: block; animation: pageFade 0.4s ease; }
+        @keyframes pageFade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- LEITSTELLE --- */
         .ls-row {
             background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-            border-radius: 15px; padding: 20px; margin-bottom: 12px;
+            border-radius: 18px; padding: 25px; margin-bottom: 15px;
             display: flex; justify-content: space-between; align-items: center;
-            border-left: 5px solid var(--yellow);
+            border-left: 6px solid var(--yellow);
         }
         .status-pill { 
-            padding: 6px 16px; border-radius: 30px; font-size: 0.75rem; 
-            font-weight: 800; text-transform: uppercase; border: 1px solid currentColor;
+            padding: 8px 20px; border-radius: 40px; font-size: 0.8rem; 
+            font-weight: 900; text-transform: uppercase; border: 2px solid currentColor;
         }
 
-        /* --- PDF & DOKUMENTE --- */
+        /* --- DOKUMENTE --- */
         .document-preview {
-            background: white; color: #000; padding: 50px; border-radius: 5px;
-            font-family: 'Times New Roman', serif; line-height: 1.6;
+            background: white; color: #000; padding: 60px; border-radius: 8px;
+            font-family: 'Times New Roman', serif; line-height: 1.7;
         }
-        .sign-area { font-family: 'Dancing Script', cursive; font-size: 2rem; border-top: 1px solid #000; margin-top: 20px; }
+        .sign-area { font-family: 'Dancing Script', cursive; font-size: 2.5rem; border-top: 1px solid #000; margin-top: 30px; display: inline-block; padding-top: 10px; }
 
         .footer-branding {
-            position: fixed; bottom: 15px; right: 25px; font-size: 10px; color: #444; text-align: right;
+            position: fixed; bottom: 15px; right: 25px; font-size: 11px; color: #555; text-align: right;
         }
     </style>
 </head>
@@ -122,375 +120,367 @@
 
     <div id="login-overlay">
         <div class="auth-card">
-            <h1 class="fw-800 text-warning mb-2">TAXI KÖLN</h1>
-            <p class="text-muted small mb-4">MANAGEMENT LOGIN</p>
+            <h1 class="fw-900 text-warning mb-2" style="letter-spacing: -2px;">TAXI KÖLN</h1>
+            <p class="text-white-50 small mb-5">ENTERPRISE MANAGEMENT SYSTEM</p>
+            
             <div class="text-start mb-3">
-                <label class="text-warning small fw-bold mb-1">Dienstnummer (DN)</label>
-                <input type="text" id="l-dn" class="form-control" placeholder="z.B. 28">
+                <label class="text-warning small fw-bold mb-1 ml-2">Vollständiger Name</label>
+                <input type="text" id="l-name" class="form-control" placeholder="z.B. Maverick Stone">
             </div>
+            
             <div class="text-start mb-4">
-                <label class="text-warning small fw-bold mb-1">Passwort</label>
+                <label class="text-warning small fw-bold mb-1 ml-2">Passwort</label>
                 <input type="password" id="l-pass" class="form-control" placeholder="••••••••">
             </div>
-            <button class="btn-taxi" onclick="handleLogin()">SYSTEM AUTHENTIFIZIEREN</button>
-            <p id="l-err" class="text-danger mt-3 small d-none">Zugriff verweigert: Daten inkorrekt.</p>
+            
+            <button class="btn-taxi py-3" onclick="handleLogin()">ANMELDEN</button>
+            <p id="l-err" class="text-danger mt-3 fw-bold d-none">Fehler: Name oder Passwort falsch!</p>
         </div>
     </div>
 
     <aside class="sidebar">
         <div class="mb-5">
-            <h3 class="fw-800 text-warning m-0">TAXI KÖLN</h3>
-            <div class="d-flex align-items-center gap-2">
-                <div style="width: 8px; height: 8px; background: #00ff66; border-radius: 50%;"></div>
-                <span class="small text-muted fw-bold">V5 ENTERPRISE</span>
-            </div>
+            <h2 class="fw-900 text-warning m-0">TAXI KÖLN</h2>
+            <span class="small text-white-50 fw-bold">PORTAL V5.0</span>
         </div>
 
-        <div class="nav-group">
+        <div class="nav-group flex-grow-1">
             <div class="nav-label">Zentrale</div>
-            <button class="nav-item active" onclick="switchPage('dash', this)"><i class="bi bi-grid-1x2"></i> Dashboard</button>
-            <button class="nav-item" onclick="switchPage('ls', this)"><i class="bi bi-broadcast"></i> Leitstelle</button>
-            <button class="nav-item" onclick="switchPage('rechner', this)"><i class="bi bi-calculator"></i> Rechner</button>
+            <button class="nav-item active" onclick="switchPage('dash', this)"><i class="bi bi-speedometer2"></i> Dashboard</button>
+            <button class="nav-item" onclick="switchPage('ls', this)"><i class="bi bi-broadcast-pin"></i> Leitstelle</button>
+            <button class="nav-item" onclick="switchPage('calc', this)"><i class="bi bi-calculator"></i> Rechner</button>
+            
+            <div class="nav-label mt-4">Personal</div>
+            <button class="nav-item" onclick="switchPage('akte', this)"><i class="bi bi-person-badge"></i> Meine Akte</button>
+            <button class="nav-item" onclick="switchPage('admin', this)"><i class="bi bi-shield-shaded"></i> Verwaltung</button>
+            <button class="nav-item" onclick="switchPage('logs', this)"><i class="bi bi-journal-text"></i> System-Logs</button>
         </div>
 
-        <div class="nav-group">
-            <div class="nav-label">Verwaltung</div>
-            <button class="nav-item" onclick="switchPage('akte', this)"><i class="bi bi-person-vcard"></i> Meine Akte</button>
-            <button class="nav-item" onclick="switchPage('admin', this)"><i class="bi bi-shield-lock"></i> Admin Panel</button>
-            <button class="nav-item" onclick="switchPage('logs', this)"><i class="bi bi-archive"></i> Archiv / Logs</button>
-        </div>
-
-        <div class="mt-auto pt-4 border-top border-dark">
-            <div id="side-name" class="fw-bold text-white">--</div>
-            <div id="side-rank" class="text-muted small">--</div>
-            <button class="btn btn-link btn-sm p-0 text-danger text-decoration-none mt-2" onclick="location.reload()">Abmelden</button>
+        <div class="pt-4 border-top border-secondary">
+            <div id="side-name" class="fw-bold text-white fs-5">--</div>
+            <div id="side-rank" class="text-warning small fw-bold">--</div>
+            <button class="btn btn-outline-danger btn-sm w-100 mt-3 fw-bold" onclick="location.reload()">ABMELDEN</button>
         </div>
     </aside>
 
     <main class="main-view">
         
         <div id="page-dash" class="page-node active">
-            <h2 class="fw-bold mb-4">Dashboard</h2>
+            <h1 class="fw-900 mb-4">Dashboard</h1>
             <div class="row g-4">
-                <div class="col-md-7">
-                    <div class="glass-card">
-                        <h5 class="text-warning mb-3">Stempeluhr</h5>
-                        <div id="timer-val" class="display-3 fw-800 mb-4">00:00:00</div>
-                        <div class="row g-2">
-                            <div class="col-6"><button id="btn-start" class="btn btn-success w-100 p-3 fw-bold" onclick="dutyStart()">DIENST START</button></div>
-                            <div class="col-6"><button id="btn-stop" class="btn btn-danger w-100 p-3 fw-bold" onclick="dutyStop()" disabled>BEENDEN</button></div>
+                <div class="col-md-8">
+                    <div class="glass-card text-center">
+                        <h4 class="text-warning fw-bold mb-4">ARBEITSZEIT-ERFASSUNG</h4>
+                        <div id="timer-display" class="display-1 fw-900 mb-4" style="letter-spacing: -3px;">00:00:00</div>
+                        <div class="row g-3">
+                            <div class="col-6"><button id="btn-start" class="btn btn-success btn-lg w-100 py-3 fw-bold" onclick="startWork()">DIENST STARTEN</button></div>
+                            <div class="col-6"><button id="btn-stop" class="btn btn-danger btn-lg w-100 py-3 fw-bold" onclick="stopWork()" disabled>BEENDEN</button></div>
                         </div>
                     </div>
                     <div class="glass-card">
-                        <h5 class="text-warning mb-3">Status setzen</h5>
+                        <h5 class="text-warning fw-bold mb-3">STATUS AKTUALISIEREN</h5>
                         <div class="row g-2">
-                            <div class="col-3"><button class="btn btn-outline-success w-100" onclick="updateStatus('Frei', '#198754')">FREI</button></div>
-                            <div class="col-3"><button class="btn btn-outline-danger w-100" onclick="updateStatus('Besetzt', '#dc3545')">BESETZT</button></div>
-                            <div class="col-3"><button class="btn btn-outline-warning w-100" onclick="updateStatus('Pause', '#ffc107')">PAUSE</button></div>
-                            <div class="col-3"><button class="btn btn-outline-info w-100" onclick="updateStatus('Zentrale', '#0dcaf0')">FUNK</button></div>
+                            <div class="col-3"><button class="btn btn-outline-success w-100 py-3 fw-bold" onclick="setStatus('Frei', '#198754')">FREI</button></div>
+                            <div class="col-3"><button class="btn btn-outline-danger w-100 py-3 fw-bold" onclick="setStatus('Besetzt', '#dc3545')">BESETZT</button></div>
+                            <div class="col-3"><button class="btn btn-outline-warning w-100 py-3 fw-bold" onclick="setStatus('Pause', '#ffc107')">PAUSE</button></div>
+                            <div class="col-3"><button class="btn btn-outline-info w-100 py-3 fw-bold" onclick="setStatus('Funk', '#0dcaf0')">FUNK</button></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5">
-                    <div class="glass-card">
-                        <h5 class="text-warning mb-3">Sicherheit</h5>
-                        <label class="text-muted small mb-2">Passwort ändern</label>
-                        <div class="input-group mb-3">
-                            <input type="password" id="new-pass-input" class="form-control" placeholder="Neues Passwort">
-                            <button class="btn btn-warning fw-bold" onclick="changePassword()">UPDATE</button>
-                        </div>
-                        <hr class="border-secondary">
-                        <div class="d-flex justify-content-between">
-                            <span class="text-muted">Aktueller Status:</span>
-                            <span id="dash-status" class="fw-bold text-success">Frei</span>
-                        </div>
+                <div class="col-md-4">
+                    <div class="glass-card h-100">
+                        <h5 class="text-warning fw-bold mb-4">SICHERHEIT</h5>
+                        <label class="text-white-50 small mb-2">Neues Passwort vergeben</label>
+                        <input type="password" id="pw-change" class="form-control mb-3" placeholder="Passwort">
+                        <button class="btn-taxi mb-4" onclick="updateOwnPassword()">SPEICHERN</button>
+                        
+                        <hr class="border-secondary mb-4">
+                        <div class="small text-white-50">Sitzungs-Status</div>
+                        <div id="status-text" class="h3 fw-bold text-success">Außer Dienst</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="page-ls" class="page-node">
-            <h2 class="fw-bold mb-4">Leitstelle</h2>
+            <h1 class="fw-900 mb-4">Leitstelle</h1>
             <div class="glass-card">
-                <div class="d-flex justify-content-between mb-4">
-                    <h5 class="m-0">Aktive Einheiten (Eingestempelt)</h5>
-                    <button class="btn btn-sm btn-outline-warning" onclick="renderLS()">Aktualisieren</button>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="m-0 text-warning">EINGESTEMPELTE EINHEITEN</h4>
+                    <span id="active-count" class="badge bg-warning text-dark px-3 py-2 fs-6">0 Fahrer</span>
                 </div>
-                <div id="ls-container">
+                <div id="ls-list">
                     </div>
             </div>
         </div>
 
-        <div id="page-rechner" class="page-node">
-            <h2 class="fw-bold mb-4">Fahrtenrechner</h2>
+        <div id="page-calc" class="page-node">
+            <h1 class="fw-900 mb-4">Fahrtenrechner</h1>
             <div class="row g-4">
                 <div class="col-md-5">
                     <div class="glass-card">
-                        <h6 class="text-warning mb-3">Konfiguration</h6>
-                        <div class="mb-3">
-                            <label class="text-muted small">Fahrzeug</label>
-                            <select id="c-car" class="form-select" onchange="calc()">
-                                <option value="s-klasse">Extended S-Klasse</option>
-                                <option value="stretch">Stretch-Limousine</option>
-                                <option value="patriot">Patriot Limousine</option>
-                            </select>
+                        <label class="text-warning small fw-bold mb-2">Fahrzeugtyp</label>
+                        <select id="c-car" class="form-select mb-3" onchange="runCalc()">
+                            <option value="s-klasse">Extended S-Klasse</option>
+                            <option value="stretch">Stretch-Limousine</option>
+                            <option value="patriot">Patriot Limousine</option>
+                        </select>
+                        <label class="text-warning small fw-bold mb-2">Fahrt-Modus</label>
+                        <select id="c-mode" class="form-select mb-3" onchange="runCalc()">
+                            <option value="0">Einfache Fahrt</option>
+                            <option value="1">Hin- & Rückfahrt</option>
+                            <option value="2">1 Std. Exklusiv-Miete</option>
+                        </select>
+                        <div class="form-check form-switch mb-4">
+                            <input class="form-check-input" type="checkbox" id="c-out" onchange="runCalc()">
+                            <label class="form-check-label text-white">Zuschlag: Außerhalb Köln</label>
                         </div>
-                        <div class="mb-3">
-                            <label class="text-muted small">Modus</label>
-                            <select id="c-mode" class="form-select" onchange="calc()">
-                                <option value="0">Einfache Fahrt</option>
-                                <option value="1">Hin- & Rückfahrt</option>
-                                <option value="2">1 Std. Exklusiv</option>
-                            </select>
-                        </div>
-                        <div class="form-check form-switch mb-2">
-                            <input class="form-check-input" type="checkbox" id="c-out" onchange="calc()">
-                            <label class="form-check-label text-muted">Außerhalb Kerngebiet</label>
-                        </div>
-                        <button class="btn-taxi mt-4" onclick="downloadPDF('rechnung-pdf', 'Rechnung_TaxiKoeln')">RECHNUNG ALS PDF</button>
+                        <button class="btn-taxi py-3" onclick="downloadPDF('rechnung-view', 'Rechnung_TaxiKoeln')">RECHNUNG DOWNLOAD (PDF)</button>
                     </div>
                 </div>
                 <div class="col-md-7">
-                    <div id="rechnung-pdf" class="document-preview">
-                        <div class="d-flex justify-content-between border-bottom pb-3 mb-4">
-                            <div><h4 class="fw-bold m-0">TAXI KÖLN</h4><small>Rechnungsbeleg</small></div>
-                            <div class="text-end"><h4 class="m-0">RECHNUNG</h4><small id="r-date">--</small></div>
+                    <div id="rechnung-view" class="document-preview">
+                        <div class="d-flex justify-content-between border-bottom border-dark pb-4 mb-4">
+                            <div><h2 class="fw-bold m-0">TAXI KÖLN</h2><small>Chauffeurservice & Limousinen</small></div>
+                            <div class="text-end"><h2 class="m-0">RECHNUNG</h2><small id="r-date">--.--.----</small></div>
                         </div>
-                        <table class="table">
-                            <thead><tr><th>Leistung</th><th class="text-end">Betrag</th></tr></thead>
+                        <table class="table table-bordered">
+                            <thead class="table-light"><tr><th>Posten</th><th class="text-end">Betrag</th></tr></thead>
                             <tbody id="r-items"></tbody>
                         </table>
-                        <div class="text-end mt-4">
-                            <div class="h2 fw-bold" id="r-total">0 EUR</div>
+                        <div class="text-end mt-5">
+                            <div class="text-muted small">GESAMTBETRAG</div>
+                            <div class="display-5 fw-bold" id="r-total">0 EUR</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <div id="page-akte" class="page-node">
+            <h1 class="fw-900 mb-4">Personalakte</h1>
+            <div id="akte-view" class="glass-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h1 class="display-3 fw-900 text-warning m-0" id="ak-name">--</h1>
+                        <p class="fs-4 text-white-50" id="ak-rank">--</p>
+                    </div>
+                    <div class="text-end">
+                        <div class="text-warning fw-bold">DIENSTNUMMER</div>
+                        <div class="display-6 fw-bold" id="ak-dn">TK-00</div>
+                    </div>
+                </div>
+                <div class="row g-4 mt-5 pt-5 border-top border-secondary">
+                    <div class="col-md-6">
+                        <div class="text-warning small fw-bold">GESAMTE DIENSTZEIT (TOTAL)</div>
+                        <div class="display-5 fw-bold" id="ak-total">00:00:00</div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="text-warning small fw-bold">STATUS</div>
+                        <div class="h2 fw-bold text-success">AKTIV</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-taxi w-25" onclick="downloadPDF('akte-view', 'Personalakte')">AKTE ALS PDF</button>
+        </div>
+
         <div id="page-admin" class="page-node">
-            <h2 class="fw-bold mb-4">Mitarbeiter-Verwaltung</h2>
+            <h1 class="fw-900 mb-4">Mitarbeiter-Verwaltung</h1>
             <div class="glass-card">
-                <h5 class="text-warning mb-3">Neuen Account anlegen</h5>
+                <h5 class="text-warning fw-bold mb-4">NEUEN ACCOUNT ERSTELLEN</h5>
                 <div class="row g-3">
-                    <div class="col-md-4"><input type="text" id="a-name" class="form-control" placeholder="Name"></div>
-                    <div class="col-md-2"><input type="text" id="a-dn" class="form-control" placeholder="DN"></div>
-                    <div class="col-md-3"><input type="text" id="a-rang" class="form-control" placeholder="Rang"></div>
-                    <div class="col-md-3"><input type="password" id="a-pass" class="form-control" placeholder="Passwort"></div>
-                    <div class="col-12"><button class="btn-taxi" onclick="adminCreate()">NUTZER SPEICHERN</button></div>
+                    <div class="col-md-4"><label class="small text-white-50">Vollständiger Name</label><input type="text" id="adm-n" class="form-control"></div>
+                    <div class="col-md-2"><label class="small text-white-50">DN</label><input type="text" id="adm-d" class="form-control"></div>
+                    <div class="col-md-3"><label class="small text-white-50">Rang</label><input type="text" id="adm-r" class="form-control"></div>
+                    <div class="col-md-3"><label class="small text-white-50">Passwort</label><input type="password" id="adm-p" class="form-control"></div>
+                    <div class="col-12"><button class="btn-taxi" onclick="adminAdd()">MITARBEITER SPEICHERN</button></div>
                 </div>
             </div>
             <div class="glass-card">
-                <h5 class="text-warning mb-3">Aktive Mitglieder</h5>
+                <h5 class="text-warning fw-bold mb-4">PERSONAL-LISTE</h5>
                 <div class="table-responsive">
-                    <table class="table table-dark table-hover">
+                    <table class="table table-dark table-hover align-middle">
                         <thead><tr><th>DN</th><th>Name</th><th>Rang</th><th>Aktion</th></tr></thead>
-                        <tbody id="admin-table"></tbody>
+                        <tbody id="adm-table"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
         <div id="page-logs" class="page-node">
-            <h2 class="fw-bold mb-4">System-Logs</h2>
+            <h1 class="fw-900 mb-4">System-Logs</h1>
             <div class="glass-card">
-                <div id="sys-logs" style="height: 400px; overflow-y: auto; font-family: monospace; color: #00ff66; font-size: 0.85rem;"></div>
+                <div id="log-box" style="height: 500px; overflow-y: auto; font-family: 'Courier New', monospace; color: #00ff66; font-size: 0.9rem;"></div>
             </div>
-        </div>
-
-        <div id="page-akte" class="page-node">
-            <h2 class="fw-bold mb-4">Personalakte</h2>
-            <div id="akte-pdf" class="glass-card">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1 class="fw-800 m-0 text-warning" id="ak-name">--</h1>
-                    <div class="text-end">
-                        <div class="small text-muted">Personalnummer</div>
-                        <div class="fw-bold" id="ak-dn">TK-2026-00</div>
-                    </div>
-                </div>
-                <div class="row g-4 border-top border-secondary pt-4">
-                    <div class="col-md-6">
-                        <label class="small-label">Aktueller Rang</label>
-                        <div class="h4" id="ak-rang">--</div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="small-label">Gesamte Dienstzeit</label>
-                        <div class="h4" id="ak-total">00:00:00</div>
-                    </div>
-                </div>
-            </div>
-            <button class="btn-taxi mt-3" onclick="downloadPDF('akte-pdf', 'Akte_Taxi_Koeln')">AKTE EXPORTIEREN</button>
         </div>
 
     </main>
 
-    <div class="footer-branding">© Taxi Köln Enterprise | Dev: agrar.julian</div>
+    <div class="footer-branding">© TAXI KÖLN | DESIGNED BY AGRAR.JULIAN | HOSTED BY NORIXIUS</div>
 
     <script>
-        // DATENBANK (Local Storage für Persistenz)
-        let members = JSON.parse(localStorage.getItem('taxi_v5_members')) || [
-            {dn: "01", name: "Chris Schreiner", pass: "admin123", rank: "Leitung", total: 0, onDuty: false, status: "Frei", color: "#198754"},
-            {dn: "28", name: "Maverick Stone", pass: "taxi28", rank: "Azubi", total: 0, onDuty: false, status: "Frei", color: "#198754"}
+        // DATENSPEICHER
+        let members = JSON.parse(localStorage.getItem('tk_db_v5')) || [
+            {dn: "01", name: "Chris Schreiner", pass: "admin123", rank: "Leitung", total: 0, duty: false, status: "Frei", color: "#198754"},
+            {dn: "28", name: "Maverick Stone", pass: "taxi28", rank: "Azubi", total: 0, duty: false, status: "Frei", color: "#198754"}
         ];
 
-        let currentUser = null;
-        let timer = null;
+        let user = null;
+        let workTimer = null;
         let sessionSec = 0;
 
-        // AUTHENTIFIZIERUNG
+        // LOGIN
         function handleLogin() {
-            const dn = document.getElementById('l-dn').value;
-            const pass = document.getElementById('l-pass').value;
-            const user = members.find(m => m.dn === dn && m.pass === pass);
+            const inputName = document.getElementById('l-name').value.trim();
+            const inputPass = document.getElementById('l-pass').value;
+            
+            const found = members.find(m => m.name === inputName && m.pass === inputPass);
 
-            if(user) {
-                currentUser = user;
+            if(found) {
+                user = found;
                 document.getElementById('login-overlay').classList.add('d-none');
-                log(`Login erfolgreich: ${user.name}`);
-                initApp();
+                logMsg(`Login erfolgreich: ${user.name}`);
+                setupUI();
             } else {
                 document.getElementById('l-err').classList.remove('d-none');
             }
         }
 
-        function initApp() {
-            document.getElementById('side-name').innerText = currentUser.name;
-            document.getElementById('side-rank').innerText = `${currentUser.rank} (DN ${currentUser.dn})`;
-            document.getElementById('ak-name').innerText = currentUser.name;
-            document.getElementById('ak-rang').innerText = currentUser.rank;
-            document.getElementById('ak-dn').innerText = `TK-2026-${currentUser.dn}`;
-            document.getElementById('ak-total').innerText = formatTime(currentUser.total);
+        function setupUI() {
+            document.getElementById('side-name').innerText = user.name;
+            document.getElementById('side-rank').innerText = user.rank;
+            document.getElementById('ak-name').innerText = user.name;
+            document.getElementById('ak-rank').innerText = user.rank;
+            document.getElementById('ak-dn').innerText = `TK-${user.dn}`;
+            document.getElementById('ak-total').innerText = fmtTime(user.total);
             renderLS();
             renderAdmin();
-            calc();
+            runCalc();
         }
 
-        // PASSWORT ÄNDERN
-        function changePassword() {
-            const newPw = document.getElementById('new-pass-input').value;
-            if(newPw.length < 3) return alert("Passwort zu kurz!");
-            currentUser.pass = newPw;
-            save();
-            alert("Passwort wurde aktualisiert!");
-            document.getElementById('new-pass-input').value = "";
-            log("Eigenes Passwort geändert.");
-        }
-
-        // STEMPELUHR & STATUS
-        function dutyStart() {
-            currentUser.onDuty = true;
+        // STEMPELUHR
+        function startWork() {
+            user.duty = true;
             document.getElementById('btn-start').disabled = true;
             document.getElementById('btn-stop').disabled = false;
-            log("Dienst angetreten.");
-            timer = setInterval(() => {
+            document.getElementById('status-text').innerText = "Im Dienst";
+            logMsg("Dienst gestartet.");
+            workTimer = setInterval(() => {
                 sessionSec++;
-                document.getElementById('timer-val').innerText = formatTime(sessionSec);
+                document.getElementById('timer-display').innerText = fmtTime(sessionSec);
             }, 1000);
             renderLS();
         }
 
-        function dutyStop() {
-            clearInterval(timer);
-            currentUser.onDuty = false;
-            currentUser.total += sessionSec;
-            log(`Dienst beendet. Sitzung: ${formatTime(sessionSec)}`);
+        function stopWork() {
+            clearInterval(workTimer);
+            user.duty = false;
+            user.total += sessionSec;
+            logMsg(`Dienst beendet. Sitzungsdauer: ${fmtTime(sessionSec)}`);
             sessionSec = 0;
-            document.getElementById('timer-val').innerText = "00:00:00";
+            document.getElementById('timer-display').innerText = "00:00:00";
             document.getElementById('btn-start').disabled = false;
             document.getElementById('btn-stop').disabled = true;
-            document.getElementById('ak-total').innerText = formatTime(currentUser.total);
+            document.getElementById('status-text').innerText = "Außer Dienst";
+            document.getElementById('ak-total').innerText = fmtTime(user.total);
             save();
             renderLS();
         }
 
-        function updateStatus(txt, col) {
-            if(!currentUser.onDuty) return alert("Zuerst einstemmeln!");
-            currentUser.status = txt;
-            currentUser.color = col;
-            document.getElementById('dash-status').innerText = txt;
-            document.getElementById('dash-status').style.color = col;
+        function setStatus(txt, col) {
+            if(!user.duty) return alert("Du musst dich zuerst einstemmeln!");
+            user.status = txt;
+            user.color = col;
+            document.getElementById('status-text').innerText = txt;
+            document.getElementById('status-text').style.color = col;
             renderLS();
-            log(`Status geändert auf: ${txt}`);
         }
 
         // LEITSTELLE
         function renderLS() {
-            const container = document.getElementById('ls-container');
+            const container = document.getElementById('ls-list');
             container.innerHTML = '';
-            const active = members.filter(m => m.onDuty);
+            const actives = members.filter(m => m.duty);
+            document.getElementById('active-count').innerText = `${actives.length} Fahrer im Dienst`;
 
-            if(active.length === 0) {
-                container.innerHTML = '<div class="text-muted italic">Keine Einheiten im Dienst.</div>';
+            if(actives.length === 0) {
+                container.innerHTML = '<p class="text-white-50">Momentan keine Fahrer im Dienst.</p>';
                 return;
             }
 
-            active.forEach(m => {
+            actives.forEach(m => {
                 container.innerHTML += `
                     <div class="ls-row">
-                        <div><div class="fw-bold h5 mb-0">${m.name}</div><small class="text-muted">DN ${m.dn} • ${m.rank}</small></div>
+                        <div>
+                            <div class="h4 fw-900 mb-0">${m.name}</div>
+                            <div class="text-white-50 fw-bold">DN ${m.dn} • ${m.rank}</div>
+                        </div>
                         <div class="status-pill" style="color: ${m.color}">${m.status}</div>
                     </div>
                 `;
             });
         }
 
-        // ADMIN FUNKTIONEN
-        function adminCreate() {
-            const n = document.getElementById('a-name').value;
-            const d = document.getElementById('a-dn').value;
-            const r = document.getElementById('a-rang').value;
-            const p = document.getElementById('a-pass').value;
+        // ADMIN
+        function adminAdd() {
+            const n = document.getElementById('adm-n').value;
+            const d = document.getElementById('adm-d').value;
+            const r = document.getElementById('adm-r').value;
+            const p = document.getElementById('adm-p').value;
 
-            if(!n || !d || !p) return alert("Daten unvollständig!");
-            members.push({dn: d, name: n, pass: p, rank: r, total: 0, onDuty: false, status: "Frei", color: "#198754"});
+            if(!n || !d || !p) return alert("Bitte alle Felder ausfüllen!");
+            members.push({dn: d, name: n, pass: p, rank: r, total: 0, duty: false, status: "Frei", color: "#198754"});
             save();
             renderAdmin();
-            log(`Neuer Nutzer angelegt: ${n} (DN ${d})`);
-            alert("Mitarbeiter gespeichert.");
+            logMsg(`Admin hat Account erstellt: ${n}`);
+            alert("Mitarbeiter erfolgreich angelegt!");
         }
 
         function renderAdmin() {
-            const body = document.getElementById('admin-table');
-            body.innerHTML = '';
-            members.forEach((m, idx) => {
-                body.innerHTML += `<tr><td>${m.dn}</td><td>${m.name}</td><td>${m.rank}</td><td><button class="btn btn-sm btn-danger" onclick="deleteUser(${idx})">Entfernen</button></td></tr>`;
+            const tb = document.getElementById('adm-table');
+            tb.innerHTML = '';
+            members.forEach((m, i) => {
+                tb.innerHTML += `<tr><td>${m.dn}</td><td class="fw-bold">${m.name}</td><td>${m.rank}</td><td><button class="btn btn-sm btn-danger" onclick="delUser(${i})">Löschen</button></td></tr>`;
             });
         }
 
-        function deleteUser(idx) {
-            if(confirm("Mitarbeiter wirklich löschen?")) {
-                log(`Nutzer entfernt: ${members[idx].name}`);
-                members.splice(idx, 1);
+        function delUser(i) {
+            if(confirm(`Möchtest du ${members[i].name} wirklich löschen?`)) {
+                logMsg(`Admin hat Account gelöscht: ${members[i].name}`);
+                members.splice(i, 1);
                 save();
                 renderAdmin();
             }
         }
 
-        // RECHNER LOGIK
-        function calc() {
+        function updateOwnPassword() {
+            const val = document.getElementById('pw-change').value;
+            if(val.length < 3) return alert("Passwort zu kurz!");
+            user.pass = val;
+            save();
+            alert("Passwort geändert!");
+            logMsg("Passwort selbstständig geändert.");
+        }
+
+        // RECHNER
+        function runCalc() {
             const car = document.getElementById('c-car').value;
             const mode = document.getElementById('c-mode').value;
             const out = document.getElementById('c-out').checked;
             
-            const prices = { 's-klasse': [12000, 22000, 30000], 'stretch': [22000, 40000, 50000], 'patriot': [35000, 50000, 60000] };
-            let total = prices[car][mode];
-            let html = `<tr><td>Grundpreis (${car})</td><td class="text-end">${total.toLocaleString()} EUR</td></tr>`;
+            const base = { 's-klasse': [12000, 22000, 30000], 'stretch': [22000, 40000, 50000], 'patriot': [35000, 50000, 60000] };
+            let total = base[car][mode];
+            let rows = `<tr><td>Grundtarif (${car})</td><td class="text-end">${total.toLocaleString()} EUR</td></tr>`;
             
-            if(out) { total += 10000; html += `<tr><td>Zuschlag Außerhalb</td><td class="text-end">10.000 EUR</td></tr>`; }
+            if(out) { total += 10000; rows += `<tr><td>Anfahrt außerhalb Kerngebiet</td><td class="text-end">10.000 EUR</td></tr>`; }
 
-            document.getElementById('r-items').innerHTML = html;
+            document.getElementById('r-items').innerHTML = rows;
             document.getElementById('r-total').innerText = total.toLocaleString() + " EUR";
             document.getElementById('r-date').innerText = new Date().toLocaleDateString();
         }
 
-        // PDF EXPORT
-        function downloadPDF(id, name) {
-            const element = document.getElementById(id);
-            html2pdf().from(element).set({ margin: 10, filename: name + '.pdf', jsPDF: { unit: 'mm', format: 'a4' } }).save();
-        }
-
-        // HELPER
-        function formatTime(s) {
+        // HELPERS
+        function fmtTime(s) {
             const h = Math.floor(s / 3600);
             const m = Math.floor((s % 3600) / 60);
             const sec = s % 60;
@@ -500,17 +490,21 @@
         function switchPage(id, btn) {
             document.querySelectorAll('.page-node').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            document.getElementById('page-' + id).classList.add('active');
+            document.getElementById('page-'+id).classList.add('active');
             btn.classList.add('active');
-            if(id === 'ls') renderLS();
         }
 
-        function save() { localStorage.setItem('taxi_v5_members', JSON.stringify(members)); }
+        function save() { localStorage.setItem('tk_db_v5', JSON.stringify(members)); }
 
-        function log(msg) {
+        function logMsg(m) {
             const time = new Date().toLocaleTimeString();
-            const logBox = document.getElementById('sys-logs');
-            logBox.innerHTML = `<div>[${time}] ${msg}</div>` + logBox.innerHTML;
+            const box = document.getElementById('log-box');
+            box.innerHTML = `<div>[${time}] ${m}</div>` + box.innerHTML;
+        }
+
+        function downloadPDF(el, name) {
+            const opt = { margin: 10, filename: name + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+            html2pdf().set(opt).from(document.getElementById(el)).save();
         }
     </script>
 </body>
