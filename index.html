@@ -9,324 +9,270 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f1115;
-            color: #e2e8f0;
-        }
-
+        body { font-family: 'Inter', sans-serif; background-color: #0b0d11; color: #e2e8f0; overflow: hidden; }
         .taxi-yellow { color: #facc15; }
         .bg-taxi-yellow { background-color: #facc15; }
-        .border-taxi-yellow { border-color: #facc15; }
-        .shadow-glow { box-shadow: 0 0 15px rgba(250, 204, 21, 0.2); }
-        
-        .sidebar-item {
-            transition: all 0.3s;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .sidebar-item:hover, .sidebar-item.active {
-            background-color: rgba(250, 204, 21, 0.1);
-            color: #facc15;
-        }
-
-        .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-        }
-
+        .glow { box-shadow: 0 0 20px rgba(250, 204, 21, 0.15); }
+        .glass { background: rgba(23, 27, 34, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .sidebar-item { transition: all 0.2s; cursor: pointer; display: flex; align-items: center; padding: 0.8rem 1rem; border-radius: 0.75rem; margin-bottom: 0.4rem; color: #94a3b8; }
+        .sidebar-item:hover, .sidebar-item.active { background: rgba(250, 204, 21, 0.1); color: #facc15; }
         .hidden { display: none; }
+        /* Ladeanimation */
+        #loader { position: fixed; inset: 0; background: #0b0d11; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
     </style>
 </head>
-<body class="h-screen overflow-hidden">
+<body>
 
-    <div id="login-page" class="fixed inset-0 z-50 flex items-center justify-center bg-black">
-        <div class="glass-card p-8 w-full max-w-md text-center">
-            <h1 class="text-3xl font-bold mb-2">TAXI <span class="taxi-yellow">KÖLN</span></h1>
-            <p class="text-gray-400 mb-6">Mitarbeiter Login</p>
-            <input type="text" id="login-dn" placeholder="Dienstnummer (z.B. 01)" class="w-full p-3 mb-3 bg-gray-900 border border-gray-700 rounded-lg">
-            <input type="password" id="login-pw" placeholder="Passwort" class="w-full p-3 mb-6 bg-gray-900 border border-gray-700 rounded-lg">
-            <button onclick="handleLogin()" class="w-full bg-taxi-yellow text-black font-bold py-3 rounded-lg hover:bg-yellow-400 transition shadow-glow">Anmelden</button>
-            <p class="mt-4 text-sm text-gray-500">Demo: 01 / Bka26a</p>
+    <div id="loader">
+        <div class="w-16 h-16 border-4 border-taxi-yellow border-t-transparent rounded-full animate-spin mb-4"></div>
+        <h2 class="text-xl font-bold tracking-widest">TAXI <span class="taxi-yellow">KÖLN</span></h2>
+    </div>
+
+    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0b0d11] hidden">
+        <div class="glass p-8 w-full max-w-md rounded-2xl glow text-center">
+            <h1 class="text-3xl font-bold mb-2">MDT <span class="taxi-yellow">LOGIN</span></h1>
+            <p class="text-gray-500 mb-8 text-sm uppercase tracking-widest">Taxi Köln NRW RP</p>
+            <div class="space-y-4">
+                <input type="text" id="login-dn" placeholder="Dienstnummer" class="w-full bg-gray-900 border border-gray-800 p-4 rounded-xl focus:border-yellow-500 outline-none">
+                <input type="password" id="login-pw" placeholder="Passwort" class="w-full bg-gray-900 border border-gray-800 p-4 rounded-xl focus:border-yellow-500 outline-none">
+                <button onclick="auth()" class="w-full bg-taxi-yellow text-black font-bold py-4 rounded-xl hover:scale-[1.02] transition shadow-lg">ANMELDEN</button>
+            </div>
+            <p class="mt-6 text-xs text-gray-600">Demo: 01 / Bka26a</p>
         </div>
     </div>
 
-    <div id="app-content" class="flex h-full hidden">
-        
-        <aside class="w-64 bg-gray-900 border-r border-gray-800 flex flex-col p-4">
-            <div class="mb-8 px-2">
-                <h2 class="text-xl font-bold">TAXI <span class="taxi-yellow">KÖLN</span></h2>
-                <span class="text-[10px] text-gray-500 uppercase tracking-widest">Management System</span>
+    <div id="app" class="flex h-screen hidden">
+        <aside class="w-72 bg-[#0d1117] border-r border-gray-800 flex flex-col p-6">
+            <div class="mb-10">
+                <h1 class="text-2xl font-black italic italic">TAXI <span class="taxi-yellow">KÖLN</span></h1>
+                <div class="h-1 w-12 bg-taxi-yellow mt-1"></div>
             </div>
 
-            <nav class="flex-grow overflow-y-auto space-y-1">
-                <div onclick="showTab('dashboard')" class="sidebar-item active" data-tab="dashboard">
-                    <i data-lucide="layout-dashboard" class="mr-3 w-5"></i> Dashboard
-                </div>
-                <div onclick="showTab('leitstelle')" class="sidebar-item" data-tab="leitstelle">
-                    <i data-lucide="radio" class="mr-3 w-5"></i> Leitstelle
-                </div>
-                <div onclick="showTab('rechner')" class="sidebar-item" data-tab="rechner">
-                    <i data-lucide="calculator" class="mr-3 w-5"></i> Fahrtenrechner
-                </div>
-                <div onclick="showTab('fahrtenbuch')" class="sidebar-item" data-tab="fahrtenbuch">
-                    <i data-lucide="book-open" class="mr-3 w-5"></i> Fahrtenbuch
-                </div>
-                <div onclick="showTab('personal')" class="sidebar-item" data-tab="personal">
-                    <i data-lucide="users" class="mr-3 w-5"></i> Personal
-                </div>
-                <div onclick="showTab('feedback')" class="sidebar-item" data-tab="feedback">
-                    <i data-lucide="message-square" class="mr-3 w-5"></i> Feedback
-                </div>
+            <nav class="flex-grow space-y-1">
+                <div onclick="showTab('dash')" class="sidebar-item active" data-tab="dash"><i data-lucide="layout-dashboard" class="mr-3 w-5"></i> Dashboard</div>
+                <div onclick="showTab('calc')" class="sidebar-item" data-tab="calc"><i data-lucide="calculator" class="mr-3 w-5"></i> Fahrtenrechner</div>
+                <div onclick="showTab('book')" class="sidebar-item" data-tab="book"><i data-lucide="book-marked" class="mr-3 w-5"></i> Fahrtenbuch</div>
+                <div onclick="showTab('staff')" class="sidebar-item" data-tab="staff"><i data-lucide="users" class="mr-3 w-5"></i> Personal</div>
+                <div onclick="showTab('docs')" class="sidebar-item" data-tab="docs"><i data-lucide="file-text" class="mr-3 w-5"></i> Arbeitszeugnis</div>
             </nav>
 
-            <div class="mt-auto pt-4 border-t border-gray-800">
-                <div class="flex items-center p-2 rounded-lg bg-gray-800/50">
-                    <div class="w-10 h-10 rounded-full bg-taxi-yellow flex items-center justify-center text-black font-bold mr-3" id="user-avatar">
-                        ?
-                    </div>
+            <div class="mt-auto pt-6 border-t border-gray-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 rounded-xl bg-taxi-yellow flex items-center justify-center text-black font-bold text-xl shadow-lg" id="prof-avatar">?</div>
                     <div class="flex-grow overflow-hidden">
-                        <p class="text-sm font-semibold truncate" id="user-name">Name</p>
-                        <p class="text-xs text-gray-400" id="user-rank">Rang</p>
+                        <p class="text-sm font-bold truncate" id="prof-name">Lade...</p>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-tighter" id="prof-rank">Rang</p>
                     </div>
-                    <button onclick="logout()" class="text-gray-500 hover:text-red-500 transition">
-                        <i data-lucide="log-out" class="w-4"></i>
-                    </button>
+                    <button onclick="location.reload()" class="text-gray-600 hover:text-red-500 transition"><i data-lucide="log-out" class="w-5"></i></button>
                 </div>
             </div>
         </aside>
 
-        <main class="flex-grow flex flex-col bg-gray-950 overflow-hidden">
-            
-            <header class="h-16 border-b border-gray-800 flex items-center justify-between px-8 bg-gray-900/50">
-                <h3 id="tab-title" class="text-lg font-medium">Dashboard</h3>
-                <div class="flex items-center space-x-4">
-                    <div id="status-badge" class="px-3 py-1 rounded-full text-xs bg-red-500/20 text-red-500 border border-red-500/50">Außer Dienst</div>
-                    <div id="live-timer" class="text-xl font-mono taxi-yellow">00:00:00</div>
+        <main class="flex-grow flex flex-col bg-[#0b0d11]">
+            <header class="h-20 border-b border-gray-800 flex items-center justify-between px-10">
+                <h2 id="tab-title" class="text-xl font-bold uppercase tracking-widest text-gray-400">Dashboard</h2>
+                <div class="flex items-center space-x-6">
+                    <div id="status-badge" class="px-3 py-1 rounded-full text-[10px] font-bold bg-red-500/10 text-red-500 border border-red-500/20 uppercase">Außer Dienst</div>
+                    <div id="clock" class="text-3xl font-mono taxi-yellow font-bold">00:00:00</div>
                 </div>
             </header>
 
-            <div id="tab-content" class="p-8 overflow-y-auto h-full">
-                
-                <section id="tab-dashboard" class="tab-pane">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="glass-card p-6 border-l-4 border-taxi-yellow">
-                            <p class="text-gray-400 text-sm">Status Management</p>
-                            <div class="mt-4 flex flex-wrap gap-2">
-                                <button onclick="toggleDuty()" id="duty-btn" class="bg-green-600 hover:bg-green-500 px-4 py-2 rounded font-bold text-sm">EINSTEMPELN</button>
-                                <select id="work-status" class="bg-gray-800 border border-gray-700 rounded px-2 text-sm">
+            <div class="p-10 overflow-y-auto h-full">
+                <div id="tab-dash" class="tab-content space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass p-6 rounded-2xl border-l-4 border-taxi-yellow">
+                            <h4 class="text-gray-500 text-xs uppercase mb-4">Dienst-Status</h4>
+                            <div class="flex flex-col space-y-3">
+                                <button onclick="toggleDuty()" id="duty-btn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl transition">EINSTEMPELN</button>
+                                <select class="bg-gray-900 border border-gray-800 p-2 rounded-lg text-sm outline-none">
                                     <option>Einsatzbereit</option>
                                     <option>Im Auftrag</option>
                                     <option>Pause</option>
-                                    <option>Zentrale</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="glass-card p-6">
-                            <p class="text-gray-400 text-sm">Letzte Sitzung</p>
-                            <h4 class="text-2xl font-bold mt-2" id="last-session">00:00:00</h4>
+                        <div class="glass p-6 rounded-2xl">
+                            <h4 class="text-gray-500 text-xs uppercase mb-1">Letzte Sitzung</h4>
+                            <p class="text-3xl font-bold" id="stat-last">00:00:00</p>
                         </div>
-                        <div class="glass-card p-6">
-                            <p class="text-gray-400 text-sm">Gesamte Dienstzeit</p>
-                            <h4 class="text-2xl font-bold mt-2" id="total-time">0h 0m</h4>
+                        <div class="glass p-6 rounded-2xl">
+                            <h4 class="text-gray-500 text-xs uppercase mb-1">Einnahmen Heute</h4>
+                            <p class="text-3xl font-bold taxi-yellow">$ 0</p>
                         </div>
                     </div>
 
-                    <div class="glass-card p-6">
-                        <h4 class="text-lg font-bold mb-4">Letzte Fahrten</h4>
-                        <table class="w-full text-left text-sm">
-                            <thead class="text-gray-500 border-b border-gray-800">
-                                <tr>
-                                    <th class="pb-3">Von</th>
-                                    <th class="pb-3">Nach</th>
-                                    <th class="pb-3">KM</th>
-                                    <th class="pb-3 text-right">Datum/Zeit</th>
-                                </tr>
-                            </thead>
-                            <tbody id="last-trips-list">
-                                </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <section id="tab-rechner" class="tab-pane hidden">
-                    <div class="max-w-2xl mx-auto glass-card p-8">
-                        <h2 class="text-2xl font-bold mb-6 flex items-center"><i data-lucide="calculator" class="mr-2 text-taxi-yellow"></i> Preisrechner</h2>
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div>
-                                <label class="block text-xs text-gray-400 mb-1">Fahrzeugtyp</label>
-                                <select id="calc-type" class="w-full bg-gray-900 border border-gray-700 p-2 rounded">
-                                    <option value="0">Normales Taxi (Kostenlos)</option>
-                                    <option value="5000">Limousine (Basis 5000$)</option>
-                                    <option value="10000">VIP Bus (Basis 10000$)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-400 mb-1">Strecke (KM)</label>
-                                <input type="number" id="calc-km" class="w-full bg-gray-900 border border-gray-700 p-2 rounded" value="0">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-400 mb-1">Zeit (Minuten)</label>
-                                <input type="number" id="calc-time" class="w-full bg-gray-900 border border-gray-700 p-2 rounded" value="0">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-400 mb-1">Zuschläge ($)</label>
-                                <input type="number" id="calc-extra" class="w-full bg-gray-900 border border-gray-700 p-2 rounded" value="0">
-                            </div>
+                    <div class="glass rounded-2xl p-8">
+                        <h3 class="font-bold mb-6 flex items-center"><i data-lucide="history" class="mr-2 w-5 taxi-yellow"></i> System Logs</h3>
+                        <div id="log-list" class="space-y-3 text-sm font-mono">
+                            <div class="text-gray-600 italic">Keine Einträge vorhanden...</div>
                         </div>
-                        <div class="bg-black/40 p-6 rounded-xl border border-dashed border-gray-700 text-center mb-6">
-                            <p class="text-gray-400">Gesamtsumme</p>
-                            <h3 class="text-4xl font-bold taxi-yellow" id="calc-total">0 $</h3>
-                        </div>
-                        <button onclick="generatePDF()" class="w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition flex items-center justify-center">
-                            <i data-lucide="file-text" class="mr-2"></i> PDF RECHNUNG ERSTELLEN
-                        </button>
                     </div>
-                </section>
-
                 </div>
 
-            <footer class="h-10 border-t border-gray-800 bg-gray-900 px-8 flex items-center justify-between text-[10px] text-gray-500 uppercase tracking-widest">
-                <div>Taxi Köln NRW RP</div>
-                <div>Coded by agrar.julian | Hosted by norixius</div>
-            </footer>
+                <div id="tab-calc" class="tab-content hidden max-w-2xl mx-auto">
+                    <div class="glass p-8 rounded-3xl space-y-6">
+                        <h2 class="text-2xl font-bold mb-4">Preisrechner</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs text-gray-500 uppercase">Fahrzeug</label>
+                                <select id="c-type" class="w-full bg-gray-900 border border-gray-800 p-3 rounded-xl outline-none mt-1">
+                                    <option value="0">Normales Taxi (Gratis)</option>
+                                    <option value="5000">Limousine ($5000)</option>
+                                    <option value="10000">VIP Bus ($10000)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500 uppercase">Strecke (KM)</label>
+                                <input type="number" id="c-km" class="w-full bg-gray-900 border border-gray-800 p-3 rounded-xl mt-1" value="0">
+                            </div>
+                        </div>
+                        <div class="bg-black/50 p-6 rounded-2xl text-center border border-dashed border-gray-800">
+                            <p class="text-xs text-gray-500 uppercase">Gesamtbetrag</p>
+                            <h3 class="text-5xl font-black taxi-yellow mt-2" id="c-total">$ 0</h3>
+                        </div>
+                        <button onclick="genPDF()" class="w-full bg-white text-black font-bold py-4 rounded-xl flex items-center justify-center hover:bg-gray-200 transition">
+                            <i data-lucide="download" class="mr-2"></i> PDF RECHNUNG ERSTELLEN
+                        </button>
+                    </div>
+                </div>
+
+                <div id="tab-staff" class="tab-content hidden">
+                    <div class="glass overflow-hidden rounded-2xl">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-900/50 text-xs text-gray-500 uppercase">
+                                <tr>
+                                    <th class="p-4">DN</th>
+                                    <th class="p-4">Name</th>
+                                    <th class="p-4">Rang</th>
+                                    <th class="p-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-800">
+                                <tr><td class="p-4">01</td><td class="p-4 font-bold">Chris Schreiner</td><td class="p-4 text-xs">Geschäftsführung</td><td class="p-4"><span class="text-green-500">Aktiv</span></td></tr>
+                                <tr><td class="p-4">02</td><td class="p-4 font-bold">Marco Krause</td><td class="p-4 text-xs">Stv. Geschäftsführung</td><td class="p-4"><span class="text-green-500">Aktiv</span></td></tr>
+                                <tr><td class="p-4">28</td><td class="p-4 font-bold">Maverick Stone</td><td class="p-4 text-xs">Azubi</td><td class="p-4"><span class="text-yellow-500">Im Dienst</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
         </main>
     </div>
 
     <script>
-        // --- DATA ---
+        // DATEN & LOGIK
         const users = [
-            { dn: "28", name: "Maverick Stone", rank: "Azubi", pw: "Bka26r" },
-            { dn: "01", name: "Chris Schreiner", rank: "Geschäftsführung", pw: "Bka26a" },
-            { dn: "02", name: "Marco Krause", rank: "Stv. Geschäftsführung", pw: "Bka26b" }
+            {dn: "28", name: "Maverick Stone", rank: "Azubi", pw: "Bka26r"},
+            {dn: "01", name: "Chris Schreiner", rank: "Geschäftsführung", pw: "Bka26a"},
+            {dn: "02", name: "Marco Krause", rank: "Stv. Geschäftsführung", pw: "Bka26b"}
         ];
 
-        let currentUser = null;
-        let timerInterval = null;
+        let currUser = null;
+        let onDuty = false;
         let seconds = 0;
-        let isOnDuty = false;
+        let timer = null;
 
-        // --- LOGIC ---
+        // Init
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loader').classList.add('hidden');
+                    document.getElementById('login-screen').classList.remove('hidden');
+                }, 500);
+            }, 1500);
+            lucide.createIcons();
+        };
 
-        function handleLogin() {
+        function auth() {
             const dn = document.getElementById('login-dn').value;
             const pw = document.getElementById('login-pw').value;
-            
             const user = users.find(u => u.dn === dn && u.pw === pw);
-            
+
             if(user) {
-                currentUser = user;
-                document.getElementById('login-page').classList.add('hidden');
-                document.getElementById('app-content').classList.remove('hidden');
-                
-                // UI Update
-                document.getElementById('user-name').innerText = user.name;
-                document.getElementById('user-rank').innerText = user.rank;
-                document.getElementById('user-avatar').innerText = user.name.charAt(0);
-                
-                lucide.createIcons();
+                currUser = user;
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+                document.getElementById('prof-name').innerText = user.name;
+                document.getElementById('prof-rank').innerText = user.rank;
+                document.getElementById('prof-avatar').innerText = user.name.charAt(0);
+                addLog(`Login erfolgreich: ${user.name}`);
             } else {
-                alert("Ungültige Zugangsdaten!");
+                alert("Zugriff verweigert!");
             }
         }
 
-        function showTab(tabId) {
-            // Hide all
-            document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
             document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-            
-            // Show target
-            const target = document.getElementById('tab-' + tabId);
-            if(target) target.classList.remove('hidden');
-            
-            // Update Sidebar
-            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-            document.getElementById('tab-title').innerText = tabId.charAt(0).toUpperCase() + tabId.slice(1);
+            document.getElementById('tab-'+id).classList.remove('hidden');
+            document.querySelector(`[data-tab="${id}"]`).classList.add('active');
+            document.getElementById('tab-title').innerText = id;
+            lucide.createIcons();
         }
 
         function toggleDuty() {
             const btn = document.getElementById('duty-btn');
             const badge = document.getElementById('status-badge');
-            
-            isOnDuty = !isOnDuty;
+            onDuty = !onDuty;
 
-            if(isOnDuty) {
+            if(onDuty) {
                 btn.innerText = "AUSSTEMPELN";
                 btn.classList.replace('bg-green-600', 'bg-red-600');
                 badge.innerText = "Im Dienst";
                 badge.classList.replace('text-red-500', 'text-green-500');
-                badge.classList.replace('bg-red-500/20', 'bg-green-500/20');
-                badge.classList.replace('border-red-500/50', 'border-green-500/50');
-                
-                // Sound Effekt
-                new Audio('https://www.soundjay.com/buttons/button-3.mp3').play().catch(()=>{});
-
-                timerInterval = setInterval(() => {
+                badge.classList.replace('bg-red-500/10', 'bg-green-500/10');
+                addLog("Dienst angetreten");
+                timer = setInterval(() => {
                     seconds++;
-                    updateTimerDisplay();
+                    document.getElementById('clock').innerText = formatTime(seconds);
                 }, 1000);
+                new Audio('https://www.soundjay.com/buttons/button-3.mp3').play().catch(()=>{});
             } else {
                 btn.innerText = "EINSTEMPELN";
                 btn.classList.replace('bg-red-600', 'bg-green-600');
                 badge.innerText = "Außer Dienst";
                 badge.classList.replace('text-green-500', 'text-red-500');
-                
-                document.getElementById('last-session').innerText = formatTime(seconds);
-                clearInterval(timerInterval);
+                document.getElementById('stat-last').innerText = formatTime(seconds);
+                clearInterval(timer);
+                addLog(`Dienst beendet. Dauer: ${formatTime(seconds)}`);
                 seconds = 0;
-                updateTimerDisplay();
+                document.getElementById('clock').innerText = "00:00:00";
             }
         }
 
-        function updateTimerDisplay() {
-            document.getElementById('live-timer').innerText = formatTime(seconds);
-        }
-
         function formatTime(s) {
-            const h = Math.floor(s / 3600).toString().padStart(2, '0');
-            const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
-            const sec = (s % 60).toString().padStart(2, '0');
-            return `${h}:${m}:${sec}`;
+            return new Date(s * 1000).toISOString().substr(11, 8);
         }
 
-        // FAHRTENRECHNER LOGIK
-        const calcInputs = ['calc-type', 'calc-km', 'calc-time', 'calc-extra'];
-        calcInputs.forEach(id => {
-            document.getElementById(id)?.addEventListener('input', () => {
-                const base = parseInt(document.getElementById('calc-type').value);
-                const km = parseInt(document.getElementById('calc-km').value) * 100; // 100$ pro km
-                const extra = parseInt(document.getElementById('calc-extra').value) || 0;
-                
-                const total = base === 0 ? 0 : base + km + extra;
-                document.getElementById('calc-total').innerText = total + " $";
-            });
+        function addLog(msg) {
+            const list = document.getElementById('log-list');
+            if(list.innerText.includes("Keine Einträge")) list.innerHTML = "";
+            const entry = document.createElement('div');
+            entry.className = "flex justify-between border-b border-gray-800 pb-1";
+            entry.innerHTML = `<span class="text-gray-400">[${new Date().toLocaleTimeString()}]</span> <span>${msg}</span>`;
+            list.prepend(entry);
+        }
+
+        // Rechner Logik
+        const calcKeys = ['c-type', 'c-km'];
+        calcKeys.forEach(k => document.getElementById(k).oninput = () => {
+            const base = parseInt(document.getElementById('c-type').value);
+            const km = parseInt(document.getElementById('c-km').value);
+            const total = base === 0 ? 0 : base + (km * 150); // 150 pro KM
+            document.getElementById('c-total').innerText = `$ ${total}`;
         });
 
-        function logout() {
-            location.reload();
-        }
-
-        // Init
-        lucide.createIcons();
-
-        function generatePDF() {
+        function genPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(22);
-            doc.text("TAXI KÖLN RECHNUNG", 20, 20);
-            doc.setFontSize(12);
-            doc.text(`Fahrer: ${currentUser.name}`, 20, 40);
-            doc.text(`Betrag: ${document.getElementById('calc-total').innerText}`, 20, 50);
+            doc.setFontSize(22); doc.text("TAXI KÖLN RECHNUNG", 20, 20);
+            doc.setFontSize(12); doc.text(`Fahrer: ${currUser.name} (DN ${currUser.dn})`, 20, 40);
+            doc.text(`Betrag: ${document.getElementById('c-total').innerText}`, 20, 50);
             doc.text(`Datum: ${new Date().toLocaleString()}`, 20, 60);
-            doc.save("rechnung_taxi_koeln.pdf");
+            doc.text("Vielen Dank für Ihre Fahrt!", 20, 80);
+            doc.save("Taxi_Koeln_Rechnung.pdf");
         }
     </script>
 </body>
