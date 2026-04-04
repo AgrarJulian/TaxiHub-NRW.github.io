@@ -3,410 +3,492 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Köln | Premium Service</title>
+    <title>Taxi Köln | Premium Management & Public Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
-        
         :root { --taxi-yellow: #facc15; --bg-dark: #0b0d11; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: #e2e8f0; scroll-behavior: smooth; margin: 0; overflow-x: hidden; }
         
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: #e2e8f0; scroll-behavior: smooth; }
+        /* Intro Video Styling */
+        #intro-container { position: fixed; inset: 0; z-index: 9999; background: black; display: flex; align-items: center; justify-content: center; transition: opacity 1s ease; }
         
         .taxi-yellow { color: var(--taxi-yellow); }
         .bg-taxi-yellow { background-color: var(--taxi-yellow); }
-        .border-taxi-yellow { border-color: var(--taxi-yellow); }
+        .glass { background: rgba(23, 27, 34, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .glow-yellow:hover { box-shadow: 0 0 20px rgba(250, 204, 21, 0.4); }
+        .hidden { display: none !important; }
         
-        .glow-yellow { box-shadow: 0 0 20px rgba(250, 204, 21, 0.2); }
-        .text-glow { text-shadow: 0 0 10px rgba(250, 204, 21, 0.5); }
-        
-        .glass { background: rgba(23, 27, 34, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        
-        .hero-gradient {
-            background: radial-gradient(circle at top right, rgba(250, 204, 21, 0.08), transparent),
-                        radial-gradient(circle at bottom left, rgba(250, 204, 21, 0.03), transparent);
-        }
+        /* Rechnungs-Vorschau Style */
+        .invoice-preview { background: white; color: black; padding: 40px; border-radius: 2px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); font-family: 'Courier New', Courier, monospace; min-height: 500px; position: relative; }
+        .invoice-preview::after { content: "VORSCHAU"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 80px; color: rgba(0,0,0,0.05); pointer-events: none; }
 
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-10px); border-color: var(--taxi-yellow); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .sidebar-item { transition: all 0.2s; cursor: pointer; display: flex; align-items: center; padding: 1rem; border-radius: 0.75rem; color: #94a3b8; font-weight: 600; }
+        .sidebar-item:hover, .sidebar-item.active { background: var(--taxi-yellow); color: black; }
 
-        .sidebar-item { transition: all 0.2s; cursor: pointer; display: flex; align-items: center; padding: 0.8rem 1rem; border-radius: 0.75rem; color: #94a3b8; }
-        .sidebar-item:hover, .sidebar-item.active { background: rgba(250, 204, 21, 0.1); color: var(--taxi-yellow); }
-
-        .hidden { display: none; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade { animation: fadeIn 0.8s ease forwards; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0b0d11; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--taxi-yellow); }
     </style>
 </head>
 <body>
 
-    <div id="landing-page" class="hero-gradient min-h-screen">
-        
-        <nav class="flex justify-between items-center px-6 md:px-20 py-6 sticky top-0 z-50 glass">
-            <div class="text-2xl font-black italic tracking-tighter">TAXI <span class="taxi-yellow">KÖLN</span></div>
-            <div class="hidden md:flex space-x-8 text-sm font-medium uppercase tracking-widest">
-                <a href="#services" class="hover:text-yellow-400 transition">Services</a>
-                <a href="#prices" class="hover:text-yellow-400 transition">Preise</a>
-                <a href="#team" class="hover:text-yellow-400 transition">Team</a>
+    <div id="intro-container">
+        <video id="intro-video" width="100%" height="100%" style="object-fit: cover;" autoplay muted playsinline>
+            <source src="images/GTA_Style_Taxi_Chase_A_black_limousine_with_gold_rims_and_neon_yellow_4ziL6-2u.mp4" type="video/mp4">
+        </video>
+        <button onclick="endIntro()" class="absolute bottom-10 right-10 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-full text-white text-xs backdrop-blur-md transition">ÜBERSPRINGEN ➔</button>
+    </div>
+
+    <div id="landing-page" class="hidden opacity-0 transition-opacity duration-1000">
+        <nav class="flex justify-between items-center px-6 md:px-20 py-4 glass sticky top-0 z-50">
+            <div class="flex items-center gap-3">
+                <img src="images/Logo.png" alt="Logo" class="h-12">
+                <span class="text-2xl font-black italic tracking-tighter">TAXI <span class="taxi-yellow">KÖLN</span></span>
             </div>
-            <button onclick="showLogin()" class="bg-taxi-yellow text-black px-6 py-2 rounded-full font-bold text-sm glow-yellow hover:scale-105 transition">INTERN LOGIN</button>
+            <div class="hidden md:flex gap-8 text-sm font-bold uppercase tracking-widest">
+                <a href="#prices" class="hover:text-yellow-400 transition">Preise</a>
+                <a href="#services" class="hover:text-yellow-400 transition">Service</a>
+                <a href="#team" class="hover:text-yellow-400 transition">Leitung</a>
+            </div>
+            <button onclick="showLogin()" class="bg-taxi-yellow text-black px-8 py-2 rounded-full font-bold glow-yellow transition hover:scale-105">MITARBEITER LOGIN</button>
         </nav>
 
-        <header class="flex flex-col items-center justify-center text-center px-4 pt-24 pb-32">
-            <div class="animate-fade">
-                <span class="text-taxi-yellow uppercase tracking-[0.3em] text-xs font-bold mb-4 block">Los Santos Premium Chauffeur</span>
-                <h1 class="text-6xl md:text-8xl font-black italic mb-6 leading-none">TAXI <span class="taxi-yellow text-glow">KÖLN</span></h1>
-                <p class="text-gray-400 max-w-xl text-lg mb-10 mx-auto">Schnell, zuverlässig und luxuriös durch Los Santos. Wir bringen Sie stilvoll an Ihr Ziel – rund um die Uhr.</p>
-                <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-center">
-                    <a href="#prices" class="bg-white text-black px-10 py-4 rounded-xl font-bold hover:bg-gray-200 transition">Preise ansehen</a>
-                    <a href="https://discord.gg/aYfP9CHtYp" target="_blank" class="glass px-10 py-4 rounded-xl font-bold flex items-center justify-center hover:bg-white/5 transition">
-                        <i data-lucide="message-circle" class="mr-2 w-5"></i> Discord Funk
-                    </a>
+        <header class="relative h-[85vh] flex items-center justify-center text-center px-4 overflow-hidden">
+            <img src="images/banner.png" class="absolute inset-0 w-full h-full object-cover opacity-40 z-[-1]" alt="Banner">
+            <div class="max-w-4xl">
+                <span class="taxi-yellow font-bold tracking-[0.4em] text-sm mb-4 block animate-bounce">PREMIUM SERVICE</span>
+                <h1 class="text-7xl md:text-9xl font-black italic mb-6 leading-none shadow-black text-white">TAXI <span class="taxi-yellow">KÖLN</span></h1>
+                <p class="text-xl md:text-2xl text-gray-300 mb-10 font-light">„Schnell, zuverlässig und luxuriös durch Los Santos“</p>
+                <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <button onclick="showLogin()" class="bg-taxi-yellow text-black px-10 py-5 rounded-2xl font-black text-lg hover:scale-105 transition shadow-2xl">JETZT EINLOGGEN</button>
+                    <a href="#prices" class="glass text-white px-10 py-5 rounded-2xl font-black text-lg hover:bg-white/10 transition">PREISE ANSEHEN</a>
                 </div>
             </div>
         </header>
 
-        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 px-6 md:px-20 -mt-16 mb-24">
-            <div class="glass p-8 rounded-3xl text-center animate-fade" style="animation-delay: 0.2s">
-                <p class="text-3xl font-black taxi-yellow">500+</p>
-                <p class="text-xs text-gray-500 uppercase tracking-widest mt-2">Fahrten</p>
-            </div>
-            <div class="glass p-8 rounded-3xl text-center animate-fade" style="animation-delay: 0.3s">
-                <p class="text-3xl font-black taxi-yellow">12</p>
-                <p class="text-xs text-gray-500 uppercase tracking-widest mt-2">Aktive Fahrer</p>
-            </div>
-            <div class="glass p-8 rounded-3xl text-center animate-fade" style="animation-delay: 0.4s">
-                <p class="text-3xl font-black taxi-yellow">100%</p>
-                <p class="text-xs text-gray-500 uppercase tracking-widest mt-2">Zufriedenheit</p>
-            </div>
-            <div class="glass p-8 rounded-3xl text-center animate-fade" style="animation-delay: 0.5s">
-                <p class="text-3xl font-black taxi-yellow">24/7</p>
-                <p class="text-xs text-gray-500 uppercase tracking-widest mt-2">Erreichbar</p>
-            </div>
-        </section>
-
-        <section id="services" class="px-6 md:px-20 py-20">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-black italic mb-4">UNSERE <span class="taxi-yellow">SERVICES</span></h2>
-                <div class="h-1 w-20 bg-taxi-yellow mx-auto"></div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="glass p-10 rounded-3xl card-hover">
-                    <i data-lucide="zap" class="w-12 h-12 taxi-yellow mb-6"></i>
-                    <h3 class="text-xl font-bold mb-4 text-white">Schnelle Abholung</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Dank unserer modernen Ingame-App sind wir in Rekordzeit bei Ihnen vor Ort.</p>
-                </div>
-                <div class="glass p-10 rounded-3xl card-hover">
-                    <i data-lucide="gem" class="w-12 h-12 taxi-yellow mb-6"></i>
-                    <h3 class="text-xl font-bold mb-4 text-white">Luxus-Fuhrpark</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Von der eleganten S-Klasse bis zur Stretch-Limousine für besondere Anlässe.</p>
-                </div>
-                <div class="glass p-10 rounded-3xl card-hover">
-                    <i data-lucide="shield-check" class="w-12 h-12 taxi-yellow mb-6"></i>
-                    <h3 class="text-xl font-bold mb-4 text-white">Profi Fahrer</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Unsere Fahrer sind bestens ausgebildet, ortskundig und diskret.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="prices" class="px-6 md:px-20 py-20 bg-black/30">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-black italic mb-4">PREIS<span class="taxi-yellow">LISTE</span></h2>
-                <p class="text-gray-500 uppercase tracking-[0.2em] text-xs">Exklusivtarife für Premiumfahrzeuge</p>
-                <p class="mt-4 taxi-yellow font-bold text-sm italic">"Normale Fahrten mit Standard-Taxis sind kostenlos!"</p>
+        <section id="prices" class="py-32 px-6 md:px-20 bg-[#080a0e]">
+            <div class="text-center mb-20">
+                <h2 class="text-5xl font-black italic mb-4 uppercase">Exklusive <span class="taxi-yellow">Tarife</span></h2>
+                <div class="h-1.5 w-24 bg-taxi-yellow mx-auto mb-6"></div>
+                <p class="text-gray-500 max-w-2xl mx-auto italic">Für unsere VIP-Gäste bieten wir spezialisierte Fahrzeuge und Langzeit-Mieten an.</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="glass p-8 rounded-3xl border-b-4 border-b-transparent hover:border-b-yellow-500 transition">
-                    <h3 class="text-2xl font-black mb-6">EXTENDED <span class="taxi-yellow">S-KLASSE</span></h3>
-                    <ul class="space-y-4 text-sm mb-8">
-                        <li class="flex justify-between border-b border-gray-800 pb-2"><span>Einfache Fahrt</span> <span class="font-bold">12.000 €</span></li>
-                        <li class="flex justify-between border-b border-gray-800 pb-2"><span>Hin & Rückfahrt</span> <span class="font-bold">22.000 €</span></li>
-                        <li class="flex justify-between"><span>1 Stunde</span> <span class="font-bold">30.000 €</span></li>
-                    </ul>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div class="glass p-10 rounded-[2rem] border-b-8 border-taxi-yellow hover:translate-y-[-10px] transition duration-500">
+                    <h3 class="text-3xl font-black mb-6 italic">Extended S-Klasse</h3>
+                    <div class="space-y-4 mb-8">
+                        <div class="flex justify-between items-center border-b border-gray-800 pb-2"><span>Einfache Fahrt</span><span class="taxi-yellow font-bold text-xl">12.000€</span></div>
+                        <div class="flex justify-between items-center border-b border-gray-800 pb-2"><span>Hin & Rück</span><span class="taxi-yellow font-bold text-xl">22.000€</span></div>
+                        <div class="flex justify-between items-center"><span>1 Stunde</span><span class="taxi-yellow font-bold text-xl">30.000€</span></div>
+                    </div>
+                    <p class="text-xs text-gray-500 italic">Inklusive Erfrischungsgetränke & Personenschutz</p>
                 </div>
-                <div class="glass p-8 rounded-3xl border-b-4 border-b-transparent hover:border-b-yellow-500 scale-105 glow-yellow">
-                    <div class="bg-taxi-yellow text-black text-[10px] font-bold px-3 py-1 rounded-full w-max mb-4">BELIEBT</div>
-                    <h3 class="text-2xl font-black mb-6">STRETCH <span class="taxi-yellow">LIMOUSINE</span></h3>
-                    <ul class="space-y-4 text-sm mb-8">
-                        <li class="flex justify-between border-b border-gray-800 pb-2"><span>Einfache Fahrt</span> <span class="font-bold">22.000 €</span></li>
-                        <li class="flex justify-between border-b border-gray-800 pb-2"><span>Hin & Rückfahrt</span> <span class="font-bold">40.000 €</span></li>
-                        <li class="flex justify-between"><span>1 Stunde</span> <span class="font-bold">50.000 €</span></li>
-                    </ul>
+                <div class="glass p-10 rounded-[2rem] border-b-8 border-taxi-yellow scale-105 shadow-[0_0_50px_rgba(250,204,21,0.15)] relative">
+                    <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-taxi-yellow text-black font-black px-6 py-1 rounded-full text-sm">POPULÄR</div>
+                    <h3 class="text-3xl font-black mb-6 italic">Stretch-Limo</h3>
+                    <div class="space-y-4 mb-8">
+                        <div class="flex justify-between items-center border-b border-gray-800 pb-2"><span>Einfache Fahrt</span><span class="taxi-yellow font-bold text-xl">22.000€</span></div>
+                        <div class="flex justify-between items-center border-b border-gray-800 pb-2"><span>Hin & Rück</span><span class="taxi-yellow font-bold text-xl">40.000€</span></div>
+                        <div class="flex justify-between items-center"><span>1 Stunde</span><span class="taxi-yellow font-bold text-xl">50.000€</span></div>
+                    </div>
                 </div>
-                <div class="glass p-8 rounded-3xl border-b-4 border-b-transparent hover:border-b-yellow-500 transition">
-                    <h3 class="text-2xl font-black mb-6">PATRIOT <span class="taxi-yellow">LIMO</span></h3>
-                    <ul class="space-y-4 text-sm mb-8">
-                        <li class="flex justify-between border-b border-gray-800 pb-2"><span>Einfache Fahrt</span> <span class="font-bold">35.000 €</span></li>
-                        <li class="flex justify-between border-b border-gray-800 pb-2"><span>Hin & Rückfahrt</span> <span class="font-bold">50.000 €</span></li>
-                        <li class="flex justify-between"><span>1 Stunde</span> <span class="font-bold">60.000 €</span></li>
-                    </ul>
+                <div class="glass p-10 rounded-[2rem] border-b-8 border-taxi-yellow hover:translate-y-[-10px] transition duration-500">
+                    <h3 class="text-3xl font-black mb-6 italic">Patriot Limo</h3>
+                    <div class="space-y-4 mb-8">
+                        <div class="flex justify-between items-center border-b border-gray-800 pb-2"><span>Einfache Fahrt</span><span class="taxi-yellow font-bold text-xl">35.000€</span></div>
+                        <div class="flex justify-between items-center border-b border-gray-800 pb-2"><span>Hin & Rück</span><span class="taxi-yellow font-bold text-xl">50.000€</span></div>
+                        <div class="flex justify-between items-center"><span>1 Stunde</span><span class="taxi-yellow font-bold text-xl">60.000€</span></div>
+                    </div>
                 </div>
+            </div>
+
+            <div class="mt-20 glass p-10 rounded-[3rem] flex flex-col md:flex-row items-center gap-12">
+                <div class="flex-grow">
+                    <h4 class="text-3xl font-bold mb-4 italic">Alle Preise im Überblick</h4>
+                    <p class="text-gray-400 mb-6 leading-relaxed">Hier finden Sie unsere offizielle Preisliste. Bitte beachten Sie, dass normale Fahrten mit dem Standard-Taxi in ganz Los Santos absolut **kostenlos** sind!</p>
+                    <div class="flex items-center gap-4 text-taxi-yellow font-bold">
+                        <i data-lucide="info" class="w-6 h-6"></i>
+                        <span>Buchungen über die Ingame-App oder Discord möglich.</span>
+                    </div>
+                </div>
+                <img src="images/preise.png" class="max-w-md w-full rounded-2xl shadow-2xl border border-gray-800" alt="Preisliste">
             </div>
         </section>
 
-        <section id="team" class="px-6 md:px-20 py-20">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-black italic mb-4">UNSERE <span class="taxi-yellow">LEITUNG</span></h2>
-            </div>
-            <div class="flex flex-wrap justify-center gap-10">
-                <div class="text-center group">
-                    <div class="w-32 h-32 rounded-3xl bg-gray-900 border-2 border-gray-800 group-hover:border-yellow-500 transition mx-auto flex items-center justify-center text-4xl font-bold mb-4">CS</div>
-                    <h4 class="text-xl font-bold">Chris Schreiner</h4>
-                    <p class="text-xs taxi-yellow uppercase tracking-widest">Geschäftsführung</p>
-                </div>
-                <div class="text-center group">
-                    <div class="w-32 h-32 rounded-3xl bg-gray-900 border-2 border-gray-800 group-hover:border-yellow-500 transition mx-auto flex items-center justify-center text-4xl font-bold mb-4">MK</div>
-                    <h4 class="text-xl font-bold">Marco Krause</h4>
-                    <p class="text-xs taxi-yellow uppercase tracking-widest">Stv. Geschäftsführung</p>
-                </div>
-            </div>
-        </section>
-
-        <footer class="bg-black/50 px-6 md:px-20 py-20 border-t border-gray-900">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
-                <div>
-                    <h3 class="text-2xl font-black italic mb-6">KONTAKT <span class="taxi-yellow">TAXI KÖLN</span></h3>
-                    <p class="text-gray-400 mb-8 max-w-sm">Premium Fahrten können bequem über unseren Discord Funk gebucht werden. Normale Fahrten bitte über die Ingame Dienste App.</p>
-                    <a href="https://discord.gg/aYfP9CHtYp" target="_blank" class="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-500 transition inline-flex items-center">
-                        <i data-lucide="disc" class="mr-2"></i> Discord Server beitreten
-                    </a>
-                </div>
-                <div class="glass p-8 rounded-3xl flex flex-col justify-center items-center text-center">
-                    <h4 class="font-bold mb-2">Bereit für den Dienst?</h4>
-                    <p class="text-sm text-gray-500 mb-6">Nur für autorisierte Mitarbeiter von Taxi Köln.</p>
-                    <button onclick="showLogin()" class="bg-taxi-yellow text-black px-10 py-3 rounded-xl font-bold glow-yellow">MITARBEITER LOGIN</button>
-                </div>
-            </div>
-            <div class="text-center pt-10 border-t border-gray-900 text-[10px] text-gray-600 uppercase tracking-[0.4em]">
-                Coded by agrar.julian (Maverick Stone) | Hosted by norixius (Marco Krause)
+        <footer class="py-20 border-t border-gray-900 bg-black text-center">
+            <img src="images/Logo.png" class="h-16 mx-auto mb-6 opacity-50">
+            <p class="text-gray-500 uppercase tracking-[0.5em] text-sm">Taxi Köln NRW RP</p>
+            <div class="mt-8 flex justify-center gap-6 text-gray-700 text-xs">
+                <span>Coded by agrar.julian</span>
+                <span>•</span>
+                <span>Hosted by norixius</span>
             </div>
         </footer>
     </div>
 
-    <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#0b0d11] hidden">
-        <button onclick="hideLogin()" class="absolute top-10 right-10 text-gray-500 hover:text-white transition flex items-center">
-            <i data-lucide="x" class="mr-2"></i> Schließen
-        </button>
-        <div class="glass p-8 w-full max-w-md rounded-2xl glow text-center">
-            <h1 class="text-3xl font-bold mb-2">MDT <span class="taxi-yellow text-glow">LOGIN</span></h1>
-            <p class="text-gray-500 mb-8 text-sm uppercase tracking-widest">Internes Management System</p>
-            <div class="space-y-4 text-left">
+    <div id="login-modal" class="fixed inset-0 z-[1000] glass flex items-center justify-center hidden">
+        <div class="bg-gray-900 p-12 rounded-[2.5rem] w-full max-w-md border border-gray-800 shadow-2xl relative">
+            <button onclick="hideLogin()" class="absolute top-8 right-8 text-gray-500 hover:text-white transition"><i data-lucide="x"></i></button>
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-black italic mb-2">MDT <span class="taxi-yellow">LOGIN</span></h2>
+                <p class="text-gray-600 text-xs uppercase tracking-widest">Nur für autorisiertes Personal</p>
+            </div>
+            <div class="space-y-6">
                 <div>
-                    <label class="text-[10px] uppercase text-gray-500 ml-2">Dienstnummer</label>
-                    <input type="text" id="login-dn" placeholder="z.B. 01" class="w-full bg-gray-900 border border-gray-800 p-4 rounded-xl focus:border-yellow-500 outline-none mt-1">
+                    <label class="text-[10px] text-gray-500 uppercase ml-2 mb-1 block">Benutzername</label>
+                    <input type="text" id="log-name" placeholder="Name eintragen..." class="w-full bg-black p-5 rounded-2xl border border-gray-800 focus:border-yellow-500 outline-none transition">
                 </div>
                 <div>
-                    <label class="text-[10px] uppercase text-gray-500 ml-2">Passwort</label>
-                    <input type="password" id="login-pw" placeholder="••••••••" class="w-full bg-gray-900 border border-gray-800 p-4 rounded-xl focus:border-yellow-500 outline-none mt-1">
+                    <label class="text-[10px] text-gray-500 uppercase ml-2 mb-1 block">Passwort</label>
+                    <input type="password" id="log-pw" placeholder="••••••••" class="w-full bg-black p-5 rounded-2xl border border-gray-800 focus:border-yellow-500 outline-none transition">
                 </div>
-                <button onclick="auth()" class="w-full bg-taxi-yellow text-black font-bold py-4 rounded-xl hover:scale-[1.02] transition shadow-lg mt-4">ANMELDEN</button>
+                <button onclick="doLogin()" class="w-full bg-taxi-yellow text-black font-black py-5 rounded-2xl glow-yellow transition transform active:scale-95 text-lg">SYSTEM STARTEN</button>
             </div>
         </div>
     </div>
 
-    <div id="app" class="flex h-screen hidden">
-        <aside class="w-72 bg-[#0d1117] border-r border-gray-800 flex flex-col p-6">
-            <div class="mb-10 px-2">
-                <h1 class="text-2xl font-black italic">TAXI <span class="taxi-yellow">KÖLN</span></h1>
-                <p class="text-[9px] uppercase tracking-[0.3em] text-gray-600 font-bold">Admin Control Panel</p>
+    <div id="dashboard" class="hidden flex h-screen overflow-hidden bg-[#0b0d11]">
+        
+        <aside class="w-80 bg-[#0d1117] border-r border-gray-800 flex flex-col p-8">
+            <div class="flex items-center gap-4 mb-12 px-2">
+                <img src="images/Logo.png" class="h-10">
+                <div>
+                    <h1 class="text-lg font-black italic leading-none">TAXI <span class="taxi-yellow text-xs">PANEL</span></h1>
+                    <span class="text-[8px] text-gray-600 tracking-[0.3em] uppercase">Control Unit v3.0</span>
+                </div>
             </div>
 
-            <nav class="flex-grow space-y-1">
-                <div onclick="showTab('dash')" class="sidebar-item active" data-tab="dash"><i data-lucide="layout-dashboard" class="mr-3 w-5"></i> Dashboard</div>
-                <div onclick="showTab('calc')" class="sidebar-item" data-tab="calc"><i data-lucide="calculator" class="mr-3 w-5"></i> Fahrtenrechner</div>
-                <div onclick="showTab('book')" class="sidebar-item" data-tab="book"><i data-lucide="book-marked" class="mr-3 w-5"></i> Fahrtenbuch</div>
-                <div onclick="showTab('staff')" class="sidebar-item" data-tab="staff"><i data-lucide="users" class="mr-3 w-5"></i> Personal</div>
+            <nav class="flex-grow space-y-2">
+                <div onclick="showPanel('dash')" class="sidebar-item active" data-nav="dash"><i data-lucide="layout-dashboard" class="mr-3"></i> Dashboard</div>
+                <div onclick="showPanel('calc')" class="sidebar-item" data-nav="calc"><i data-lucide="calculator" class="mr-3"></i> Fahrtenrechner</div>
+                <div onclick="showPanel('book')" class="sidebar-item" data-nav="book"><i data-lucide="book-open" class="mr-3"></i> Fahrtenbuch</div>
+                <div onclick="showPanel('staff')" class="sidebar-item" data-nav="staff"><i data-lucide="users" class="mr-3"></i> Personalverwaltung</div>
             </nav>
 
-            <div class="mt-auto pt-6 border-t border-gray-800">
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 rounded-xl bg-taxi-yellow flex items-center justify-center text-black font-bold text-xl shadow-lg" id="prof-avatar">?</div>
+            <div class="pt-6 border-t border-gray-800 mt-auto">
+                <div class="flex items-center gap-4 p-4 glass rounded-2xl">
+                    <div class="w-10 h-10 rounded-full bg-taxi-yellow text-black flex items-center justify-center font-black" id="user-initials">?</div>
                     <div class="flex-grow overflow-hidden">
-                        <p class="text-sm font-bold truncate" id="prof-name">Lade...</p>
-                        <p class="text-[10px] text-gray-500 uppercase tracking-tighter" id="prof-rank">Rang</p>
+                        <p class="text-sm font-bold truncate" id="user-display">Name</p>
+                        <p class="text-[10px] text-gray-500 uppercase" id="user-rank">Rang</p>
                     </div>
-                    <button onclick="location.reload()" class="text-gray-600 hover:text-red-500 transition"><i data-lucide="log-out" class="w-5"></i></button>
+                    <button onclick="location.reload()" class="text-red-500 hover:scale-110 transition"><i data-lucide="log-out" class="w-5"></i></button>
                 </div>
             </div>
         </aside>
 
-        <main class="flex-grow flex flex-col bg-[#0b0d11]">
-            <header class="h-20 border-b border-gray-800 flex items-center justify-between px-10 glass z-10">
-                <h2 id="tab-title" class="text-sm font-bold uppercase tracking-[0.2em] text-gray-500">Dashboard</h2>
-                <div class="flex items-center space-x-6">
-                    <div id="status-badge" class="px-4 py-1.5 rounded-full text-[10px] font-black bg-red-500/10 text-red-500 border border-red-500/20 uppercase tracking-widest">Außer Dienst</div>
-                    <div id="clock" class="text-3xl font-mono taxi-yellow font-black tracking-tighter">00:00:00</div>
-                </div>
-            </header>
-
-            <div class="p-10 overflow-y-auto h-full bg-hero-gradient">
-                <div id="tab-dash" class="tab-content space-y-8">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="glass p-8 rounded-3xl border-l-4 border-taxi-yellow glow-yellow">
-                            <h4 class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-6">Status Management</h4>
-                            <div class="flex flex-col space-y-3">
-                                <button onclick="toggleDuty()" id="duty-btn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-2xl transition shadow-lg">EINSTEMPELN</button>
-                                <select class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-sm outline-none text-gray-300">
-                                    <option>Einsatzbereit</option>
-                                    <option>Im Auftrag</option>
-                                    <option>Pause</option>
-                                    <option>Zentrale</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="glass p-8 rounded-3xl">
-                            <h4 class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-2">Letzte Sitzung</h4>
-                            <p class="text-4xl font-black" id="stat-last">00:00:00</p>
-                        </div>
-                        <div class="glass p-8 rounded-3xl">
-                            <h4 class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-2">Fahrten Heute</h4>
-                            <p class="text-4xl font-black taxi-yellow">0</p>
+        <main class="flex-grow overflow-y-auto p-12 bg-hero-gradient relative">
+            
+            <div id="panel-dash" class="panel-content animate-fade space-y-10">
+                <h2 class="text-5xl font-black italic">Willkommen zurück!</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="glass p-8 rounded-[2rem] border-l-4 border-taxi-yellow">
+                        <p class="text-gray-500 text-xs uppercase mb-2">Dein Status</p>
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-3xl font-bold" id="status-text">Außer Dienst</h3>
+                            <button onclick="toggleDuty()" id="duty-btn" class="bg-green-600 p-3 rounded-xl hover:scale-105 transition"><i data-lucide="play" class="text-white"></i></button>
                         </div>
                     </div>
+                    <div class="glass p-8 rounded-[2rem]">
+                        <p class="text-gray-500 text-xs uppercase mb-2">Sitzungsdauer</p>
+                        <h3 class="text-4xl font-black taxi-yellow" id="timer-display">00:00:00</h3>
+                    </div>
+                    <div class="glass p-8 rounded-[2rem]">
+                        <p class="text-gray-500 text-xs uppercase mb-2">Fahrten Heute</p>
+                        <h3 class="text-4xl font-black">0</h3>
+                    </div>
                 </div>
-
-                <div id="tab-calc" class="tab-content hidden max-w-2xl mx-auto">
-                    <div class="glass p-10 rounded-[2.5rem] space-y-8">
-                        <div class="text-center">
-                            <h2 class="text-3xl font-black italic">FAHRTEN<span class="taxi-yellow">RECHNER</span></h2>
-                            <p class="text-gray-500 text-[10px] uppercase tracking-widest mt-2">Berechne den Fahrpreis für deine Kunden</p>
-                        </div>
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label class="text-[10px] uppercase text-gray-500 font-bold ml-2">Fahrzeugtyp</label>
-                                <select id="c-type" class="w-full bg-gray-900 border border-gray-800 p-4 rounded-2xl outline-none focus:border-yellow-500 transition">
-                                    <option value="0">Normales Taxi (Gratis)</option>
-                                    <option value="5000">Limousine ($5.000)</option>
-                                    <option value="10000">VIP Bus ($10.000)</option>
-                                </select>
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] uppercase text-gray-500 font-bold ml-2">Strecke (KM)</label>
-                                <input type="number" id="c-km" class="w-full bg-gray-900 border border-gray-800 p-4 rounded-2xl outline-none focus:border-yellow-500 transition" value="0">
-                            </div>
-                        </div>
-                        <div class="bg-black/50 p-10 rounded-[2rem] text-center border border-dashed border-gray-800">
-                            <p class="text-[10px] text-gray-500 uppercase tracking-[0.3em] mb-2">Gesamtsumme</p>
-                            <h3 class="text-6xl font-black taxi-yellow text-glow" id="c-total">$ 0</h3>
-                        </div>
-                        <button onclick="genPDF()" class="w-full bg-white text-black font-black py-5 rounded-2xl flex items-center justify-center hover:bg-yellow-400 transition transform active:scale-95">
-                            <i data-lucide="file-text" class="mr-3"></i> RECHNUNG (PDF) EXPORTIEREN
-                        </button>
+                <div class="glass p-10 rounded-[2.5rem]">
+                    <h3 class="text-xl font-bold mb-6 flex items-center gap-3"><i data-lucide="activity" class="taxi-yellow"></i> System-Logs</h3>
+                    <div id="log-container" class="space-y-4 text-xs font-mono text-gray-500">
+                        <p>[INFO] System bereit. Warte auf Eingabe...</p>
                     </div>
                 </div>
             </div>
+
+            <div id="panel-calc" class="panel-content hidden animate-fade max-w-5xl mx-auto">
+                <div class="flex justify-between items-end mb-12">
+                    <div>
+                        <h2 class="text-5xl font-black italic leading-none">FAHRTEN<span class="taxi-yellow">RECHNER</span></h2>
+                        <p class="text-gray-500 mt-2 uppercase tracking-widest text-xs">Erstelle professionelle Belege für deine Kunden</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div class="space-y-8">
+                        <div class="glass p-10 rounded-[2.5rem] space-y-6">
+                            <div>
+                                <label class="text-[10px] text-gray-500 uppercase font-bold ml-2">Kundenname / Grund</label>
+                                <input type="text" id="inv-client" placeholder="Max Mustermann..." class="w-full bg-gray-900 border border-gray-800 p-5 rounded-2xl outline-none focus:border-yellow-500 transition">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[10px] text-gray-500 uppercase font-bold ml-2">Fahrzeugtyp</label>
+                                    <select id="inv-type" onchange="updatePreview()" class="w-full bg-gray-900 border border-gray-800 p-5 rounded-2xl outline-none">
+                                        <option value="0">Normales Taxi (0€)</option>
+                                        <option value="12000">S-Klasse (12.000€)</option>
+                                        <option value="22000">Stretch-Limo (22.000€)</option>
+                                        <option value="35000">Patriot Limo (35.000€)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-gray-500 uppercase font-bold ml-2">Zusatz (KM/Zeit)</label>
+                                    <input type="number" id="inv-extra" oninput="updatePreview()" value="0" class="w-full bg-gray-900 border border-gray-800 p-5 rounded-2xl outline-none">
+                                </div>
+                            </div>
+                            <button onclick="downloadInvoice()" class="w-full bg-taxi-yellow text-black font-black py-5 rounded-2xl shadow-xl hover:scale-[1.02] transition flex items-center justify-center gap-3">
+                                <i data-lucide="download"></i> PDF HERUNTERLADEN
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                        <p class="text-xs text-gray-600 mb-4 uppercase tracking-[0.3em]">Digitale Beleg-Vorschau</p>
+                        <div id="preview-box" class="invoice-preview w-full">
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-book" class="panel-content hidden animate-fade">
+                <h2 class="text-5xl font-black italic mb-10">FAHRTEN<span class="taxi-yellow">BUCH</span></h2>
+                <div class="glass rounded-[2rem] overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-900/50 text-gray-500 text-[10px] uppercase font-black">
+                            <tr>
+                                <th class="p-6">Datum</th>
+                                <th class="p-6">Fahrer</th>
+                                <th class="p-6">Kunde</th>
+                                <th class="p-6">Betrag</th>
+                            </tr>
+                        </thead>
+                        <tbody id="book-table-body" class="divide-y divide-gray-800">
+                            <tr>
+                                <td colspan="4" class="p-20 text-center text-gray-600 italic">Noch keine Fahrten für heute aufgezeichnet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="panel-staff" class="panel-content hidden animate-fade">
+                <h2 class="text-5xl font-black italic mb-10">PERSONAL<span class="taxi-yellow">VERWALTUNG</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="staff-list">
+                    </div>
+            </div>
+
         </main>
     </div>
 
     <script>
         lucide.createIcons();
+        const video = document.getElementById('intro-video');
 
-        // USER DATEN
-        const users = [
-            {dn: "28", name: "Maverick Stone", rank: "Azubi", pw: "Bka26r"},
-            {dn: "01", name: "Chris Schreiner", rank: "Geschäftsführung", pw: "Bka26a"},
-            {dn: "02", name: "Marco Krause", rank: "Stv. Geschäftsführung", pw: "Bka26b"}
+        // Intro Logic
+        video.onended = () => endIntro();
+        function endIntro() {
+            const intro = document.getElementById('intro-container');
+            const landing = document.getElementById('landing-page');
+            intro.style.opacity = '0';
+            setTimeout(() => {
+                intro.classList.add('hidden');
+                landing.classList.remove('hidden');
+                setTimeout(() => landing.style.opacity = '1', 50);
+            }, 1000);
+        }
+
+        // Auth & Employees
+        const employees = [
+            {user: "Chris Schreiner", pw: "Bka26a", rank: "Geschäftsführung", icon: "CS"},
+            {user: "Marco Krause", pw: "Bka26b", rank: "Stv. Geschäftsführung", icon: "MK"},
+            {user: "Maverick Stone", pw: "Bka26r", rank: "Azubi", icon: "MS"}
         ];
 
-        let currUser = null;
-        let onDuty = false;
-        let seconds = 0;
-        let timer = null;
+        let currentUser = null;
 
-        // NAVIGATION LANDING -> LOGIN
-        function showLogin() {
-            document.getElementById('login-screen').classList.remove('hidden');
-        }
+        function showLogin() { document.getElementById('login-modal').classList.remove('hidden'); }
+        function hideLogin() { document.getElementById('login-modal').classList.add('hidden'); }
 
-        function hideLogin() {
-            document.getElementById('login-screen').classList.add('hidden');
-        }
+        function doLogin() {
+            const name = document.getElementById('log-name').value;
+            const pass = document.getElementById('log-pw').value;
+            const found = employees.find(e => e.user === name && e.pw === pass);
 
-        // LOGIN LOGIK
-        function auth() {
-            const dn = document.getElementById('login-dn').value;
-            const pw = document.getElementById('login-pw').value;
-            const user = users.find(u => u.dn === dn && u.pw === pw);
-
-            if(user) {
-                currUser = user;
+            if(found) {
+                currentUser = found;
                 document.getElementById('landing-page').classList.add('hidden');
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-                document.getElementById('prof-name').innerText = user.name;
-                document.getElementById('prof-rank').innerText = user.rank;
-                document.getElementById('prof-avatar').innerText = user.name.charAt(0);
+                document.getElementById('login-modal').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                
+                document.getElementById('user-display').innerText = found.user;
+                document.getElementById('user-rank').innerText = found.rank;
+                document.getElementById('user-initials').innerText = found.icon;
+                
+                renderStaff();
+                addLog(`Login erfolgreich als ${found.user}`);
+                updatePreview();
                 lucide.createIcons();
             } else {
-                alert("Dienstnummer oder Passwort falsch!");
+                alert("Zugangsdaten inkorrekt!");
             }
         }
 
-        function showTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+        // Navigation
+        function showPanel(id) {
+            document.querySelectorAll('.panel-content').forEach(p => p.classList.add('hidden'));
             document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-            document.getElementById('tab-'+id).classList.remove('hidden');
-            document.querySelector(`[data-tab="${id}"]`).classList.add('active');
-            document.getElementById('tab-title').innerText = id.toUpperCase();
+            document.getElementById('panel-' + id).classList.remove('hidden');
+            document.querySelector(`[data-nav="${id}"]`).classList.add('active');
             lucide.createIcons();
         }
 
-        function toggleDuty() {
-            const btn = document.getElementById('duty-btn');
-            const badge = document.getElementById('status-badge');
-            onDuty = !onDuty;
+        // Duty Timer
+        let onDuty = false;
+        let seconds = 0;
+        let timerInterval = null;
 
+        function toggleDuty() {
+            onDuty = !onDuty;
+            const btn = document.getElementById('duty-btn');
+            const statusText = document.getElementById('status-text');
+            
             if(onDuty) {
-                btn.innerText = "AUSSTEMPELN";
                 btn.classList.replace('bg-green-600', 'bg-red-600');
-                badge.innerText = "Im Dienst";
-                badge.classList.replace('text-red-500', 'text-green-500');
-                badge.classList.replace('bg-red-500/10', 'bg-green-500/10');
-                timer = setInterval(() => {
+                btn.innerHTML = '<i data-lucide="square" class="text-white"></i>';
+                statusText.innerText = "Im Dienst";
+                statusText.classList.add('taxi-yellow');
+                addLog("Dienst angetreten");
+                timerInterval = setInterval(() => {
                     seconds++;
-                    document.getElementById('clock').innerText = formatTime(seconds);
+                    document.getElementById('timer-display').innerText = formatTime(seconds);
                 }, 1000);
-                new Audio('https://www.soundjay.com/buttons/button-3.mp3').play().catch(()=>{});
             } else {
-                btn.innerText = "EINSTEMPELN";
                 btn.classList.replace('bg-red-600', 'bg-green-600');
-                badge.innerText = "Außer Dienst";
-                badge.classList.replace('text-green-500', 'text-red-500');
-                document.getElementById('stat-last').innerText = formatTime(seconds);
-                clearInterval(timer);
+                btn.innerHTML = '<i data-lucide="play" class="text-white"></i>';
+                statusText.innerText = "Außer Dienst";
+                statusText.classList.remove('taxi-yellow');
+                addLog(`Dienst beendet nach ${formatTime(seconds)}`);
+                clearInterval(timerInterval);
                 seconds = 0;
-                document.getElementById('clock').innerText = "00:00:00";
+                document.getElementById('timer-display').innerText = "00:00:00";
             }
+            lucide.createIcons();
         }
 
         function formatTime(s) {
             return new Date(s * 1000).toISOString().substr(11, 8);
         }
 
-        // RECHNER LOGIK
-        const calcInputs = ['c-type', 'c-km'];
-        calcInputs.forEach(k => document.getElementById(k).oninput = () => {
-            const base = parseInt(document.getElementById('c-type').value);
-            const km = parseInt(document.getElementById('c-km').value);
-            const total = base === 0 ? 0 : base + (km * 100); 
-            document.getElementById('c-total').innerText = `$ ${total.toLocaleString()}`;
-        });
+        function addLog(msg) {
+            const container = document.getElementById('log-container');
+            const entry = document.createElement('p');
+            entry.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            container.prepend(entry);
+        }
 
-        function genPDF() {
+        // Calc & Invoice
+        function updatePreview() {
+            const client = document.getElementById('inv-client').value || "MAX MUSTERMANN";
+            const type = document.getElementById('inv-type');
+            const typeLabel = type.options[type.selectedIndex].text;
+            const base = parseInt(type.value);
+            const extra = parseInt(document.getElementById('inv-extra').value) || 0;
+            const total = base + extra;
+
+            const html = `
+                <div style="text-align:center; border-bottom: 2px solid black; padding-bottom: 20px; margin-bottom: 30px;">
+                    <h1 style="margin:0; font-size: 24px; letter-spacing: 2px;">TAXI KÖLN</h1>
+                    <p style="margin:0; font-size: 10px; text-transform: uppercase; color: #555;">Offizieller Chauffeur-Beleg</p>
+                </div>
+                <div style="font-size: 12px; margin-bottom: 40px;">
+                    <p><strong>DATUM:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p><strong>FAHRER:</strong> ${currentUser ? currentUser.user : '---'}</p>
+                    <p><strong>KUNDE:</strong> ${client.toUpperCase()}</p>
+                </div>
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <tr style="border-bottom: 1px solid #000;">
+                        <th style="text-align: left; padding: 10px 0;">BESCHREIBUNG</th>
+                        <th style="text-align: right; padding: 10px 0;">BETRAG</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0;">${typeLabel.split('(')[0]}</td>
+                        <td style="text-align: right;">${base.toLocaleString()} €</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0;">Zusatzgebühren (KM/Wartezeit)</td>
+                        <td style="text-align: right;">${extra.toLocaleString()} €</td>
+                    </tr>
+                    <tr style="border-top: 2px solid #000; font-weight: bold; font-size: 18px;">
+                        <td style="padding: 20px 0;">GESAMTSUMME</td>
+                        <td style="text-align: right; padding: 20px 0;">${total.toLocaleString()} €</td>
+                    </tr>
+                </table>
+                <div style="margin-top: 50px; text-align: center; font-size: 9px; color: #777;">
+                    Vielen Dank für Ihre Fahrt mit Taxi Köln. <br>
+                    Wir hoffen, Sie bald wieder begrüßen zu dürfen!
+                </div>
+            `;
+            document.getElementById('preview-box').innerHTML = html;
+        }
+
+        document.getElementById('inv-client').oninput = updatePreview;
+
+        function downloadInvoice() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFillColor(11, 13, 17);
-            doc.rect(0, 0, 210, 297, 'F');
-            doc.setTextColor(250, 204, 21);
-            doc.setFontSize(30); doc.text("TAXI KOELN", 20, 40);
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(12); doc.text(`Fahrer: ${currUser.name}`, 20, 60);
-            doc.text(`Betrag: ${document.getElementById('c-total').innerText}`, 20, 70);
-            doc.text(`Datum: ${new Date().toLocaleString()}`, 20, 80);
-            doc.save(`Rechnung_${currUser.name}.pdf`);
+            const client = document.getElementById('inv-client').value || "Kunde";
+            const base = parseInt(document.getElementById('inv-type').value);
+            const extra = parseInt(document.getElementById('inv-extra').value) || 0;
+
+            doc.setFillColor(250, 204, 21);
+            doc.rect(0, 0, 210, 20, 'F');
+            doc.setFont("courier", "bold");
+            doc.setFontSize(22);
+            doc.text("TAXI KOELN RECHNUNG", 105, 45, {align: 'center'});
+            
+            doc.setFontSize(12);
+            doc.setFont("courier", "normal");
+            doc.text(`Kunde: ${client}`, 20, 70);
+            doc.text(`Fahrer: ${currentUser.user}`, 20, 80);
+            doc.text(`Datum: ${new Date().toLocaleDateString()}`, 20, 90);
+            
+            doc.line(20, 100, 190, 100);
+            doc.text("Posten", 20, 110);
+            doc.text("Preis", 160, 110);
+            doc.line(20, 115, 190, 115);
+            
+            doc.text("Basisfahrt", 20, 125);
+            doc.text(`${base.toLocaleString()} EUR`, 160, 125);
+            doc.text("Extras", 20, 135);
+            doc.text(`${extra.toLocaleString()} EUR`, 160, 135);
+            
+            doc.setFontSize(16);
+            doc.setFont("courier", "bold");
+            doc.text("TOTAL:", 20, 155);
+            doc.text(`${(base+extra).toLocaleString()} EUR`, 160, 155);
+            
+            doc.save(`Rechnung_${client.replace(/\s/g, '_')}.pdf`);
+        }
+
+        // Staff Rendering
+        function renderStaff() {
+            const list = document.getElementById('staff-list');
+            list.innerHTML = "";
+            employees.forEach(e => {
+                const card = document.createElement('div');
+                card.className = "glass p-8 rounded-[2rem] text-center border-b-4 border-transparent hover:border-taxi-yellow transition";
+                card.innerHTML = `
+                    <div class="w-20 h-20 rounded-2xl bg-gray-900 border border-gray-800 flex items-center justify-center text-3xl font-black mx-auto mb-6 text-taxi-yellow">${e.icon}</div>
+                    <h4 class="text-xl font-bold">${e.user}</h4>
+                    <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">${e.rank}</p>
+                `;
+                list.appendChild(card);
+            });
         }
     </script>
 </body>
