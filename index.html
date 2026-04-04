@@ -3,922 +3,706 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Köln | Management</title>
+    <title>Taxi Köln | Management Enterprise V4 Full</title>
 
-    <link rel="icon" type="image/png" href="images/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Dancing+Script:wght@700&display=swap');
 
         :root {
             --bg: #070707;
             --bg-soft: #0f0f10;
-            --bg-card: rgba(18, 18, 20, 0.92);
-            --bg-card-2: rgba(24, 24, 28, 0.95);
-            --sidebar: #050505;
-            --border: rgba(255, 255, 255, 0.08);
-            --border-strong: rgba(255, 255, 255, 0.14);
-            --text: #f4f4f5;
-            --muted: #9a9aa2;
+            --bg-card: rgba(18, 18, 20, 0.98);
+            --sidebar: #000000;
+            --border: rgba(255, 255, 255, 0.1);
             --yellow: #ffcc00;
-            --yellow-2: #ffd84d;
-            --green: #00ff66;
-            --red: #ff4d4d;
-            --blue: #3aa0ff;
-            --shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
-            --radius: 22px;
+            --yellow-hover: #ffdb4d;
+            --text: #f4f4f5;
+            --muted: #808085;
+            --radius: 20px;
         }
 
-        * {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            height: 100%;
-        }
-
+        * { box-sizing: border-box; outline: none !important; }
         body {
             margin: 0;
-            background:
-                radial-gradient(circle at top left, rgba(255, 204, 0, 0.12), transparent 26%),
-                radial-gradient(circle at top right, rgba(58, 160, 255, 0.08), transparent 22%),
-                linear-gradient(180deg, #050505 0%, #090909 100%);
+            background-color: var(--bg);
             color: var(--text);
             font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
             overflow: hidden;
         }
 
-        a {
-            color: inherit;
-        }
-
-        .app-shell {
-            display: flex;
-            width: 100%;
-            height: 100vh;
-        }
-
-        /* LOGIN */
-        #login-view {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            background:
-                radial-gradient(circle at top, rgba(255, 204, 0, 0.12), transparent 28%),
-                linear-gradient(180deg, #040404 0%, #090909 100%);
-        }
-
-        .auth-card {
-            width: min(94vw, 430px);
-            padding: 34px;
-            border-radius: 28px;
-            background: linear-gradient(180deg, rgba(20, 20, 24, 0.98), rgba(12, 12, 14, 0.96));
-            border: 1px solid var(--border-strong);
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(12px);
-        }
-
-        .brand-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 14px;
-            border-radius: 999px;
-            background: rgba(255, 204, 0, 0.09);
-            border: 1px solid rgba(255, 204, 0, 0.18);
-            color: var(--yellow);
-            font-size: 0.82rem;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-        }
-
-        .auth-title {
-            margin: 18px 0 6px;
-            font-size: 2rem;
-            font-weight: 800;
-        }
-
-        .auth-subtitle {
-            color: var(--muted);
-            margin-bottom: 22px;
-            font-size: 0.95rem;
-        }
-
-        .auth-input,
-        .rechner-input {
-            background: rgba(255, 255, 255, 0.04) !important;
-            border: 1px solid var(--border) !important;
-            color: var(--text) !important;
-            border-radius: 14px !important;
-            padding: 12px 14px !important;
-            transition: 0.2s ease;
-            box-shadow: none !important;
-        }
-
-        .auth-input::placeholder,
-        .rechner-input::placeholder {
-            color: #70707a;
-        }
-
-        .auth-input:focus,
-        .rechner-input:focus {
-            border-color: rgba(255, 204, 0, 0.5) !important;
-            box-shadow: 0 0 0 0.2rem rgba(255, 204, 0, 0.12) !important;
-        }
-
-        .auth-button,
-        .btn-yellow {
-            border: none;
-            border-radius: 14px;
-            background: linear-gradient(135deg, var(--yellow), var(--yellow-2));
-            color: #111;
-            font-weight: 800;
-            padding: 12px 18px;
-            letter-spacing: 0.02em;
-            transition: 0.2s ease;
-            box-shadow: 0 10px 28px rgba(255, 204, 0, 0.18);
-        }
-
-        .auth-button:hover,
-        .btn-yellow:hover {
-            transform: translateY(-1px);
-            filter: brightness(1.02);
-        }
-
-        /* SIDEBAR */
+        /* Layout */
         .sidebar {
-            width: 290px;
-            background: linear-gradient(180deg, rgba(7, 7, 8, 0.98), rgba(3, 3, 4, 0.98));
+            width: 300px;
+            background: var(--sidebar);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            padding: 22px 16px 16px;
+            padding: 25px;
+            z-index: 100;
         }
 
-        .sidebar-brand {
-            padding: 10px 10px 18px;
-            margin-bottom: 6px;
-        }
-
-        .sidebar-title {
-            margin-top: 10px;
-            font-size: 0.95rem;
-            color: var(--muted);
-        }
-
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding: 6px 0;
+        .main-view {
+            flex: 1;
             overflow-y: auto;
+            padding: 40px;
+            background: radial-gradient(circle at top right, #111, var(--bg));
         }
 
+        /* Nav */
+        .nav-group { margin-bottom: 25px; }
         .nav-label {
-            margin: 18px 12px 8px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: #6f6f79;
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: #444;
             text-transform: uppercase;
-            letter-spacing: 0.12em;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+            padding-left: 10px;
         }
-
-        .nav-btn {
+        .nav-item {
             width: 100%;
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
-            border: 1px solid transparent;
-            border-radius: 16px;
-            color: #a0a0aa;
+            gap: 15px;
+            padding: 12px 15px;
+            border-radius: 12px;
+            color: var(--muted);
             background: transparent;
-            text-decoration: none;
-            cursor: pointer;
-            transition: 0.2s ease;
+            border: none;
+            transition: all 0.2s ease;
             text-align: left;
             font-weight: 500;
+            margin-bottom: 4px;
         }
+        .nav-item i { font-size: 1.2rem; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-item.active { background: var(--yellow); color: #000; }
 
-        .nav-btn i {
-            font-size: 1.05rem;
-            color: #9d9da6;
-            transition: 0.2s ease;
-        }
-
-        .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: var(--border);
-            color: #fff;
-        }
-
-        .nav-btn.active {
-            background: linear-gradient(135deg, rgba(255, 204, 0, 0.13), rgba(255, 204, 0, 0.06));
-            color: var(--yellow);
-            border-color: rgba(255, 204, 0, 0.18);
-            box-shadow: inset 0 0 0 1px rgba(255, 204, 0, 0.04);
-        }
-
-        .nav-btn.active i {
-            color: var(--yellow);
-        }
-
-        .sidebar-footer {
-            margin-top: auto;
-            padding: 16px 12px 8px;
-            border-top: 1px solid var(--border);
-        }
-
-        .user-name {
-            font-weight: 700;
-            font-size: 0.95rem;
-        }
-
-        .user-rank {
-            color: var(--muted);
-            font-size: 0.85rem;
-        }
-
-        /* CONTENT */
-        .content-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 28px;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .page-title {
-            margin: 0;
-            font-size: 2rem;
-            font-weight: 800;
-        }
-
-        .page-subtitle {
-            margin: 5px 0 0;
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
-
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 11px 16px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border);
-            color: #ececec;
-            white-space: nowrap;
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--green);
-            box-shadow: 0 0 16px rgba(0, 255, 102, 0.35);
-        }
-
-        .tab-panel {
-            display: none;
-            animation: fadeIn 0.25s ease;
-        }
-
-        .tab-panel.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        /* Components */
         .glass-card {
-            background: linear-gradient(180deg, var(--bg-card), var(--bg-card-2));
+            background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(10px);
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .card-title {
-            font-size: 0.8rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--muted);
+        .btn-taxi {
+            background: var(--yellow);
+            color: #000;
             font-weight: 700;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+        .btn-taxi:hover { background: var(--yellow-hover); transform: translateY(-2px); }
+
+        /* Dropdown Sichtbarkeit Fix */
+        select option { color: #000 !important; background: #fff !important; }
+        .form-control, .form-select {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 12px;
+            border-radius: 10px;
+        }
+        .form-control:focus, .form-select:focus {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--yellow);
+            color: #fff;
+            box-shadow: none;
+        }
+
+        /* Tab Management */
+        .page-node { display: none; }
+        .page-node.active { display: block; animation: pageIn 0.4s ease forwards; }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Leitstelle & Status */
+        .ls-row {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px 20px;
             margin-bottom: 10px;
-        }
-
-        .value-big {
-            font-size: 3rem;
-            font-weight: 800;
-            line-height: 1;
-            color: var(--yellow);
-        }
-
-        .soft-divider {
-            border-top: 1px solid var(--border);
-            margin-top: 18px;
-            padding-top: 18px;
-        }
-
-        .mini-stat {
             display: flex;
             justify-content: space-between;
-            gap: 18px;
-            padding: 10px 0;
-            color: #d8d8de;
+            align-items: center;
+        }
+        .status-pill { padding: 6px 15px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+
+        /* PDF & Zeugnis */
+        .document-preview {
+            background: white;
+            color: #000;
+            padding: 60px;
+            border-radius: 5px;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+        .sign-area { font-family: 'Dancing Script', cursive; font-size: 2rem; border-top: 1px solid #000; display: inline-block; padding-top: 5px; margin-top: 20px; }
+
+        /* Archiv Table */
+        .table-custom { color: #fff; width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        .table-custom th { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; padding: 10px 20px; }
+        .table-custom td { background: rgba(255,255,255,0.03); padding: 15px 20px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .table-custom td:first-child { border-left: 1px solid var(--border); border-radius: 12px 0 0 12px; }
+        .table-custom td:last-child { border-right: 1px solid var(--border); border-radius: 0 12px 12px 0; }
+
+        .rights-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 15px;
         }
 
-        .mini-stat span:first-child {
-            color: var(--muted);
-        }
-
-        .badge-soft {
-            padding: 8px 12px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border);
-            color: #dcdce2;
-        }
-
-        .form-check-input {
-            background-color: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-
-        .form-check-input:checked {
-            background-color: var(--yellow);
-            border-color: var(--yellow);
-        }
-
-        #invoice {
-            background: #ffffff;
-            color: #111;
-            border-radius: 18px;
-            padding: 28px;
-            margin-top: 22px;
-            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
-        }
-
-        #invoice .table {
-            margin-bottom: 0;
-        }
-
-        .table-dark {
-            --bs-table-bg: rgba(255, 255, 255, 0.03);
-            --bs-table-striped-bg: rgba(255, 255, 255, 0.05);
-            --bs-table-color: #f3f3f5;
-            --bs-table-border-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .action-link {
-            text-decoration: none;
-            color: var(--yellow);
-            font-weight: 600;
-        }
-
-        .text-italic {
-            font-style: italic;
-        }
-
-        @media (max-width: 992px) {
-            body {
-                overflow: auto;
-            }
-
-            .app-shell {
-                flex-direction: column;
-                height: auto;
-                min-height: 100vh;
-            }
-
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-
-            .content-area {
-                padding: 18px;
-            }
-
-            .topbar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .status-pill {
-                width: fit-content;
-            }
-        }
-
-        @media print {
-            body * {
-                visibility: hidden !important;
-            }
-
-            #invoice, #invoice * {
-                visibility: visible !important;
-            }
-
-            #invoice {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                margin: 0;
-                box-shadow: none;
-            }
+        .footer-branding {
+            position: fixed;
+            bottom: 15px;
+            right: 25px;
+            font-size: 10px;
+            color: #333;
+            line-height: 1.4;
+            text-align: right;
         }
     </style>
 </head>
 <body>
 
-    <div id="login-view">
-        <div class="auth-card">
-            <span class="brand-badge"><i class="bi bi-taxi-front-fill"></i> Taxi Köln</span>
-            <h1 class="auth-title">Management Login</h1>
-            <p class="auth-subtitle">Bitte melde dich mit deinen Zugangsdaten an.</p>
-
-            <div class="mb-3">
-                <input type="text" id="userInput" class="form-control auth-input" placeholder="Name">
+    <aside class="sidebar">
+        <div class="mb-5">
+            <h3 class="fw-800 text-warning m-0" style="letter-spacing: -1px;">TAXI KÖLN</h3>
+            <div class="d-flex align-items-center gap-2">
+                <div style="width: 8px; height: 8px; background: #00ff66; border-radius: 50%;"></div>
+                <span class="small text-muted fw-bold">OS ENTERPRISE V4</span>
             </div>
-            <div class="mb-2">
-                <input type="password" id="passInput" class="form-control auth-input" placeholder="Passwort">
-            </div>
-
-            <button class="btn-yellow w-100 mt-3" onclick="handleLogin()">LOGIN</button>
-            <p id="loginError" class="text-danger mt-3 small d-none">Daten inkorrekt.</p>
         </div>
-    </div>
 
-    <div id="app-area" class="app-shell d-none">
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <span class="brand-badge"><i class="bi bi-taxi-front-fill"></i> Taxi Köln</span>
-                <div class="sidebar-title">Management Dashboard</div>
-            </div>
-
+        <div class="nav-group">
             <div class="nav-label">Zentrale</div>
-            <div class="sidebar-nav">
-                <button class="nav-btn active" onclick="tab('dash', this)"><i class="bi bi-speedometer2"></i><span>Dashboard</span></button>
-                <button class="nav-btn" onclick="tab('calc', this)"><i class="bi bi-calculator"></i><span>Fahrtenrechner</span></button>
-                <button class="nav-btn" onclick="tab('book', this)"><i class="bi bi-journal-text"></i><span>Fahrtenbuch</span></button>
+            <button class="nav-item active" onclick="switchPage('dash', this)"><i class="bi bi-grid-1x2"></i> Dashboard</button>
+            <button class="nav-item" onclick="switchPage('ls', this)"><i class="bi bi-broadcast-pin"></i> Leitstelle</button>
+            <button class="nav-item" onclick="switchPage('rechner', this)"><i class="bi bi-calculator"></i> Fahrtenrechner</button>
+            <button class="nav-item" onclick="switchPage('buch', this)"><i class="bi bi-journal-bookmark"></i> Fahrtenbuch</button>
+        </div>
 
-                <div class="nav-label">Management</div>
-                <button class="nav-btn" onclick="tab('perso', this)"><i class="bi bi-person-badge"></i><span>Personalakte</span></button>
-                <button class="nav-btn" onclick="tab('admin', this)"><i class="bi bi-shield-lock"></i><span>Admin Panel</span></button>
+        <div class="nav-group">
+            <div class="nav-label">Personal & Admin</div>
+            <button class="nav-item" onclick="switchPage('akte', this)"><i class="bi bi-person-vcard"></i> Personalakte</button>
+            <button class="nav-item" onclick="switchPage('list', this)"><i class="bi bi-people"></i> Mitglieder</button>
+            <button class="nav-item" onclick="switchPage('zeugnis', this)"><i class="bi bi-file-earmark-medical"></i> Arbeitszeugnis</button>
+            <button class="nav-item" onclick="switchPage('admin', this)"><i class="bi bi-shield-lock"></i> Admin Panel</button>
+            <button class="nav-item" onclick="switchPage('logs', this)"><i class="bi bi-archive"></i> Archiv & Logs</button>
+        </div>
 
-                <div class="nav-label">Sonstiges</div>
-                <button class="nav-btn" onclick="tab('supp', this)"><i class="bi bi-headset"></i><span>Support</span></button>
-                <button class="nav-btn" onclick="tab('patch', this)"><i class="bi bi-sticky"></i><span>Patchnotes</span></button>
-            </div>
+        <div class="nav-group">
+            <div class="nav-label">Hilfe</div>
+            <button class="nav-item" onclick="switchPage('patch', this)"><i class="bi bi-megaphone"></i> Patchnotes</button>
+            <button class="nav-item" onclick="switchPage('supp', this)"><i class="bi bi-headset"></i> Support</button>
+        </div>
 
-            <div class="sidebar-footer">
-                <div class="user-name" id="sideName">Name</div>
-                <div class="user-rank" id="sideRank">Rang</div>
-                <button class="btn btn-link btn-sm p-0 text-danger text-decoration-none mt-2" onclick="location.reload()">Abmelden</button>
-            </div>
-        </aside>
+        <div class="mt-auto pt-4 border-top border-dark">
+            <div id="user-display" class="fw-bold text-white small">Maverick Stone</div>
+            <div id="rank-display" class="text-muted" style="font-size: 0.75rem;">Azubi (DN 28)</div>
+            <button class="btn btn-link btn-sm p-0 text-danger text-decoration-none mt-2" onclick="location.reload()">System beenden</button>
+        </div>
+    </aside>
 
-        <main class="content-area">
-            <div class="topbar">
-                <div>
-                    <h2 class="page-title" id="tab-title">Dashboard</h2>
-                    <p class="page-subtitle">Übersicht und Verwaltung</p>
-                </div>
-                <div class="status-pill">
-                    <span class="status-dot" id="dot"></span>
-                    <span id="status-text">Im Dienst</span>
-                </div>
-            </div>
-
-            <div id="tabs-container">
-                <div id="tab-dash" class="tab-panel active">
-                    <div class="row g-4">
-                        <div class="col-lg-6">
-                            <div class="glass-card h-100">
-                                <div class="card-title">Aktuelle Sitzung</div>
-                                <div class="value-big mb-3" id="session-timer">00:00:00</div>
-                                <div class="d-flex gap-2 flex-wrap">
-                                    <button class="btn btn-success flex-grow-1" id="start-btn" onclick="timerStart()">DIENST START</button>
-                                    <button class="btn btn-danger flex-grow-1" id="stop-btn" onclick="timerStop()" disabled>BEENDEN</button>
-                                </div>
-                                <div class="soft-divider">
-                                    <div class="mini-stat">
-                                        <span>Letzte Sitzung:</span>
-                                        <span id="last-session">00:00:00</span>
-                                    </div>
-                                    <div class="mini-stat">
-                                        <span>Gesamte Dienstzeit:</span>
-                                        <span id="total-time">00:00:00</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                            <div class="glass-card h-100">
-                                <div class="card-title">Status setzen</div>
-                                <div class="row g-2">
-                                    <div class="col-6"><button class="btn btn-outline-success w-100" onclick="setStatus('Frei', '#00ff66')">FREI</button></div>
-                                    <div class="col-6"><button class="btn btn-outline-danger w-100" onclick="setStatus('Besetzt', '#ff3333')">BESETZT</button></div>
-                                    <div class="col-6"><button class="btn btn-outline-warning w-100" onclick="setStatus('Pause', '#ffaa00')">PAUSE</button></div>
-                                    <div class="col-6"><button class="btn btn-outline-info w-100" onclick="setStatus('Leitstelle', '#0099ff')">LEITSTELLE</button></div>
-                                </div>
-                            </div>
+    <main class="main-view">
+        
+        <div id="page-dash" class="page-node active">
+            <h2 class="fw-bold mb-4">Dashboard</h2>
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="glass-card">
+                        <h5 class="mb-3">Dienst-Status</h5>
+                        <p class="text-muted">Aktualisiere deinen Status für die Leitstelle:</p>
+                        <div class="row g-3">
+                            <div class="col-md-3"><button class="btn btn-outline-success w-100 p-3 fw-bold" onclick="setGlobalStatus('Frei', '#198754')">FREI</button></div>
+                            <div class="col-md-3"><button class="btn btn-outline-danger w-100 p-3 fw-bold" onclick="setGlobalStatus('Besetzt', '#dc3545')">BESETZT</button></div>
+                            <div class="col-md-3"><button class="btn btn-outline-warning w-100 p-3 fw-bold" onclick="setGlobalStatus('Pause', '#ffc107')">PAUSE</button></div>
+                            <div class="col-md-3"><button class="btn btn-outline-info w-100 p-3 fw-bold" onclick="setGlobalStatus('An Zentrale', '#0dcaf0')">ZENTRALE</button></div>
                         </div>
                     </div>
-                </div>
-
-                <div id="tab-calc" class="tab-panel">
                     <div class="glass-card">
-                        <div class="card-title">Rechner</div>
+                        <h5>System-Meldungen</h5>
+                        <div id="dash-logs" class="small text-muted mt-3" style="max-height: 150px; overflow-y: auto;">
+                            </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="glass-card text-center py-5">
+                        <div class="text-muted small mb-2 uppercase">Aktueller Status</div>
+                        <div id="cur-status-text" class="display-6 fw-800 text-success">Frei</div>
+                        <hr class="my-4 border-secondary">
+                        <div class="small text-muted">Heutige Fahrten</div>
+                        <div class="h2 fw-bold">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <div id="page-ls" class="page-node">
+            <h2 class="fw-bold mb-4">Leitstelle</h2>
+            <div class="glass-card">
+                <div class="d-flex justify-content-between mb-4">
+                    <h5>Aktive Einheiten</h5>
+                    <button class="btn btn-sm btn-outline-warning" onclick="renderLS()">Aktualisieren</button>
+                </div>
+                <div id="ls-container">
+                    </div>
+            </div>
+        </div>
+
+        <div id="page-rechner" class="page-node">
+            <h2 class="fw-bold mb-4">Fahrtenrechner</h2>
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <div class="glass-card">
+                        <h6>Konfiguration</h6>
                         <div class="mb-3">
-                            <label class="text-warning fw-bold mb-2">Name für Rechnung</label>
-                            <input type="text" id="calcUserName" class="form-control rechner-input" readonly>
+                            <label class="small text-muted">Fahrzeug</label>
+                            <select id="calc-car" class="form-select" onchange="calculate()">
+                                <option value="s-klasse">Extended S-Klasse</option>
+                                <option value="stretch">Stretch-Limousine</option>
+                                <option value="patriot">Patriot Limousine</option>
+                            </select>
                         </div>
-
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="mb-2">Fahrzeug</label>
-                                <select id="car" class="form-select rechner-input" onchange="calcPrice()">
-                                    <option value="s-klasse">Extended S-Klasse</option>
-                                    <option value="stretch">Stretch-Limousine</option>
-                                    <option value="patriot">Patriot Limousine</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="mb-2">Modus</label>
-                                <select id="type" class="form-select rechner-input" onchange="calcPrice()">
-                                    <option value="0">Einfache Fahrt</option>
-                                    <option value="1">Hin- und Rückfahrt</option>
-                                    <option value="2">1 Stunde exklusiv</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="mb-2">Zusatzzeit (15 Min Einheiten)</label>
-                                <input type="number" id="extra-time" class="form-control rechner-input" value="0" oninput="calcPrice()">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="mb-2">Zusatz-Stopps</label>
-                                <input type="number" id="extra-stops" class="form-control rechner-input" value="0" oninput="calcPrice()">
-                            </div>
+                        <div class="mb-3">
+                            <label class="small text-muted">Modus</label>
+                            <select id="calc-mode" class="form-select" onchange="calculate()">
+                                <option value="0">Einfache Fahrt</option>
+                                <option value="1">Hin- und Rückfahrt</option>
+                                <option value="2">1 Std. Exklusiv</option>
+                            </select>
                         </div>
-
-                        <div class="mt-3 d-grid gap-2">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="c-out" onchange="calcPrice()">
-                                <label class="form-check-label" for="c-out">Außerhalb Kerngebiet</label>
-                            </div>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="c-spontan" onchange="calcPrice()">
-                                <label class="form-check-label" for="c-spontan">Spontanbuchung (&lt; 3 Std.)</label>
-                            </div>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="c-kolonne" onchange="calcPrice()">
-                                <label class="form-check-label" for="c-kolonne">Kolonnenfahrt (+20%)</label>
-                            </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="calc-out" onchange="calculate()">
+                            <label class="form-check-label small">Außerhalb Kerngebiet</label>
                         </div>
-
-                        <button class="btn-yellow w-100 mt-3" onclick="window.print()">RECHNUNG DRUCKEN</button>
-
-                        <div id="invoice">
-                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-                                <strong>Taxi Köln</strong>
-                                <strong>RECHNUNG</strong>
-                            </div>
-                            <table class="table table-sm">
-                                <tbody id="invoice-items"></tbody>
-                            </table>
-                            <div class="text-end h4 mt-3">Gesamt: <span id="total-val">0</span> EUR</div>
-                            <div class="mt-3 small text-italic">Bearbeitet von: <span id="invoice-signer"></span></div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="calc-spontan" onchange="calculate()">
+                            <label class="form-check-label small">Spontanbuchung</label>
                         </div>
+                        <button class="btn-taxi w-100 mt-4" onclick="downloadPDF('rechnung-pdf', 'Rechnung_TaxiKoeln')">RECHNUNG ALS PDF</button>
                     </div>
                 </div>
-
-                <div id="tab-book" class="tab-panel">
-                    <div class="glass-card">
-                        <div class="card-title">Fahrtenbuch</div>
-                        <div class="row g-3">
-                            <div class="col-md-3">
-                                <label class="small text-muted mb-2">Fahrer</label>
-                                <input type="text" id="book-driver" class="form-control rechner-input" readonly>
+                <div class="col-md-7">
+                    <div id="rechnung-pdf" class="document-preview">
+                        <div class="d-flex justify-content-between border-bottom pb-3 mb-4">
+                            <div>
+                                <h4 class="fw-bold m-0">TAXI KÖLN</h4>
+                                <small>Chauffeur- & Limousinenservice</small>
                             </div>
-                            <div class="col-md-3">
-                                <label class="small text-muted mb-2">Kilometer</label>
-                                <input type="number" id="book-km" class="form-control rechner-input" placeholder="0">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="small text-muted mb-2">Start</label>
-                                <input type="text" id="book-start" class="form-control rechner-input" placeholder="Ort">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="small text-muted mb-2">Ende</label>
-                                <input type="text" id="book-end" class="form-control rechner-input" placeholder="Ort">
-                            </div>
-                            <div class="col-md-12">
-                                <label class="small text-muted mb-2">Fahrt-Typ</label>
-                                <select id="book-type" class="form-select rechner-input">
-                                    <option>Normale Fahrt (Kostenlos)</option>
-                                    <option>Helikopter (Premium)</option>
-                                    <option>Limo (Premium)</option>
-                                </select>
+                            <div class="text-end">
+                                <h4 class="m-0">RECHNUNG</h4>
+                                <small id="r-date">--.--.----</small>
                             </div>
                         </div>
-
-                        <button class="btn-yellow w-100 mt-3" onclick="addBookEntry()">EINTRAG SPEICHERN</button>
-
-                        <div class="mt-4">
-                            <div class="card-title mb-2">Letzte Fahrten</div>
-                            <div id="book-list"></div>
+                        <table class="table table-sm">
+                            <thead><tr><th>Leistung</th><th class="text-end">Betrag</th></tr></thead>
+                            <tbody id="r-items"></tbody>
+                        </table>
+                        <div class="text-end mt-4">
+                            <div class="small text-muted">GESAMTBETRAG</div>
+                            <div class="h2 fw-bold" id="r-total">0 EUR</div>
                         </div>
-                    </div>
-                </div>
-
-                <div id="tab-perso" class="tab-panel">
-                    <div class="glass-card">
-                        <div class="row align-items-center g-4">
-                            <div class="col-md-4 text-center border-md-end">
-                                <h2 id="p-name" class="fw-bold mb-1">--</h2>
-                                <p id="p-rank" class="text-warning mb-0">--</p>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="row g-3">
-                                    <div class="col-4">
-                                        <label class="text-muted d-block small mb-1">DN</label>
-                                        <span id="p-dn" class="fw-bold">--</span>
-                                    </div>
-                                    <div class="col-4">
-                                        <label class="text-muted d-block small mb-1">Fahrten</label>
-                                        <span id="p-trips" class="fw-bold">0</span>
-                                    </div>
-                                    <div class="col-4">
-                                        <label class="text-muted d-block small mb-1">Dienstzeit</label>
-                                        <span id="p-total" class="fw-bold">00:00:00</span>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="mt-5 pt-4 border-top">
+                            <div class="small">Bearbeitet von:</div>
+                            <div class="fw-bold" id="r-author">Maverick Stone</div>
                         </div>
-                    </div>
-                </div>
-
-                <div id="tab-admin" class="tab-panel">
-                    <div class="glass-card">
-                        <div class="card-title">Mitarbeiter Verwaltung</div>
-                        <div class="table-responsive">
-                            <table class="table table-dark table-hover align-middle mt-3">
-                                <thead>
-                                    <tr>
-                                        <th>DN</th>
-                                        <th>Name</th>
-                                        <th>Rang</th>
-                                        <th>Rechte</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>01</td><td>Chris Schreiner</td><td>Geschäftsführung</td><td>Full Access</td></tr>
-                                    <tr><td>02</td><td>Marco Krause</td><td>Stlv Geschäftsführung</td><td>Full Access</td></tr>
-                                    <tr><td>28</td><td>Maverick Stone</td><td>Azubi</td><td>Standard</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-supp" class="tab-panel">
-                    <div class="glass-card">
-                        <div class="card-title">Support</div>
-                        <div class="mb-4">
-                            <a href="https://docs.google.com/forms/d/e/1FAIpQLScjGyIFb2Z_di9xNqLpuoycT8OhpDXqRsD_WAP8hvxpo58p7w/viewform?usp=dialog" target="_blank" class="btn btn-outline-danger w-100 p-3 mb-2">FEHLER MELDEN</a>
-                            <a href="https://docs.google.com/forms/d/1AQbT_tArogRQJyUiRimHLSS3cg3TCeuu2TpZxk4hNks/edit" target="_blank" class="btn btn-outline-warning w-100 p-3">FEEDBACK GEBEN</a>
-                        </div>
-                        <div class="text-center p-3 bg-dark rounded-4 border border-warning">
-                            <div class="small text-muted">Discord Kontakt</div>
-                            <div class="fw-bold">agrar.julian</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-patch" class="tab-panel">
-                    <div class="glass-card">
-                        <div class="card-title">Patchnotes</div>
-                        <h6 class="text-warning fw-bold">Version 2.0.1</h6>
-                        <ul class="text-muted small mb-0">
-                            <li>Fahrtenbuch-Modul hinzugefügt</li>
-                            <li>Rechner-Logik aktualisiert</li>
-                            <li>Personalakten-Layout optimiert</li>
-                            <li>Bugfixes Stempeluhr</li>
-                        </ul>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
+
+        <div id="page-list" class="page-node">
+            <h2 class="fw-bold mb-4">Mitgliederliste</h2>
+            <div class="glass-card p-0 overflow-hidden">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>DN</th>
+                            <th>NAME</th>
+                            <th>RANG</th>
+                            <th>ABTEILUNG</th>
+                            <th>BEMERKUNG</th>
+                            <th class="text-end">AKTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="members-list-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="page-zeugnis" class="page-node">
+            <h2 class="fw-bold mb-4">Arbeitszeugnis-Generator</h2>
+            <div class="glass-card">
+                <div class="row g-3">
+                    <div class="col-md-4"><label class="small text-muted">Vorname Nachname</label><input type="text" id="az-name" class="form-control" placeholder="Max Mustermann"></div>
+                    <div class="col-md-2"><label class="small text-muted">Anrede</label><select id="az-gender" class="form-select"><option value="Herr">Herr</option><option value="Frau">Frau</option></select></div>
+                    <div class="col-md-3"><label class="small text-muted">Eintritt</label><input type="date" id="az-start" class="form-control"></div>
+                    <div class="col-md-3"><label class="small text-muted">Austritt</label><input type="date" id="az-end" class="form-control"></div>
+                    <div class="col-md-6"><label class="small text-muted">Rang</label><input type="text" id="az-rang" class="form-control" placeholder="z.B. Senior Chauffeur"></div>
+                    <div class="col-md-12"><button class="btn-taxi mt-2" onclick="genZeugnis()">Vorschau Generieren</button></div>
+                </div>
+            </div>
+            
+            <div id="zeugnis-container" class="d-none">
+                <div id="zeugnis-pdf" class="document-preview mb-3">
+                    <h2 class="text-center fw-bold mb-5">ARBEITSZEUGNIS</h2>
+                    <div id="zeugnis-body-text"></div>
+                    <div class="mt-5">
+                        Köln, den <span id="az-today"></span><br><br>
+                        <div class="sign-area">Chris Schreiner</div><br>
+                        Geschäftsführung Taxi Köln
+                    </div>
+                </div>
+                <button class="btn-taxi w-100" onclick="downloadPDF('zeugnis-pdf', 'Arbeitszeugnis')">ZEUGNIS HERUNTERLADEN (PDF)</button>
+            </div>
+        </div>
+
+        <div id="page-admin" class="page-node">
+            <h2 class="fw-bold mb-4">Admin Panel</h2>
+            <div class="glass-card">
+                <h5>Mitarbeiter anlegen / Rechte verwalten</h5>
+                <div class="row g-3 mt-3">
+                    <div class="col-md-4"><input type="text" id="adm-name" class="form-control" placeholder="Name"></div>
+                    <div class="col-md-2"><input type="text" id="adm-dn" class="form-control" placeholder="DN"></div>
+                    <div class="col-md-3"><input type="text" id="adm-rang" class="form-control" placeholder="Rang"></div>
+                    <div class="col-md-3"><input type="text" id="adm-abt" class="form-control" placeholder="Abteilung"></div>
+                    <div class="col-md-12"><input type="text" id="adm-bem" class="form-control" placeholder="Bemerkung"></div>
+                </div>
+                <h6 class="mt-4 mb-3 text-warning">Berechtigungen für diesen Account:</h6>
+                <div class="rights-box">
+                    <label><input type="checkbox" class="r-chk" value="patch"> Patchnotes erstellen</label>
+                    <label><input type="checkbox" class="r-chk" value="ls"> Leitstelle Besetzen</label>
+                    <label><input type="checkbox" class="r-chk" value="calc"> Fahrtenrechner Zugriff</label>
+                    <label><input type="checkbox" class="r-chk" value="book"> Fahrtenbuch schreiben</label>
+                    <label><input type="checkbox" class="r-chk" value="az"> Arbeitszeugnis erstellen</label>
+                    <label><input type="checkbox" class="r-chk" value="edit"> Personal-Änderung</label>
+                    <label><input type="checkbox" class="r-chk" value="fire"> Kündigungen aussprechen</label>
+                    <label><input type="checkbox" class="r-chk" value="admin"> Vollzugriff / Admin</label>
+                </div>
+                <button class="btn-taxi mt-4" onclick="createNewUser()">BENUTZER SPEICHERN</button>
+            </div>
+        </div>
+
+        <div id="page-logs" class="page-node">
+            <h2 class="fw-bold mb-4">Archiv & System-Logs</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="glass-card">
+                        <h6 class="mb-3">Ehemalige Mitarbeiter (Archiv)</h6>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-sm">
+                                <thead><tr><th>Name</th><th>DN</th><th>Datum</th></tr></thead>
+                                <tbody id="archive-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="glass-card">
+                        <h6 class="mb-3">System-Logs</h6>
+                        <div id="sys-logs-full" class="small text-muted" style="height: 300px; overflow-y: auto; font-family: monospace;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-akte" class="page-node">
+            <h2 class="fw-bold mb-4">Personalakte</h2>
+            <div id="akte-pdf-area" class="glass-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h1 class="fw-800 m-0" id="ak-name">Maverick Stone</h1>
+                        <p class="text-warning fw-bold mb-4" id="ak-rang">Azubi</p>
+                    </div>
+                    <div class="text-end">
+                        <div class="small text-muted">Personal-ID</div>
+                        <div class="fw-bold">TK-2026-<span id="ak-dn">28</span></div>
+                    </div>
+                </div>
+                <div class="row g-4 border-top border-dark pt-4">
+                    <div class="col-md-4">
+                        <div class="small text-muted">Abteilung</div>
+                        <div class="fw-bold" id="ak-abt">Fahrer</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="small text-muted">Fahrten Gesamt</div>
+                        <div class="fw-bold">0</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="small text-muted">Dienstzeit</div>
+                        <div class="fw-bold">0 Std.</div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="small text-muted">Bemerkung</div>
+                        <div id="ak-bem" class="font-italic">Keine Einträge vorhanden.</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-taxi mt-3" onclick="downloadPDF('akte-pdf-area', 'Personalakte_TaxiKoeln')">AKTE ALS PDF SPEICHERN</button>
+        </div>
+
+        <div id="page-supp" class="page-node">
+            <h2 class="fw-bold mb-4 text-center">Support & Hilfe</h2>
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-5">
+                    <div class="glass-card text-center border-danger" style="border-width: 2px;">
+                        <i class="bi bi-bug-fill display-4 text-danger"></i>
+                        <h4 class="mt-3">Fehler melden</h4>
+                        <p class="text-muted small">Hier kannst du Systemfehler oder Bugs direkt an die Entwicklung weitergeben.</p>
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScjGyIFb2Z_di9xNqLpuoycT8OhpDXqRsD_WAP8hvxpo58p7w/viewform?usp=dialog" target="_blank" class="btn btn-danger w-100">Ticket erstellen</a>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="glass-card text-center border-warning" style="border-width: 2px;">
+                        <i class="bi bi-star-fill display-4 text-warning"></i>
+                        <h4 class="mt-3">Feedback geben</h4>
+                        <p class="text-muted small">Wünsche für neue Features oder Kritik an der Struktur?</p>
+                        <a href="https://docs.google.com/forms/d/1AQbT_tArogRQJyUiRimHLSS3cg3TCeuu2TpZxk4hNks/edit" target="_blank" class="btn btn-warning w-100">Formular öffnen</a>
+                    </div>
+                </div>
+                <div class="col-md-10 mt-4">
+                    <div class="glass-card text-center py-4">
+                        <div class="text-muted small mb-1">Technischer Kontakt (Discord)</div>
+                        <div class="fw-bold h5">agrar.julian</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-patch" class="page-node">
+            <h2 class="fw-bold mb-4">Patchnotes</h2>
+            <div class="glass-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-warning m-0">Version 4.0.0 (Enterprise Update)</h5>
+                    <span class="badge bg-dark">04.04.2026</span>
+                </div>
+                <ul>
+                    <li class="mb-2 text-white">Vollständiger PDF-Export für Rechnungen, Akten und Zeugnisse.</li>
+                    <li class="mb-2">Implementierung eines Mitarbeiter-Archivs für entlassene Personen.</li>
+                    <li class="mb-2">Neues Dashboard-Status-System mit Echtzeit-Leitstelle.</li>
+                    <li class="mb-2">Admin-Bereich zur Rechteverwaltung und Neuerstellung von Accounts.</li>
+                    <li class="mb-2 text-muted small">Support-Integration für Bug-Reports & Feedback.</li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="footer-branding">
+        ©Taxi-Köln NRW-RP<br>
+        Codet By agrar.julian(Maverick Stone)<br>
+        Hoastet By norixius.
     </div>
 
     <script>
-        const users = {
-            "Chris Schreiner": { pass: "Bka26r", dn: "01", rank: "Geschäftsführung", trips: 0, total: 0 },
-            "Marco Krause": { pass: "02", dn: "02", rank: "Stlv Geschäftsführung", trips: 0, total: 0 },
-            "Maverick Stone": { pass: "28", dn: "28", rank: "Azubi", trips: 0, total: 0 }
+        // DATENBANK
+        let members = [
+            {dn: "01", name: "Chris Schreiner", rang: "Geschäftsführung", abt: "Leitung", bem: "Inhaber", status: "Frei", color: "#198754"},
+            {dn: "02", name: "Marco Krause", rang: "Stlv Geschäftsführung", abt: "Leitung", bem: "-", status: "Pause", color: "#ffc107"},
+            {dn: "28", name: "Maverick Stone", rang: "Azubi", abt: "Fahrer", bem: "Neuaufnahme", status: "Frei", color: "#198754"}
+        ];
+        let archive = [];
+        let logs = [];
+
+        // INIT
+        window.onload = () => {
+            log("System V4 erfolgreich gestartet.");
+            calculate();
+            renderMembers();
+            renderLS();
         };
 
-        const config = {
-            's-klasse': { base: [12000, 22000, 30000], time: 8000, stop: 3000, out: 10000, minSpontan: 8000, minKol: 10000 },
-            'stretch':  { base: [22000, 40000, 50000], time: 12000, stop: 5000, out: 15000, minSpontan: 12000, minKol: 15000 },
-            'patriot':  { base: [35000, 50000, 60000], time: 15000, stop: 6000, out: 20000, minSpontan: 15000, minKol: 20000 }
-        };
-
-        let currentUser = null;
-        let seconds = 0;
-        let totalSeconds = 0;
-        let timer = null;
-
-        function formatTime(sec) {
-            const h = Math.floor(sec / 3600);
-            const m = Math.floor((sec % 3600) / 60);
-            const s = sec % 60;
-            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        // NAV
+        function switchPage(id, btn) {
+            document.querySelectorAll('.page-node').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById('page-' + id).classList.add('active');
+            if(btn) btn.classList.add('active');
+            
+            // Refresh logic
+            if(id === 'list') renderMembers();
+            if(id === 'ls') renderLS();
         }
 
-        function showTab(id) {
-            document.querySelectorAll('.tab-panel').forEach(panel => {
-                panel.classList.remove('active');
+        // STATUS
+        function setGlobalStatus(txt, col) {
+            document.getElementById('cur-status-text').innerText = txt;
+            document.getElementById('cur-status-text').style.color = col;
+            members[2].status = txt; // Simulierte Änderung für Maverick
+            members[2].color = col;
+            log(`Status geändert auf: ${txt}`);
+            renderLS();
+        }
+
+        // LEITSTELLE
+        function renderLS() {
+            const container = document.getElementById('ls-container');
+            container.innerHTML = '';
+            members.forEach(m => {
+                container.innerHTML += `
+                    <div class="ls-row">
+                        <div>
+                            <span class="fw-bold text-white">${m.name}</span> <small class="text-muted ps-2">[DN ${m.dn}]</small><br>
+                            <small class="text-muted">${m.rang}</small>
+                        </div>
+                        <div class="status-pill" style="border: 1px solid ${m.color}; color: ${m.color}; background: ${m.color}11">
+                            ${m.status}
+                        </div>
+                    </div>
+                `;
             });
-            document.getElementById('tab-' + id).classList.add('active');
         }
 
-        function handleLogin() {
-            const u = document.getElementById('userInput').value.trim();
-            const p = document.getElementById('passInput').value.trim();
+        // MITGLIEDER & ADMIN
+        function renderMembers() {
+            const body = document.getElementById('members-list-body');
+            body.innerHTML = '';
+            members.forEach((m, idx) => {
+                body.innerHTML += `
+                    <tr>
+                        <td class="ps-4 fw-bold text-warning">${m.dn}</td>
+                        <td>${m.name}</td>
+                        <td>${m.rang}</td>
+                        <td>${m.abt}</td>
+                        <td class="small text-muted">${m.bem}</td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-outline-danger" onclick="fireMember(${idx})"><i class="bi bi-person-x"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
 
-            if (users[u] && users[u].pass === p) {
-                currentUser = users[u];
-                currentUser.name = u;
+        function createNewUser() {
+            const n = document.getElementById('adm-name').value;
+            const d = document.getElementById('adm-dn').value;
+            if(!n || !d) return alert("Fehlende Daten!");
+            
+            members.push({
+                dn: d, name: n,
+                rang: document.getElementById('adm-rang').value,
+                abt: document.getElementById('adm-abt').value,
+                bem: document.getElementById('adm-bem').value,
+                status: 'Frei', color: '#198754'
+            });
+            log(`Neuer Account erstellt: ${n} (DN ${d})`);
+            alert("Erfolgreich angelegt!");
+            renderMembers();
+        }
 
-                document.getElementById('login-view').classList.add('d-none');
-                document.getElementById('app-area').classList.remove('d-none');
-                document.getElementById('app-area').style.display = 'flex';
-
-                document.getElementById('sideName').innerText = u;
-                document.getElementById('sideRank').innerText = currentUser.rank;
-                document.getElementById('p-name').innerText = u;
-                document.getElementById('p-rank').innerText = currentUser.rank;
-                document.getElementById('p-dn').innerText = currentUser.dn;
-                document.getElementById('calcUserName').value = u;
-                document.getElementById('invoice-signer').innerText = u;
-                document.getElementById('book-driver').value = u;
-                document.getElementById('p-trips').innerText = currentUser.trips;
-                document.getElementById('p-total').innerText = formatTime(currentUser.total);
-
-                document.getElementById('loginError').classList.add('d-none');
-                calcPrice();
-            } else {
-                document.getElementById('loginError').classList.remove('d-none');
+        function fireMember(idx) {
+            const m = members[idx];
+            if(confirm(`${m.name} wirklich entlassen und archivieren?`)) {
+                archive.push({...m, date: new Date().toLocaleDateString()});
+                log(`MITARBEITER GEKÜNDIGT: ${m.name}`);
+                members.splice(idx, 1);
+                renderMembers();
+                renderArchive();
             }
         }
 
-        function tab(id, el) {
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            el.classList.add('active');
-
-            showTab(id);
-            document.getElementById('tab-title').innerText = el.innerText.trim();
+        function renderArchive() {
+            const body = document.getElementById('archive-body');
+            body.innerHTML = '';
+            archive.forEach(a => {
+                body.innerHTML += `<tr><td>${a.name}</td><td>${a.dn}</td><td class="text-muted small">${a.date}</td></tr>`;
+            });
         }
 
-        function timerStart() {
-            if (timer) return;
+        // FAHRTENRECHNER
+        const config = {
+            's-klasse': { base: [12000, 22000, 30000], out: 10000, spontan: 5000 },
+            'stretch':  { base: [22000, 40000, 50000], out: 15000, spontan: 8000 },
+            'patriot':  { base: [35000, 50000, 60000], out: 20000, spontan: 10000 }
+        };
 
-            document.getElementById('start-btn').disabled = true;
-            document.getElementById('stop-btn').disabled = false;
-
-            timer = setInterval(() => {
-                seconds++;
-                document.getElementById('session-timer').innerText = formatTime(seconds);
-            }, 1000);
-        }
-
-        function timerStop() {
-            if (!timer) return;
-
-            clearInterval(timer);
-            timer = null;
-
-            totalSeconds += seconds;
-            currentUser.total = totalSeconds;
-
-            document.getElementById('last-session').innerText = formatTime(seconds);
-            document.getElementById('total-time').innerText = formatTime(totalSeconds);
-            document.getElementById('p-total').innerText = formatTime(totalSeconds);
-
-            seconds = 0;
-            document.getElementById('session-timer').innerText = "00:00:00";
-            document.getElementById('start-btn').disabled = false;
-            document.getElementById('stop-btn').disabled = true;
-        }
-
-        function setStatus(txt, col) {
-            document.getElementById('status-text').innerText = txt;
-            document.getElementById('dot').style.background = col;
-            document.getElementById('dot').style.boxShadow = `0 0 16px ${col}55`;
-        }
-
-        function calcPrice() {
-            const car = document.getElementById('car').value;
-            const type = parseInt(document.getElementById('type').value, 10);
-            const exTime = parseInt(document.getElementById('extra-time').value) || 0;
-            const exStops = parseInt(document.getElementById('extra-stops').value) || 0;
-            const out = document.getElementById('c-out').checked;
-            const spontan = document.getElementById('c-spontan').checked;
-            const kolonne = document.getElementById('c-kolonne').checked;
-
+        function calculate() {
+            const car = document.getElementById('calc-car').value;
+            const modeIdx = document.getElementById('calc-mode').value;
+            const isOut = document.getElementById('calc-out').checked;
+            const isSpontan = document.getElementById('calc-spontan').checked;
+            
             const p = config[car];
-            let total = p.base[type];
-            let html = `<tr><td>Grundpreis (${car})</td><td class="text-end">${total.toLocaleString()} €</td></tr>`;
+            let total = p.base[modeIdx];
+            let html = `<tr><td>Grundpreis (${car})</td><td class="text-end">${p.base[modeIdx].toLocaleString()} EUR</td></tr>`;
+            
+            if(isOut) { total += p.out; html += `<tr><td>Anfahrt außerhalb</td><td class="text-end">${p.out.toLocaleString()} EUR</td></tr>`; }
+            if(isSpontan) { total += p.spontan; html += `<tr><td>Spontanbuchung</td><td class="text-end">${p.spontan.toLocaleString()} EUR</td></tr>`; }
 
-            if (exTime > 0) {
-                const c = exTime * p.time;
-                total += c;
-                html += `<tr><td>Zusatzzeit (${exTime}x)</td><td class="text-end">${c.toLocaleString()} €</td></tr>`;
-            }
-
-            if (exStops > 0) {
-                const c = exStops * p.stop;
-                total += c;
-                html += `<tr><td>Stopps (${exStops}x)</td><td class="text-end">${c.toLocaleString()} €</td></tr>`;
-            }
-
-            if (out) {
-                total += p.out;
-                html += `<tr><td>Außerhalb Kerngebiet</td><td class="text-end">${p.out.toLocaleString()} €</td></tr>`;
-            }
-
-            if (spontan) {
-                const c = p.minSpontan;
-                total += c;
-                html += `<tr><td>Spontanbuchung</td><td class="text-end">${c.toLocaleString()} €</td></tr>`;
-            }
-
-            if (kolonne) {
-                const c = Math.round(total * 0.2);
-                total += c;
-                html += `<tr><td>Kolonnenfahrt (+20%)</td><td class="text-end">${c.toLocaleString()} €</td></tr>`;
-            }
-
-            document.getElementById('invoice-items').innerHTML = html;
-            document.getElementById('total-val').innerText = total.toLocaleString('de-DE');
+            document.getElementById('r-items').innerHTML = html;
+            document.getElementById('r-total').innerText = total.toLocaleString() + " EUR";
+            document.getElementById('r-date').innerText = new Date().toLocaleDateString();
         }
 
-        function addBookEntry() {
-            const km = document.getElementById('book-km').value;
-            const start = document.getElementById('book-start').value.trim();
-            const end = document.getElementById('book-end').value.trim();
-            const type = document.getElementById('book-type').value;
+        // ZEUGNIS
+        function genZeugnis() {
+            const name = document.getElementById('az-name').value;
+            const start = document.getElementById('az-start').value;
+            const end = document.getElementById('az-end').value;
+            const rang = document.getElementById('az-rang').value;
+            const gender = document.getElementById('az-gender').value;
+            const nname = name.split(' ').pop();
 
-            if (!km || !start || !end) {
-                alert("Bitte alle Felder ausfüllen!");
-                return;
-            }
+            if(!name || !start) return alert("Daten unvollständig!");
 
-            const entry = document.createElement('div');
-            entry.className = 'bg-dark p-3 mb-2 rounded-4 border border-warning small';
-            entry.innerHTML = `<strong>${type}</strong>: ${start} ➔ ${end} (${km} km)`;
-
-            document.getElementById('book-list').prepend(entry);
-
-            currentUser.trips++;
-            document.getElementById('p-trips').innerText = currentUser.trips;
-
-            document.getElementById('book-km').value = "";
-            document.getElementById('book-start').value = "";
-            document.getElementById('book-end').value = "";
+            const text = `
+                ${gender} ${name} war in der Zeit vom ${start} bis zum ${end} als Taxifahrer in unserem Unternehmen in Köln beschäftigt.<br><br>
+                Aufgrund seiner/ihrer fundierten Erfahrung und der überdurchschnittlichen Zuverlässigkeit bekleidete er/sie innerhalb unseres Teams den Rang des <strong>${rang}</strong>. In dieser Funktion trug er/sie eine besondere Verantwortung für die reibungslose Abwicklung des operativen Tagesgeschäfts und zeichnete sich durch ein hohes Maß an Eigeninitiative aus.<br><br>
+                <strong>Tätigkeitsbeschreibung:</strong><br>
+                Das Aufgabengebiet von ${gender} ${nname} umfasste die verantwortungsbewusste Beförderung unserer Fahrgäste im gesamten Stadtgebiet Köln sowie im überregionalen Umland. Zu den täglichen Schwerpunkten gehörten die sichere Personenbeförderung, Durchführung von Fernfahrten sowie die fehlerfreie Abwicklung von Abrechnungen.<br><br>
+                Das Verhalten gegenüber Fahrgästen und Geschäftsleitung war stets vorbildlich. Wir bedauern sein/ihr Ausscheiden sehr und wünschen für die Zukunft alles Gute.
+            `;
+            document.getElementById('zeugnis-body-text').innerHTML = text;
+            document.getElementById('az-today').innerText = new Date().toLocaleDateString();
+            document.getElementById('zeugnis-container').classList.remove('d-none');
+            log(`Zeugnis generiert für ${name}`);
         }
 
-        document.getElementById('loginBtn')?.addEventListener('click', handleLogin);
-        document.getElementById('passInput')?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') handleLogin();
-        });
+        // PDF EXPORT
+        function downloadPDF(elementId, filename) {
+            const element = document.getElementById(elementId);
+            const opt = {
+                margin: 10,
+                filename: filename + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
 
-        document.getElementById('userInput')?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') document.getElementById('passInput').focus();
-        });
+        // LOGGING
+        function log(msg) {
+            const time = new Date().toLocaleTimeString();
+            const l = `[${time}] ${msg}`;
+            logs.unshift(l);
+            
+            // Kleine Dash-Anzeige
+            const dashLog = document.getElementById('dash-logs');
+            if(dashLog) dashLog.innerHTML = l + "<br>" + dashLog.innerHTML;
+            
+            // Full Log Page
+            const fullLog = document.getElementById('sys-logs-full');
+            if(fullLog) fullLog.innerHTML = l + "<br>" + fullLog.innerHTML;
+        }
     </script>
 </body>
 </html>
