@@ -3,164 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Köln | Professional Management</title>
+    <title>Taxi Köln | OS 2.0 Management</title>
     
     <link rel="icon" type="image/png" href="images/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
         :root {
             --taxi-yellow: #ffcc00;
-            --taxi-yellow-hover: #e6b800;
-            --bg-dark: #0c0c0c;
-            --card-bg: #161616;
-            --sidebar-bg: #000000;
-            --text-gray: #a0a0a0;
-            --status-frei: #28a745;
-            --status-besetzt: #dc3545;
-            --status-pause: #ffc107;
+            --taxi-yellow-glow: rgba(255, 204, 0, 0.3);
+            --bg-main: #050505;
+            --bg-card: #0f0f0f;
+            --bg-sidebar: #000000;
+            --border-color: #1f1f1f;
+            --text-muted: #666;
+            
+            --status-frei: #00ff66;
+            --status-besetzt: #ff3333;
+            --status-pause: #ffaa00;
+            --status-ls: #0099ff;
         }
 
         body { 
-            background-color: var(--bg-dark); 
-            color: white; 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background-color: var(--bg-main); 
+            color: #efefef; 
+            font-family: 'Inter', sans-serif; 
             margin: 0;
             height: 100vh;
             overflow: hidden;
+            display: flex;
         }
 
-        /* --- LOGIN SCREEN --- */
+        /* --- LOGIN DESIGN --- */
         #login-view {
-            display: flex; height: 100vh; align-items: center; justify-content: center;
-            background: radial-gradient(circle, #1a1a1a 0%, #0c0c0c 100%);
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 9999;
+            position: fixed; inset: 0; z-index: 9999;
+            background: linear-gradient(135deg, #000 0%, #111 100%);
+            display: flex; align-items: center; justify-content: center;
         }
-        .login-card {
-            width: 100%; max-width: 400px; padding: 40px;
-            background: var(--card-bg); border: 1px solid var(--taxi-yellow);
-            border-radius: 20px; text-align: center;
+        .login-box {
+            width: 100%; max-width: 400px; padding: 50px;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 30px; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-
-        /* --- LAYOUT --- */
-        #employee-area { display: none; height: 100vh; width: 100vw; }
-        .dashboard-container { display: flex; width: 100%; height: 100%; }
+        .login-input {
+            width: 100%; background: #1a1a1a; border: 1px solid #333;
+            padding: 15px; border-radius: 12px; color: white; margin-bottom: 15px;
+            transition: 0.3s;
+        }
+        .login-input:focus { border-color: var(--taxi-yellow); outline: none; box-shadow: 0 0 15px var(--taxi-yellow-glow); }
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 280px; background: var(--sidebar-bg);
-            border-right: 2px solid var(--taxi-yellow);
-            display: flex; flex-direction: column; flex-shrink: 0;
+            width: 280px; background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column;
         }
-        .sidebar-brand { padding: 30px; font-size: 1.5rem; font-weight: 900; color: var(--taxi-yellow); border-bottom: 1px solid #111; }
+        .sidebar-header { padding: 40px 30px; }
+        .logo-text { font-weight: 800; font-size: 1.4rem; letter-spacing: -1px; color: var(--taxi-yellow); }
         
-        .nav-group-label { padding: 20px 25px 5px; font-size: 0.7rem; color: #444; text-transform: uppercase; letter-spacing: 1px; }
-        .nav-item-emp {
-            padding: 12px 25px; display: flex; align-items: center; color: #888;
-            text-decoration: none; cursor: pointer; transition: 0.2s;
+        .nav-section { padding: 0 15px; margin-bottom: 30px; }
+        .nav-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; padding-left: 15px; margin-bottom: 10px; }
+        
+        .nav-btn {
+            display: flex; align-items: center; padding: 12px 15px;
+            color: #888; text-decoration: none; border-radius: 12px;
+            margin-bottom: 5px; transition: 0.2s; cursor: pointer;
         }
-        .nav-item-emp:hover, .nav-item-emp.active { color: var(--taxi-yellow); background: rgba(255,204,0,0.05); }
-        .nav-item-emp i { margin-right: 15px; font-size: 1.1rem; width: 20px; }
-
-        .sidebar-footer { margin-top: auto; padding: 20px; background: #050505; border-top: 1px solid #111; }
+        .nav-btn i { font-size: 1.2rem; margin-right: 15px; }
+        .nav-btn:hover, .nav-btn.active { color: white; background: #111; }
+        .nav-btn.active { color: var(--taxi-yellow); background: var(--taxi-yellow-glow); }
 
         /* --- MAIN CONTENT --- */
-        .main-content { flex-grow: 1; padding: 40px; overflow-y: auto; background: #080808; }
-        .page-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 30px; }
+        .content-area { flex-grow: 1; overflow-y: auto; padding: 50px; position: relative; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        
+        .stat-badge { background: #111; border: 1px solid #222; padding: 8px 20px; border-radius: 100px; display: flex; align-items: center; gap: 10px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--status-frei); box-shadow: 0 0 10px var(--status-frei); }
 
-        /* --- CARDS --- */
-        .dash-card { background: var(--card-bg); border-radius: 15px; border: 1px solid #222; margin-bottom: 20px; overflow: hidden; }
-        .card-header-taxi { padding: 12px 20px; background: #111; border-bottom: 1px solid #222; font-size: 0.75rem; font-weight: 800; color: var(--text-gray); text-transform: uppercase; }
-        .card-body-taxi { padding: 20px; }
+        /* --- CARDS & GRID --- */
+        .glass-card { 
+            background: var(--bg-card); border: 1px solid var(--border-color); 
+            border-radius: 24px; padding: 30px; height: 100%;
+            transition: 0.3s;
+        }
+        .glass-card:hover { border-color: #333; }
+        .card-title { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 20px; }
 
-        /* --- STEMPELUHR --- */
-        .timer-display { font-family: monospace; font-size: 2.2rem; font-weight: bold; color: var(--taxi-yellow); text-align: center; margin: 10px 0; }
-        .timer-label { font-size: 0.7rem; text-transform: uppercase; color: #555; text-align: center; }
+        /* --- TIMER --- */
+        .timer-val { font-size: 3rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--taxi-yellow); }
 
-        /* --- STATUS BUTTONS --- */
-        .btn-stat { width: 100%; padding: 10px; border-radius: 8px; border: none; font-weight: bold; margin-bottom: 10px; color: white; transition: 0.2s; }
-        .btn-stat:hover { transform: scale(1.02); }
+        /* --- LEITSTELLE UNITS --- */
+        .unit-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; background: #080808; border-radius: 15px; margin-bottom: 10px;
+        }
+        .status-pill { padding: 4px 12px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
 
-        /* --- LEITSTELLE --- */
-        .unit-card { background: #111; border: 1px solid #333; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .unit-status { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        /* --- ANIMATIONS --- */
+        .fade-in { animation: fadeIn 0.5s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- INPUTS --- */
-        .taxi-input { width: 100%; background: #222; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
-        .accent { color: var(--taxi-yellow); }
+        .btn-yellow { background: var(--taxi-yellow); color: black; font-weight: 700; border-radius: 12px; border: none; padding: 12px 25px; transition: 0.3s; }
+        .btn-yellow:hover { transform: translateY(-2px); box-shadow: 0 5px 20px var(--taxi-yellow-glow); }
+        .btn-yellow:disabled { opacity: 0.3; transform: none; }
     </style>
 </head>
 <body>
 
     <div id="login-view">
-        <div class="login-card">
-            <img src="images/logo.png" width="80" class="mb-3">
-            <h3 class="fw-bold mb-4 accent">Mitarbeiter Portal</h3>
-            <input type="text" id="userInput" class="taxi-input" placeholder="Benutzername">
-            <input type="password" id="passInput" class="taxi-input" placeholder="Passwort">
-            <button class="btn btn-warning w-100 py-3 fw-bold" onclick="attemptLogin()">EINLOGGEN</button>
-            <p id="loginError" class="text-danger mt-3 small" style="display:none;">Daten inkorrekt!</p>
+        <div class="login-box fade-in">
+            <img src="images/logo.png" width="80" class="mb-4">
+            <h2 class="fw-bold mb-1">Taxi Köln</h2>
+            <p class="text-muted small mb-4">Management OS v2.0</p>
+            <input type="text" id="userInput" class="login-input" placeholder="Benutzername">
+            <input type="password" id="passInput" class="login-input" placeholder="Passwort">
+            <button class="btn-yellow w-100" onclick="handleLogin()">SYSTEM STARTEN</button>
+            <div id="loginError" class="text-danger mt-3 small" style="display:none;">Zugriff verweigert.</div>
         </div>
     </div>
 
-    <div id="employee-area">
-        <div class="dashboard-container">
-            
-            <aside class="sidebar">
-                <div class="sidebar-brand">Taxi Köln</div>
+    <div id="app-area" style="display: none; width: 100%; display: flex;">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-text">TAXI KÖLN</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">Zentrale</div>
+                <div class="nav-btn active" onclick="tab('dash', this)"><i class="bi bi-columns-gap"></i> Dashboard</div>
+                <div class="nav-btn" onclick="tab('calc', this)"><i class="bi bi-calculator"></i> Fahrtenrechner</div>
+                <div class="nav-btn" onclick="tab('ls', this)"><i class="bi bi-broadcast"></i> Leitstelle</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">Management</div>
+                <div class="nav-btn" onclick="tab('perso', this)"><i class="bi bi-person-lines-fill"></i> Personalakte</div>
+                <div class="nav-btn" onclick="tab('admin', this)"><i class="bi bi-shield-lock"></i> Admin Panel</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">Hilfe</div>
+                <div class="nav-btn" onclick="tab('supp', this)"><i class="bi bi-bug"></i> Support</div>
+                <div class="nav-btn" onclick="tab('patch', this)"><i class="bi bi-cpu"></i> Patchnotes</div>
+            </div>
+
+            <div class="mt-auto p-4 border-top border-dark">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div style="width: 40px; height: 40px; background: var(--taxi-yellow); border-radius: 10px; color: black; display: flex; align-items: center; justify-content: center; font-weight: 800;">CS</div>
+                    <div>
+                        <div class="small fw-bold" id="userNameSide">Chris Schreiner</div>
+                        <div class="small text-muted">Geschäftsführer</div>
+                    </div>
+                </div>
+                <button class="btn btn-dark btn-sm w-100" onclick="location.reload()">ABMELDEN</button>
+            </div>
+        </aside>
+
+        <main class="content-area">
+            <div class="top-bar">
+                <h2 class="fw-800 m-0" id="tab-title">Dashboard</h2>
+                <div class="stat-badge">
+                    <div class="status-dot" id="dot"></div>
+                    <span id="status-text">Im Dienst</span>
+                </div>
+            </div>
+
+            <div id="tabs-container">
                 
-                <div class="nav-group-label">Hauptmenü</div>
-                <a class="nav-item-emp active" id="nav-dash" onclick="showTab('dash')"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                <a class="nav-item-emp" id="nav-calc" onclick="showTab('calc')"><i class="bi bi-plus-circle"></i> Neue Fahrt</a>
-                <a class="nav-item-emp" id="nav-ls" onclick="showTab('ls')"><i class="bi bi-broadcast"></i> Leitstelle</a>
-
-                <div class="nav-group-label">Verwaltung</div>
-                <a class="nav-item-emp" id="nav-perso" onclick="showTab('perso')"><i class="bi bi-person-badge"></i> Personalakte</a>
-                <a class="nav-item-emp" id="nav-admin" onclick="showTab('admin')"><i class="bi bi-shield-lock"></i> Admin Panel</a>
-
-                <div class="nav-group-label">System</div>
-                <a class="nav-item-emp" id="nav-supp" onclick="showTab('supp')"><i class="bi bi-bug"></i> Support & Bugs</a>
-                <a class="nav-item-emp" id="nav-patch" onclick="showTab('patch')"><i class="bi bi-journal-text"></i> Patchnotes</a>
-
-                <div class="sidebar-footer">
-                    <div class="small opacity-50">Eingeloggt als:</div>
-                    <div class="fw-bold accent" id="sideName">---</div>
-                    <button class="btn btn-outline-danger btn-sm w-100 mt-3" onclick="location.reload()">LOGOUT</button>
-                </div>
-            </aside>
-
-            <main class="main-content">
-                
-                <div id="tab-dash">
-                    <h1 class="page-title">Willkommen zurück, <span class="accent" id="welcomeName">Fahrer</span>!</h1>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="dash-card">
-                                <div class="card-header-taxi">Stempeluhr / Dienstzeit</div>
-                                <div class="card-body-taxi">
-                                    <div class="timer-label">Aktuelle Sitzung</div>
-                                    <div id="session-timer" class="timer-display">00:00:00</div>
-                                    <div class="timer-label">Gesamtzeit (Woche)</div>
-                                    <div class="text-center fw-bold">14 Std. 22 Min.</div>
-                                    <div class="mt-4">
-                                        <button id="btn-start" class="btn btn-success w-100 mb-2 fw-bold" onclick="startDienst()">DIENST STARTEN</button>
-                                        <button id="btn-stop" class="btn btn-danger w-100 fw-bold" onclick="stopDienst()" disabled>DIENST BEENDEN</button>
+                <div id="tab-dash" class="fade-in">
+                    <div class="row g-4">
+                        <div class="col-md-5">
+                            <div class="glass-card">
+                                <div class="card-title">Stempeluhr</div>
+                                <div class="timer-val" id="session-timer">00:00:00</div>
+                                <p class="text-muted small">Aktuelle Dienstsitzung</p>
+                                <hr class="border-dark my-4">
+                                <div class="row text-center">
+                                    <div class="col-6 border-end border-dark">
+                                        <div class="h4 m-0 fw-bold">14.2h</div>
+                                        <div class="small text-muted">Woche</div>
                                     </div>
+                                    <div class="col-6">
+                                        <div class="h4 m-0 fw-bold">124h</div>
+                                        <div class="small text-muted">Monat</div>
+                                    </div>
+                                </div>
+                                <div class="mt-5">
+                                    <button class="btn-yellow w-100 mb-3" id="start-btn" onclick="timerStart()">DIENST STARTEN</button>
+                                    <button class="btn btn-outline-danger w-100" id="stop-btn" onclick="timerStop()" disabled>DIENST BEENDEN</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-8">
-                            <div class="dash-card">
-                                <div class="card-header-taxi">Status-Zentrale</div>
-                                <div class="card-body-taxi row">
-                                    <div class="col-6">
-                                        <button class="btn-stat" style="background:#28a745" onclick="setStat('Frei')">FREI / FUNKBEREIT</button>
-                                        <button class="btn-stat" style="background:#dc3545" onclick="setStat('Besetzt')">BESETZT</button>
-                                    </div>
-                                    <div class="col-6">
-                                        <button class="btn-stat" style="background:#ffc107; color:black" onclick="setStat('Pause')">PAUSE</button>
-                                        <button class="btn-stat" style="background:#007bff" onclick="setStat('Leitstelle')">LS ÜBERNAHME</button>
+                        <div class="col-md-7">
+                            <div class="glass-card">
+                                <div class="card-title">Schnell-Status</div>
+                                <div class="row g-3">
+                                    <div class="col-6"><button class="btn btn-dark w-100 py-3 border-success text-success" onclick="setStatus('Frei', '#00ff66')">FREI / FUNK</button></div>
+                                    <div class="col-6"><button class="btn btn-dark w-100 py-3 border-danger text-danger" onclick="setStatus('Besetzt', '#ff3333')">BESETZT</button></div>
+                                    <div class="col-6"><button class="btn btn-dark w-100 py-3 border-warning text-warning" onclick="setStatus('Pause', '#ffaa00')">PAUSE</button></div>
+                                    <div class="col-6"><button class="btn btn-dark w-100 py-3 border-primary text-primary" onclick="setStatus('Leitstelle', '#0099ff')">LEITSTELLE</button></div>
+                                </div>
+                                <div class="mt-4 p-4 bg-dark rounded-4">
+                                    <div class="card-title mb-2">Letzte Fahrt</div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>Zentrale ➔ PD Köln</span>
+                                        <span class="text-warning fw-bold">12.500 €</span>
                                     </div>
                                 </div>
                             </div>
@@ -168,199 +219,136 @@
                     </div>
                 </div>
 
-                <div id="tab-ls" style="display:none;">
-                    <h1 class="page-title">Leitstelle & Dispatching</h1>
-                    <div class="row">
+                <div id="tab-ls" class="fade-in" style="display:none;">
+                    <div class="row g-4">
                         <div class="col-md-8">
-                            <div class="dash-card">
-                                <div class="card-header-taxi">Aktive Einheiten im Dienst</div>
-                                <div class="card-body-taxi">
-                                    <div class="unit-card">
-                                        <span><strong>[10-01]</strong> Chris Schreiner</span>
-                                        <span class="badge bg-success">FREI</span>
-                                    </div>
-                                    <div class="unit-card">
-                                        <span><strong>[10-02]</strong> Marco Krause</span>
-                                        <span class="badge bg-danger">BESETZT</span>
-                                    </div>
-                                    <div class="unit-card">
-                                        <span><strong>[10-05]</strong> Julian Agrar</span>
-                                        <span class="badge bg-primary">LEITSTELLE</span>
-                                    </div>
+                            <div class="glass-card">
+                                <div class="card-title">Aktive Einheiten</div>
+                                <div class="unit-row">
+                                    <span><strong>[10-01]</strong> Chris Schreiner</span>
+                                    <span class="status-pill bg-success">FREI</span>
+                                </div>
+                                <div class="unit-row">
+                                    <span><strong>[10-02]</strong> Marco Krause</span>
+                                    <span class="status-pill bg-danger">BESETZT</span>
+                                </div>
+                                <div class="unit-row">
+                                    <span><strong>[10-44]</strong> Julian Agrar</span>
+                                    <span class="status-pill bg-primary">LEITSTELLE</span>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="dash-card">
-                                <div class="card-header-taxi">Funk-Status</div>
-                                <div class="card-body-taxi">
-                                    <p>Status: <strong class="text-success">AKTIV</strong></p>
-                                    <p>Dispatches offen: <strong class="accent">0</strong></p>
-                                    <button class="btn btn-warning w-100 fw-bold">DISPATCH SENDEN</button>
-                                </div>
+                            <div class="glass-card">
+                                <div class="card-title">Dispatching</div>
+                                <button class="btn btn-outline-warning w-100 mb-2">Globaler Funkspruch</button>
+                                <button class="btn btn-outline-light w-100 mb-2">Einheit zuweisen</button>
+                                <button class="btn btn-outline-danger w-100">Notfall-Alarm</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="tab-perso" style="display:none;">
-                    <h1 class="page-title">Mitarbeiter-Akte</h1>
-                    <div class="dash-card">
-                        <div class="card-header-taxi">Eingetragene Informationen</div>
-                        <div class="card-body-taxi">
-                            <div class="row">
-                                <div class="col-md-3 text-center">
-                                    <div style="width:120px; height:120px; background:#333; margin:0 auto; border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:3rem;">👤</div>
-                                </div>
-                                <div class="col-md-9">
-                                    <h3 class="accent" id="perso-name">Name</h3>
-                                    <p>Rang: <strong>Geschäftsführung</strong></p>
-                                    <p>Eintrittsdatum: 01.01.2024</p>
-                                    <p>Verwarnungen: <span class="badge bg-success">Keine</span></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-admin" style="display:none;">
-                    <h1 class="page-title">Administrator Panel</h1>
-                    <div class="alert alert-danger">Zutritt nur für Level 3 Administratoren gestattet.</div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="dash-card">
-                                <div class="card-header-taxi">Mitarbeiter Verwaltung</div>
-                                <div class="card-body-taxi">
-                                    <button class="btn btn-outline-light w-100 mb-2">Fahrer kündigen</button>
-                                    <button class="btn btn-outline-light w-100 mb-2">Rang ändern</button>
-                                    <button class="btn btn-outline-warning w-100">Neuen Fahrer anlegen</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-supp" style="display:none;">
-                    <h1 class="page-title">Support & Formulare</h1>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <a href="https://forms.gle/rvwLTAJSh3B57oYF8" target="_blank" class="text-decoration-none">
-                                <div class="dash-card p-4 text-center">
-                                    <i class="bi bi-bug-fill fs-1 accent"></i>
-                                    <h4 class="mt-2 text-white">Fehler melden</h4>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-md-6">
-                            <a href="https://forms.gle/1UD6Y8R2UjqWZyki6" target="_blank" class="text-decoration-none">
-                                <div class="dash-card p-4 text-center">
-                                    <i class="bi bi-star-fill fs-1 accent"></i>
-                                    <h4 class="mt-2 text-white">Bewertung</h4>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-patch" style="display:none;">
-                    <h1 class="page-title">System Patchnotes</h1>
-                    <div class="dash-card">
-                        <div class="card-header-taxi">Version 1.5.0 - Das Leitstellen-Update</div>
-                        <div class="card-body-taxi">
-                            <ul>
-                                <li>Neuer Tab: Leitstelle hinzugefügt.</li>
-                                <li>Personalakte integriert.</li>
-                                <li>Stempeluhr mit Sitzungs-Tracker optimiert.</li>
-                                <li>Sidebar-Navigation gruppiert.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-calc" style="display:none;">
-                    <h1 class="page-title">Neue Fahrt erfassen</h1>
-                    <div class="dash-card p-4">
+                <div id="tab-perso" class="fade-in" style="display:none;">
+                    <div class="glass-card">
                         <div class="row">
-                            <div class="col-md-6">
-                                <label class="small accent fw-bold">STARTPUNKT</label>
-                                <input type="text" id="f-start" class="taxi-input" placeholder="Ort">
+                            <div class="col-md-4 text-center border-end border-dark">
+                                <div style="width:150px; height:150px; background: #1a1a1a; border-radius: 30px; margin: 0 auto; display:flex; align-items:center; justify-content:center; font-size: 4rem;">👤</div>
+                                <h3 class="mt-3 mb-0" id="pers-name">Chris Schreiner</h3>
+                                <p class="text-warning">Geschäftsführer</p>
                             </div>
-                            <div class="col-md-6">
-                                <label class="small accent fw-bold">ZIELORT</label>
-                                <input type="text" id="f-ziel" class="taxi-input" placeholder="Ziel">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="small accent fw-bold">GEFAHRENE KM</label>
-                                <input type="number" id="f-km" class="taxi-input" value="0">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="small accent fw-bold">FAHRZEUG</label>
-                                <select id="f-car" class="taxi-input">
-                                    <option value="S-Klasse">S-Klasse</option>
-                                    <option value="Stretch">Stretch-Limo</option>
-                                </select>
+                            <div class="col-md-8 ps-md-5">
+                                <div class="card-title">Mitarbeiter Informationen</div>
+                                <div class="row g-4">
+                                    <div class="col-6">
+                                        <label class="text-muted small d-block">Mitarbeiter-ID</label>
+                                        <span class="fw-bold">TK-001</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="text-muted small d-block">Einstellungsdatum</label>
+                                        <span class="fw-bold">01.01.2024</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="text-muted small d-block">Fahrerlaubnis</label>
+                                        <span class="text-success fw-bold">Gültig ✓</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="text-muted small d-block">Kontostand (Firmenanteil)</label>
+                                        <span class="text-warning fw-bold">450.000 €</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <button class="btn btn-warning w-100 py-3 fw-bold" onclick="alert('Fahrt gespeichert!')">FAHRT PROTOKOLLIEREN</button>
                     </div>
                 </div>
 
-            </main>
-        </div>
+                <div id="tab-calc" style="display:none;" class="fade-in"><div class="glass-card"><h3>Rechner-Modul wird geladen...</h3></div></div>
+                <div id="tab-admin" style="display:none;" class="fade-in"><div class="glass-card text-danger"><h3>ZUGRIFF VERWEIGERT - ADMIN LEVEL ERFORDERLICH</h3></div></div>
+                <div id="tab-supp" style="display:none;" class="fade-in"><div class="glass-card"><h3>Support-Tickets folgen...</h3></div></div>
+                <div id="tab-patch" style="display:none;" class="fade-in"><div class="glass-card"><h3>OS 2.0 Update erfolgreich installiert.</h3></div></div>
+
+            </div>
+        </main>
     </div>
 
     <script>
-        let timer;
         let seconds = 0;
-        let isDienst = false;
+        let timer;
+        let currentU = "";
 
-        function attemptLogin() {
+        function handleLogin() {
             const u = document.getElementById('userInput').value;
             const p = document.getElementById('passInput').value;
+
             if(u === "Chris Schreiner" && p === "Bka26r") {
+                currentU = u;
                 document.getElementById('login-view').style.display = 'none';
-                document.getElementById('employee-area').style.display = 'block';
-                document.getElementById('welcomeName').innerText = u;
-                document.getElementById('sideName').innerText = u;
-                document.getElementById('perso-name').innerText = u;
+                document.getElementById('app-area').style.display = 'flex';
+                document.getElementById('userNameSide').innerText = u;
+                document.getElementById('pers-name').innerText = u;
             } else {
                 document.getElementById('loginError').style.display = 'block';
             }
         }
 
-        function showTab(id) {
-            const tabs = ['dash', 'calc', 'ls', 'perso', 'admin', 'supp', 'patch'];
-            tabs.forEach(t => document.getElementById('tab-' + t).style.display = 'none');
-            document.querySelectorAll('.nav-item-emp').forEach(n => n.classList.remove('active'));
+        function tab(id, el) {
+            // Hide all
+            const sections = ['dash', 'calc', 'ls', 'perso', 'admin', 'supp', 'patch'];
+            sections.forEach(s => document.getElementById('tab-' + s).style.display = 'none');
             
+            // UI Update
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            
+            // Show new
             document.getElementById('tab-' + id).style.display = 'block';
-            document.getElementById('nav-' + id).classList.add('active');
+            document.getElementById('tab-title').innerText = el.innerText.trim();
         }
 
-        function startDienst() {
-            isDienst = true;
-            document.getElementById('btn-start').disabled = true;
-            document.getElementById('btn-stop').disabled = false;
+        function timerStart() {
+            document.getElementById('start-btn').disabled = true;
+            document.getElementById('stop-btn').disabled = false;
             timer = setInterval(() => {
                 seconds++;
                 let h = Math.floor(seconds / 3600);
                 let m = Math.floor((seconds % 3600) / 60);
                 let s = seconds % 60;
                 document.getElementById('session-timer').innerText = 
-                    (h < 10 ? "0"+h : h) + ":" + (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
+                    `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
             }, 1000);
         }
 
-        function stopDienst() {
-            isDienst = false;
+        function timerStop() {
             clearInterval(timer);
-            alert("Dienst beendet. Sitzungsdauer: " + document.getElementById('session-timer').innerText);
-            document.getElementById('btn-start').disabled = false;
-            document.getElementById('btn-stop').disabled = true;
+            alert("Dienst beendet. Zeit wurde im System gespeichert.");
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('stop-btn').disabled = true;
         }
 
-        function setStat(s) {
-            alert("Status auf " + s + " gesetzt.");
+        function setStatus(txt, color) {
+            document.getElementById('status-text').innerText = txt;
+            document.getElementById('dot').style.background = color;
+            document.getElementById('dot').style.boxShadow = `0 0 10px ${color}`;
         }
     </script>
 </body>
