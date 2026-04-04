@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Köln | Management</title>
+    <title>Taxi Köln | Management Enterprise V7.0 FULL</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Dancing+Script:wght@700&family=JetBrains+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
 
         :root {
             --bg: #050505;
             --bg-card: rgba(18, 18, 20, 0.98);
             --sidebar: #000000;
-            --border: rgba(255, 255, 255, 0.15);
+            --border: rgba(255, 255, 255, 0.12);
             --yellow: #ffcc00;
             --yellow-hover: #ffdb4d;
             --text-main: #ffffff;
             --text-muted: #aaaaaa;
-            --radius: 20px;
+            --radius: 22px;
             --success: #00ff66;
             --danger: #ff4444;
         }
@@ -38,19 +38,20 @@
             overflow: hidden;
         }
 
-        /* --- AUTHENTIFIZIERUNG (LOGIN) --- */
+        /* --- LOGIN SCREEN --- */
         #login-overlay {
             position: fixed; inset: 0; 
-            background: radial-gradient(circle at center, #1a1a1a, #000);
+            background: radial-gradient(circle at top, rgba(255, 204, 0, 0.15), #000);
             z-index: 9999; display: flex; align-items: center; justify-content: center;
         }
         .auth-card {
             width: 450px; padding: 50px; background: var(--bg-card); 
-            border: 2px solid var(--yellow); border-radius: 35px; text-align: center;
-            box-shadow: 0 0 80px rgba(255, 204, 0, 0.2);
+            border: 1px solid var(--border); border-radius: 35px; text-align: center;
+            box-shadow: 0 20px 80px rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px);
         }
 
-        /* --- LAYOUT STRUKTUR --- */
+        /* --- LAYOUT --- */
         .sidebar {
             width: 320px; background: var(--sidebar); border-right: 1px solid var(--border);
             display: flex; flex-direction: column; padding: 30px; z-index: 100;
@@ -62,87 +63,67 @@
 
         /* --- NAVIGATION --- */
         .nav-label {
-            font-size: 0.75rem; font-weight: 800; color: var(--yellow);
-            text-transform: uppercase; letter-spacing: 2.5px; margin-bottom: 15px; margin-top: 25px;
+            font-size: 0.7rem; font-weight: 800; color: #555;
+            text-transform: uppercase; letter-spacing: 2px; margin: 25px 0 10px 10px;
         }
         .nav-item {
-            width: 100%; display: flex; align-items: center; gap: 15px; padding: 15px 20px;
-            border-radius: 15px; color: var(--text-muted); background: transparent; border: none;
-            transition: all 0.3s ease; text-align: left; font-weight: 600; margin-bottom: 8px;
+            width: 100%; display: flex; align-items: center; gap: 15px; padding: 14px 20px;
+            border-radius: 16px; color: var(--text-muted); background: transparent; border: none;
+            transition: 0.3s; text-align: left; font-weight: 600; margin-bottom: 5px;
         }
-        .nav-item i { font-size: 1.4rem; }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; transform: translateX(5px); }
-        .nav-item.active { background: var(--yellow); color: #000; box-shadow: 0 5px 15px rgba(255, 204, 0, 0.2); }
+        .nav-item i { font-size: 1.2rem; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-item.active { background: linear-gradient(135deg, var(--yellow), #ffb300); color: #000; box-shadow: 0 8px 20px rgba(255, 204, 0, 0.2); }
 
-        /* --- CARDS --- */
+        /* --- CARDS & UI --- */
         .glass-card {
             background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: var(--radius); padding: 35px; margin-bottom: 30px;
-            transition: 0.3s;
+            border-radius: var(--radius); padding: 30px; margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        .glass-card:hover { border-color: rgba(255, 204, 0, 0.4); }
-
         .btn-taxi {
             background: var(--yellow); color: #000; font-weight: 800; border: none;
             padding: 16px; border-radius: 14px; transition: 0.3s; width: 100%;
             text-transform: uppercase; letter-spacing: 1px;
         }
-        .btn-taxi:hover { background: var(--yellow-hover); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255, 204, 0, 0.3); }
-        .btn-taxi:active { transform: translateY(0); }
+        .btn-taxi:hover { background: var(--yellow-hover); transform: translateY(-2px); }
 
-        /* --- FORMULARE --- */
         .form-control, .form-select {
-            background: #111; border: 1px solid var(--border); color: #fff !important;
-            padding: 15px; border-radius: 12px; font-weight: 500; font-size: 1rem;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff !important;
+            padding: 12px 15px; border-radius: 12px;
         }
-        .form-control:focus { background: #181818; border-color: var(--yellow); box-shadow: 0 0 10px rgba(255,204,0,0.1); }
-        label { color: var(--yellow); font-weight: 700; font-size: 0.85rem; margin-bottom: 8px; margin-left: 5px; display: block; }
-        select option { background: #111; color: #fff; }
+        label { color: var(--yellow); font-weight: 700; font-size: 0.8rem; margin-bottom: 6px; display: block; }
 
-        /* --- PAGES CONTROLL --- */
+        /* --- PAGES --- */
         .page-node { display: none; }
-        .page-node.active { display: block; animation: pageFade 0.5s ease-out; }
-        @keyframes pageFade { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .page-node.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- RECHNUNG (DESIGN AUS BILD) --- */
+        #rechnung-view {
+            background: white; color: #111; padding: 40px; border-radius: 15px;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.2); min-height: 700px;
+            font-family: 'Inter', sans-serif;
+        }
+        .inv-header { border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
+        .inv-table { width: 100%; margin-top: 20px; }
+        .inv-table th { border-bottom: 2px solid #f0f0f0; padding: 12px; color: #888; font-size: 0.8rem; text-transform: uppercase; }
+        .inv-table td { padding: 15px 12px; border-bottom: 1px solid #f9f9f9; }
+        .total-display { font-size: 3.5rem; font-weight: 800; color: #000; letter-spacing: -2px; }
 
         /* --- LEITSTELLE --- */
-        .ls-row {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-            border-radius: 20px; padding: 25px; margin-bottom: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-left: 8px solid var(--yellow);
-            transition: 0.3s;
+        .ls-card {
+            background: rgba(255,255,255,0.03); border-left: 5px solid var(--yellow);
+            border-radius: 15px; padding: 20px; margin-bottom: 15px; display: flex; 
+            justify-content: space-between; align-items: center;
         }
-        .ls-row:hover { background: rgba(255,255,255,0.06); transform: scale(1.01); }
-        .status-pill { 
-            padding: 10px 24px; border-radius: 50px; font-size: 0.85rem; 
-            font-weight: 900; text-transform: uppercase; border: 2px solid currentColor;
-            letter-spacing: 1px;
-        }
-
-        /* --- TABELLEN --- */
-        .table-custom { color: #fff; width: 100%; border-collapse: separate; border-spacing: 0 10px; }
-        .table-custom th { color: var(--text-muted); padding: 15px; font-size: 0.8rem; text-transform: uppercase; }
-        .table-custom td { background: rgba(255,255,255,0.04); padding: 20px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-        .table-custom td:first-child { border-left: 1px solid var(--border); border-radius: 15px 0 0 15px; }
-        .table-custom td:last-child { border-right: 1px solid var(--border); border-radius: 0 15px 15px 0; }
-
-        /* --- DOKUMENTE / PDF --- */
-        .document-preview {
-            background: white; color: #000; padding: 60px; border-radius: 10px;
-            font-family: 'Times New Roman', serif; line-height: 1.8;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
-        .sign-area { font-family: 'Dancing Script', cursive; font-size: 2.8rem; border-top: 2px solid #000; margin-top: 40px; display: inline-block; padding-top: 10px; }
+        .status-badge { padding: 6px 15px; border-radius: 50px; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; }
 
         /* --- LOGS --- */
         #log-box {
-            height: 550px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; 
-            color: var(--success); font-size: 0.9rem; padding: 20px; background: #000;
-            border-radius: 15px; border: 1px solid var(--border);
-        }
-
-        .footer-branding {
-            position: fixed; bottom: 15px; right: 25px; font-size: 11px; color: #444; text-align: right; line-height: 1.4;
+            height: 400px; overflow-y: auto; background: #000; border-radius: 15px;
+            padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--success);
+            border: 1px solid var(--border);
         }
     </style>
 </head>
@@ -150,49 +131,44 @@
 
     <div id="login-overlay">
         <div class="auth-card">
-            <h1 class="fw-900 text-warning mb-2" style="letter-spacing: -2px; font-size: 3rem;">TAXI KÖLN</h1>
-            <p class="text-white-50 small mb-5 fw-bold">ENTERPRISE MANAGEMENT SYSTEM V5.1</p>
-            
+            <h1 class="fw-900 text-warning mb-2" style="font-size: 2.5rem;">TAXI KÖLN</h1>
+            <p class="text-white-50 small mb-4">MANAGEMENT SYSTEM V7.0</p>
             <div class="text-start mb-3">
-                <label>Vollständiger Name</label>
-                <input type="text" id="l-name" class="form-control" placeholder="Name eingeben...">
+                <label>Benutzername</label>
+                <input type="text" id="l-name" class="form-control" placeholder="Name">
             </div>
-            
             <div class="text-start mb-4">
                 <label>Passwort</label>
-                <input type="password" id="l-pass" class="form-control" placeholder="••••••••">
+                <input type="password" id="l-pass" class="form-control" placeholder="••••">
             </div>
-            
-            <button class="btn-taxi" onclick="handleLogin()">SYSTEM STARTEN</button>
-            <p id="l-err" class="text-danger mt-4 fw-bold d-none"><i class="bi bi-exclamation-triangle"></i> Zugriff verweigert: Name oder Passwort falsch!</p>
+            <button class="btn-taxi" onclick="handleLogin()">System Login</button>
+            <p id="l-err" class="text-danger mt-3 d-none small fw-bold">Zugriff verweigert!</p>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="mb-4">
-            <h2 class="fw-900 text-warning m-0">TAXI KÖLN</h2>
-            <span class="small text-white-50 fw-bold">Managemant Dashboard</span>
+        <div class="mb-4 px-2">
+            <h3 class="fw-900 text-warning m-0">TAXI KÖLN</h3>
+            <span class="text-white-50 small fw-bold">CENTRAL OPERATING</span>
         </div>
 
-        <div class="nav-group flex-grow-1 overflow-auto">
-            <div class="nav-label">Hauptmenü</div>
+        <div class="sidebar-nav flex-grow-1 overflow-auto">
+            <div class="nav-label">Zentrale</div>
             <button class="nav-item active" onclick="switchPage('dash', this)"><i class="bi bi-speedometer2"></i> Dashboard</button>
             <button class="nav-item" onclick="switchPage('ls', this)"><i class="bi bi-broadcast"></i> Leitstelle</button>
             <button class="nav-item" onclick="switchPage('calc', this)"><i class="bi bi-calculator"></i> Fahrtenrechner</button>
             <button class="nav-item" onclick="switchPage('book', this)"><i class="bi bi-journal-text"></i> Fahrtenbuch</button>
             
-            <div class="nav-label">Personal & Recht</div>
+            <div class="nav-label">Verwaltung</div>
             <button class="nav-item" onclick="switchPage('akte', this)"><i class="bi bi-person-badge"></i> Personalakte</button>
-            <button class="nav-item" onclick="switchPage('list', this)"><i class="bi bi-people"></i> Mitgliederliste</button>
-            <button class="nav-item" onclick="switchPage('zeugnis', this)"><i class="bi bi-file-earmark-medical"></i> Arbeitszeugnis</button>
-            <button class="nav-item" onclick="switchPage('admin', this)"><i class="bi bi-shield-lock"></i> Administration</button>
+            <button class="nav-item" onclick="switchPage('admin', this)"><i class="bi bi-shield-lock"></i> Admin Panel</button>
             <button class="nav-item" onclick="switchPage('logs', this)"><i class="bi bi-terminal"></i> System-Logs</button>
         </div>
 
-        <div class="pt-4 border-top border-secondary mt-3">
-            <div id="side-name" class="fw-bold text-white fs-5">Lade...</div>
-            <div id="side-rank" class="text-warning small fw-bold">---</div>
-            <button class="btn btn-outline-danger btn-sm w-100 mt-3 fw-bold" onclick="location.reload()">ABMELDEN</button>
+        <div class="pt-3 border-top border-secondary mt-3">
+            <div id="side-name" class="fw-bold">Gast</div>
+            <div id="side-rank" class="text-warning small">---</div>
+            <button class="btn btn-sm btn-outline-danger w-100 mt-3" onclick="location.reload()">Abmelden</button>
         </div>
     </aside>
 
@@ -201,43 +177,29 @@
         <div id="page-dash" class="page-node active">
             <h1 class="fw-900 mb-4">Dashboard</h1>
             <div class="row g-4">
-                <div class="col-md-8">
+                <div class="col-md-7">
                     <div class="glass-card text-center py-5">
-                        <h4 class="text-warning fw-bold mb-4 uppercase">Aktive Dienstzeit</h4>
-                        <div id="timer-display" class="display-1 fw-900 mb-4" style="letter-spacing: -4px; font-family: 'JetBrains Mono';">00:00:00</div>
-                        <div class="row g-3 px-5">
-                            <div class="col-6"><button id="btn-start" class="btn btn-success btn-lg w-100 py-3 fw-bold" onclick="startWork()">DIENST STARTEN</button></div>
-                            <div class="col-6"><button id="btn-stop" class="btn btn-danger btn-lg w-100 py-3 fw-bold" onclick="stopWork()" disabled>DIENST BEENDEN</button></div>
-                        </div>
-                    </div>
-                    <div class="glass-card">
-                        <h5 class="text-warning fw-bold mb-4">STATUS FÜR LEITSTELLE</h5>
-                        <div class="row g-3">
-                            <div class="col-md-3"><button class="btn btn-outline-success w-100 py-3 fw-bold" onclick="setStatus('Frei', '#00ff66')">FREI</button></div>
-                            <div class="col-md-3"><button class="btn btn-outline-danger w-100 py-3 fw-bold" onclick="setStatus('Besetzt', '#ff4444')">BESETZT</button></div>
-                            <div class="col-md-3"><button class="btn btn-outline-warning w-100 py-3 fw-bold" onclick="setStatus('Pause', '#ffcc00')">PAUSE</button></div>
-                            <div class="col-md-3"><button class="btn btn-outline-info w-100 py-3 fw-bold" onclick="setStatus('Zentrale', '#00d4ff')">ZENTRALE</button></div>
+                        <label>AKTIVE DIENSTZEIT</label>
+                        <div id="timer-display" class="display-1 fw-900 mb-4" style="font-family: 'JetBrains Mono'; color: var(--yellow);">00:00:00</div>
+                        <div class="d-flex gap-3 px-4">
+                            <button id="btn-start" class="btn btn-success btn-lg w-100 fw-bold" onclick="startWork()">DIENST START</button>
+                            <button id="btn-stop" class="btn btn-danger btn-lg w-100 fw-bold" onclick="stopWork()" disabled>BEENDEN</button>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-5">
                     <div class="glass-card h-100">
-                        <h5 class="text-warning fw-bold mb-4">NUTZER-PROFIL</h5>
-                        <div class="mb-4">
-                            <label>Passwort ändern</label>
-                            <div class="input-group">
-                                <input type="password" id="pw-change" class="form-control" placeholder="Neues Passwort">
-                                <button class="btn btn-warning fw-bold" onclick="updateOwnPassword()">FIX</button>
-                            </div>
+                        <label>STATUS SETZEN</label>
+                        <div class="row g-2 mb-4">
+                            <div class="col-6"><button class="btn btn-outline-success w-100" onclick="setStatus('Frei', '#00ff66')">FREI</button></div>
+                            <div class="col-6"><button class="btn btn-outline-danger w-100" onclick="setStatus('Besetzt', '#ff4444')">BESETZT</button></div>
+                            <div class="col-6"><button class="btn btn-outline-warning w-100" onclick="setStatus('Pause', '#ffcc00')">PAUSE</button></div>
+                            <div class="col-6"><button class="btn btn-outline-info w-100" onclick="setStatus('Zentrale', '#00d4ff')">ZENTRALE</button></div>
                         </div>
-                        <hr class="border-secondary my-4">
-                        <div class="mb-3">
+                        <hr class="border-secondary">
+                        <div class="mt-4">
                             <span class="text-white-50 small d-block">Aktueller Status</span>
-                            <span id="status-text" class="h3 fw-bold text-danger">Außer Dienst</span>
-                        </div>
-                        <div>
-                            <span class="text-white-50 small d-block">Letzte Sitzung</span>
-                            <span id="last-session" class="h5 fw-bold">00:00:00</span>
+                            <h2 id="status-text" class="fw-bold text-danger">Außer Dienst</h2>
                         </div>
                     </div>
                 </div>
@@ -247,435 +209,281 @@
         <div id="page-ls" class="page-node">
             <h1 class="fw-900 mb-4">Leitstelle</h1>
             <div class="glass-card">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="m-0 text-warning">AKTIVE EINHEITEN IM DIENST</h4>
-                    <span id="active-count" class="badge bg-warning text-dark px-4 py-2 fs-6 rounded-pill">0 Einheiten</span>
-                </div>
                 <div id="ls-list">
                     </div>
             </div>
         </div>
 
         <div id="page-calc" class="page-node">
-            <h1 class="fw-900 mb-4">Fahrtenrechner</h1>
+            <h1 class="fw-900 mb-4">Fahrtenrechner V2</h1>
             <div class="row g-4">
                 <div class="col-md-5">
                     <div class="glass-card">
-                        <label>Fahrzeugmodell</label>
-                        <select id="c-car" class="form-select mb-3" onchange="runCalc()">
-                            <option value="s-klasse">Extended S-Klasse</option>
-                            <option value="stretch">Stretch-Limousine</option>
-                            <option value="patriot">Patriot Limousine</option>
-                        </select>
-                        <label>Buchungs-Typ</label>
-                        <select id="c-mode" class="form-select mb-3" onchange="runCalc()">
-                            <option value="0">Einfache Fahrt</option>
-                            <option value="1">Hin- & Rückfahrt</option>
-                            <option value="2">1 Std. Exklusiv-Service</option>
-                        </select>
-                        <div class="form-check form-switch mb-4 mt-3">
-                            <input class="form-check-input" type="checkbox" id="c-out" onchange="runCalc()">
-                            <label class="form-check-label text-white">Außerhalb von Köln (+10.000€)</label>
+                        <div class="row g-3">
+                            <div class="col-12"><label>Fahrzeug</label>
+                                <select id="c-car" class="form-select" onchange="runCalc()">
+                                    <option value="s-klasse">Extended S-Klasse</option>
+                                    <option value="stretch">Stretch-Limousine</option>
+                                    <option value="patriot">Patriot Limousine</option>
+                                </select>
+                            </div>
+                            <div class="col-12"><label>Tarif</label>
+                                <select id="c-mode" class="form-select" onchange="runCalc()">
+                                    <option value="0">Einfache Fahrt</option>
+                                    <option value="1">Hin- & Rückfahrt</option>
+                                    <option value="2">1 Std. Exklusiv-Service</option>
+                                </select>
+                            </div>
+                            <div class="col-6"><label>Zusatzzeit (15m)</label><input type="number" id="c-extra-time" class="form-control" value="0" oninput="runCalc()"></div>
+                            <div class="col-6"><label>Stopps (ab 4.)</label><input type="number" id="c-stops" class="form-control" value="0" oninput="runCalc()"></div>
+                            <div class="col-6"><label>Standzeit (15m)</label><input type="number" id="c-wait" class="form-control" value="0" oninput="runCalc()"></div>
+                            
+                            <div class="col-12 mt-3">
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="c-out" onchange="runCalc()"><label class="form-check-label text-white ms-2">Außerhalb Kerngebiet</label></div>
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="c-spontan" onchange="runCalc()"><label class="form-check-label text-white ms-2">Spontanbuchung</label></div>
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="c-kolonne" onchange="runCalc()"><label class="form-check-label text-white ms-2">Kolonnenfahrt (+20%)</label></div>
+                            </div>
+                            <button class="btn-taxi mt-4" onclick="downloadInvoice()">Rechnung Exportieren</button>
                         </div>
-                        <button class="btn-taxi" onclick="downloadPDF('rechnung-view', 'Rechnung_TaxiKoeln')">RECHNUNG DOWNLOAD (PDF)</button>
                     </div>
                 </div>
                 <div class="col-md-7">
-                    <div id="rechnung-view" class="document-preview">
-                        <div class="d-flex justify-content-between border-bottom border-dark pb-4 mb-5">
-                            <div><h2 class="fw-bold m-0">TAXI KÖLN</h2><small>Exklusiv-Transporte & Service</small></div>
-                            <div class="text-end"><h2 class="m-0">RECHNUNG</h2><small id="r-date">--.--.----</small></div>
+                    <div id="rechnung-view">
+                        <div class="inv-header d-flex justify-content-between">
+                            <div><h3 class="fw-bold m-0">Taxi Köln</h3><p class="small m-0 text-muted">Chauffeur- & Limousinenservice</p></div>
+                            <div class="text-end"><h2 class="fw-900 m-0">RECHNUNG</h2><p class="small m-0">Datum: <span id="r-date">--</span></p></div>
                         </div>
-                        <table class="table table-bordered">
-                            <thead class="table-light"><tr><th>Leistung / Beschreibung</th><th class="text-end">Netto</th></tr></thead>
+                        <table class="inv-table">
+                            <thead><tr><th>Leistungsbeschreibung</th><th class="text-end">Betrag</th></tr></thead>
                             <tbody id="r-items"></tbody>
                         </table>
                         <div class="text-end mt-5">
-                            <div class="text-muted fw-bold">GESAMTSUMME</div>
-                            <div class="display-4 fw-bold" id="r-total">0 EUR</div>
+                            <p class="small fw-bold m-0 text-muted">GESAMTBETRAG</p>
+                            <div class="total-display" id="r-total">0 EUR</div>
                         </div>
-                        <div class="mt-5 pt-4">
-                            <small>Ausgestellt durch: <span id="r-signer" class="fw-bold"></span></small>
+                        <div class="mt-5 pt-4 border-top">
+                            <p class="small text-muted italic">Bearbeitet von: <span id="r-signer" class="fw-bold"></span></p>
+                            <p class="text-center x-small mt-5 text-muted">Dies ist eine automatisch erstellte Rechnung des TaxiRechners Köln.</p>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div id="page-list" class="page-node">
-            <h1 class="fw-900 mb-4">Mitgliederliste</h1>
-            <div class="glass-card p-0 overflow-hidden">
-                <table class="table-custom">
-                    <thead>
-                        <tr>
-                            <th class="ps-4">DN</th>
-                            <th>NAME</th>
-                            <th>RANG</th>
-                            <th>STATUS</th>
-                            <th class="text-end pe-4">ID</th>
-                        </tr>
-                    </thead>
-                    <tbody id="member-table-body">
-                        </tbody>
-                </table>
             </div>
         </div>
 
         <div id="page-akte" class="page-node">
             <h1 class="fw-900 mb-4">Personalakte</h1>
-            <div id="akte-view" class="glass-card">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h1 class="display-2 fw-900 text-warning m-0" id="ak-name">--</h1>
-                        <p class="fs-3 text-white-50" id="ak-rank">--</p>
-                    </div>
-                    <div class="text-end">
-                        <div class="text-warning fw-bold small">PERSONAL-NUMMER</div>
-                        <div class="display-5 fw-bold" id="ak-dn">TK-00</div>
-                    </div>
-                </div>
-                <div class="row g-4 mt-5 pt-5 border-top border-secondary">
-                    <div class="col-md-4">
-                        <label class="text-warning small fw-bold">GESAMTE DIENSTZEIT</label>
-                        <div class="h2 fw-bold" id="ak-total">00:00:00</div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="text-warning small fw-bold">FAHRTEN GESAMT</label>
-                        <div class="h2 fw-bold">0</div>
-                    </div>
-                    <div class="col-md-4 text-end">
-                        <label class="text-warning small fw-bold">ACCOUNT-STATUS</label>
-                        <div class="h2 fw-bold text-success">ZERTIFIZIERT</div>
-                    </div>
-                </div>
-            </div>
-            <button class="btn-taxi w-25" onclick="downloadPDF('akte-view', 'Personalakte_TaxiKoeln')">AKTE EXPORTIEREN</button>
-        </div>
-
-        <div id="page-zeugnis" class="page-node">
-            <h1 class="fw-900 mb-4">Zeugnis-Generator</h1>
             <div class="glass-card">
-                <div class="row g-3">
-                    <div class="col-md-4"><label>Name des Mitarbeiters</label><input type="text" id="z-name" class="form-control" placeholder="Max Mustermann"></div>
-                    <div class="col-md-2"><label>Anrede</label><select id="z-gender" class="form-select"><option value="Herr">Herr</option><option value="Frau">Frau</option></select></div>
-                    <div class="col-md-3"><label>Eintrittsdatum</label><input type="date" id="z-start" class="form-control"></div>
-                    <div class="col-md-3"><label>Austrittsdatum</label><input type="date" id="z-end" class="form-control"></div>
-                    <div class="col-md-12"><button class="btn-taxi mt-2" onclick="generateZeugnis()">VORSCHAU GENERIEREN</button></div>
-                </div>
-            </div>
-            <div id="zeugnis-preview-area" class="d-none">
-                <div id="zeugnis-pdf" class="document-preview mb-4">
-                    <h1 class="text-center fw-bold mb-5" style="text-decoration: underline;">ARBEITSZEUGNIS</h1>
-                    <div id="zeugnis-text"></div>
-                    <div class="mt-5">
-                        Köln, den <span id="z-today"></span><br><br>
-                        <div class="sign-area">Chris Schreiner</div><br>
-                        Geschäftsführung Taxi Köln
+                <div class="row align-items-center">
+                    <div class="col-md-4 border-end border-secondary">
+                        <h1 class="display-4 fw-900 text-warning m-0" id="ak-name">--</h1>
+                        <p class="h4" id="ak-rank">--</p>
+                    </div>
+                    <div class="col-md-8 px-5">
+                        <div class="row text-center">
+                            <div class="col-4"><label>DIENSTNUMMER</label><h2 id="ak-dn" class="fw-bold">--</h2></div>
+                            <div class="col-4"><label>GESAMTZEIT</label><h2 id="ak-total" class="fw-bold">00:00</h2></div>
+                            <div class="col-4"><label>STATUS</label><h2 class="text-success fw-bold">AKTIV</h2></div>
+                        </div>
                     </div>
                 </div>
-                <button class="btn-taxi" onclick="downloadPDF('zeugnis-pdf', 'Arbeitszeugnis')">ALS PDF SPEICHERN</button>
             </div>
         </div>
 
         <div id="page-admin" class="page-node">
-            <h1 class="fw-900 mb-4">Verwaltung (Admin)</h1>
+            <h1 class="fw-900 mb-4">Administration</h1>
             <div class="glass-card">
-                <h5 class="text-warning fw-bold mb-4">NEUEN BENUTZER ANLEGEN</h5>
+                <h5 class="text-warning fw-bold mb-4">Mitarbeiter hinzufügen</h5>
                 <div class="row g-3">
-                    <div class="col-md-3"><label>Vollständiger Name</label><input type="text" id="adm-name" class="form-control"></div>
+                    <div class="col-md-3"><label>Name</label><input type="text" id="adm-name" class="form-control"></div>
                     <div class="col-md-2"><label>DN</label><input type="text" id="adm-dn" class="form-control"></div>
                     <div class="col-md-3"><label>Rang</label><input type="text" id="adm-rank" class="form-control"></div>
-                    <div class="col-md-4"><label>Login-Passwort</label><input type="password" id="adm-pass" class="form-control"></div>
-                    <div class="col-12"><button class="btn-taxi mt-2" onclick="adminAddUser()">ACCOUNT ERSTELLEN</button></div>
+                    <div class="col-md-4"><label>Passwort</label><input type="password" id="adm-pass" class="form-control"></div>
+                    <div class="col-12"><button class="btn-taxi" onclick="adminAddUser()">Nutzer erstellen</button></div>
                 </div>
             </div>
             <div class="glass-card">
-                <h5 class="text-warning fw-bold mb-4">AKTUELLE MITGLIEDERSTEUERUNG</h5>
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover">
-                        <thead><tr><th>DN</th><th>Name</th><th>Rang</th><th class="text-end">Aktion</th></tr></thead>
-                        <tbody id="adm-table-body"></tbody>
-                    </table>
-                </div>
+                <table class="table table-dark table-hover">
+                    <thead><tr><th>DN</th><th>Name</th><th>Rang</th><th>Aktion</th></tr></thead>
+                    <tbody id="adm-table"></tbody>
+                </table>
             </div>
         </div>
 
         <div id="page-logs" class="page-node">
-            <h1 class="fw-900 mb-4">System-Protokoll</h1>
+            <h1 class="fw-900 mb-4">System-Logs</h1>
             <div id="log-box"></div>
         </div>
 
     </main>
 
-    <div class="footer-branding">
-        © 2026 TAXI KÖLN <br>
-        Entwickelt von agrar.julian (Maverick Stone) | Host: norixius (Marco Krause)
-    </div>
-
     <script>
-        // --- DATENBANK & VARIABLEN ---
-        let members = JSON.parse(localStorage.getItem('taxi_full_db')) || [
-            {dn: "01", name: "Chris Schreiner", pass: "admin123", rank: "Geschäftsführung", total: 0, duty: false, status: "Frei", color: "#00ff66"},
-            {dn: "28", name: "Maverick Stone", pass: "taxi28", rank: "Azubi", total: 0, duty: false, status: "Frei", color: "#00ff66"}
+        // DATENSTRUKTUR (Initial)
+        let members = JSON.parse(localStorage.getItem('tk_central_db')) || [
+            {dn: "01", name: "Chris Schreiner", pass: "Bka26r", rank: "Geschäftsführung", total: 0, duty: false, status: "Offline", color: "#666"},
+            {dn: "28", name: "Maverick Stone", pass: "taxi28", rank: "Azubi", total: 0, duty: false, status: "Offline", color: "#666"}
         ];
 
+        const pricing = {
+            's-klasse': { base: [12000, 22000, 30000], extra: 8000, stop: 3000, wait: 5000, out: 10000, minSpontan: 8000, minKol: 10000 },
+            'stretch': { base: [22000, 40000, 50000], extra: 12000, stop: 5000, wait: 8000, out: 15000, minSpontan: 12000, minKol: 15000 },
+            'patriot': { base: [35000, 50000, 60000], extra: 15000, stop: 6000, wait: 10000, out: 20000, minSpontan: 15000, minKol: 20000 }
+        };
+
         let currentUser = null;
-        let mainTimer = null;
+        let timer = null;
         let sessionSec = 0;
 
-        // --- AUTHENTIFIZIERUNG ---
+        // AUTH
         function handleLogin() {
-            const n = document.getElementById('l-name').value.trim();
+            const n = document.getElementById('l-name').value;
             const p = document.getElementById('l-pass').value;
-            
             const user = members.find(m => m.name === n && m.pass === p);
 
             if(user) {
                 currentUser = user;
                 document.getElementById('login-overlay').style.display = 'none';
-                logMsg(`Benutzer ${user.name} erfolgreich angemeldet.`);
-                initApp();
+                initCentral();
+                log("Login erfolgreich: " + n);
             } else {
-                const err = document.getElementById('l-err');
-                err.classList.remove('d-none');
-                setTimeout(() => err.classList.add('d-none'), 3000);
+                document.getElementById('l-err').classList.remove('d-none');
             }
         }
 
-        function initApp() {
+        function initCentral() {
             document.getElementById('side-name').innerText = currentUser.name;
-            document.getElementById('side-rank').innerText = `${currentUser.rank} (DN ${currentUser.dn})`;
+            document.getElementById('side-rank').innerText = currentUser.rank;
             document.getElementById('ak-name').innerText = currentUser.name;
             document.getElementById('ak-rank').innerText = currentUser.rank;
-            document.getElementById('ak-dn').innerText = `TK-${currentUser.dn}`;
-            document.getElementById('ak-total').innerText = formatTime(currentUser.total);
+            document.getElementById('ak-dn').innerText = currentUser.dn;
             document.getElementById('r-signer').innerText = currentUser.name;
-            
-            renderLS();
-            renderMembers();
+            updateAkte();
             renderAdmin();
+            renderLS();
             runCalc();
         }
 
-        // --- STEMPELUHR & STATUS ---
+        // STEMPELUHR
         function startWork() {
             currentUser.duty = true;
             document.getElementById('btn-start').disabled = true;
             document.getElementById('btn-stop').disabled = false;
-            document.getElementById('status-text').innerText = "Im Dienst (Frei)";
-            document.getElementById('status-text').className = "h3 fw-bold text-success";
-            
-            logMsg("Dienstantritt registriert.");
-            mainTimer = setInterval(() => {
+            setStatus('Frei', '#00ff66');
+            timer = setInterval(() => {
                 sessionSec++;
                 document.getElementById('timer-display').innerText = formatTime(sessionSec);
             }, 1000);
-            renderLS();
+            log("Dienst gestartet.");
         }
 
         function stopWork() {
-            clearInterval(mainTimer);
+            clearInterval(timer);
             currentUser.duty = false;
             currentUser.total += sessionSec;
-            
-            document.getElementById('last-session').innerText = formatTime(sessionSec);
-            document.getElementById('ak-total').innerText = formatTime(currentUser.total);
-            
             sessionSec = 0;
             document.getElementById('timer-display').innerText = "00:00:00";
             document.getElementById('btn-start').disabled = false;
             document.getElementById('btn-stop').disabled = true;
-            document.getElementById('status-text').innerText = "Außer Dienst";
-            document.getElementById('status-text').className = "h3 fw-bold text-danger";
-            
-            logMsg("Dienstende registriert.");
+            setStatus('Offline', '#666');
             save();
-            renderLS();
+            updateAkte();
+            log("Dienst beendet.");
         }
 
         function setStatus(txt, col) {
-            if(!currentUser.duty) return alert("Du musst dich zuerst einstemmeln!");
+            if(!currentUser.duty && txt !== 'Offline') return alert("Erst Dienst starten!");
             currentUser.status = txt;
             currentUser.color = col;
-            document.getElementById('status-text').innerText = `Im Dienst (${txt})`;
+            document.getElementById('status-text').innerText = txt;
             document.getElementById('status-text').style.color = col;
             renderLS();
-            logMsg(`Status geändert: ${txt}`);
         }
 
-        // --- LEITSTELLE ---
+        // LEITSTELLE
         function renderLS() {
             const list = document.getElementById('ls-list');
             list.innerHTML = '';
-            const actives = members.filter(m => m.duty);
-            document.getElementById('active-count').innerText = `${actives.length} Einheiten`;
-
-            if(actives.length === 0) {
-                list.innerHTML = '<div class="text-white-50 text-center py-4">Keine Einheiten im Dienst.</div>';
-                return;
-            }
-
-            actives.forEach(m => {
+            members.filter(m => m.duty).forEach(m => {
                 list.innerHTML += `
-                    <div class="ls-row">
-                        <div>
-                            <div class="h3 fw-900 mb-0">${m.name}</div>
-                            <div class="text-white-50 fw-bold">DIENSTNUMMER: ${m.dn} | ${m.rank}</div>
-                        </div>
-                        <div class="status-pill" style="color: ${m.color}">${m.status}</div>
+                    <div class="ls-card">
+                        <div><h4 class="m-0 fw-bold">${m.name}</h4><small class="text-muted">DN ${m.dn} | ${m.rank}</small></div>
+                        <div class="status-badge" style="background:${m.color}33; color:${m.color}; border: 1px solid ${m.color}">${m.status}</div>
                     </div>
                 `;
             });
         }
 
-        // --- MITGLIEDERLISTE ---
-        function renderMembers() {
-            const body = document.getElementById('member-table-body');
-            body.innerHTML = '';
-            members.sort((a,b) => a.dn - b.dn).forEach(m => {
-                body.innerHTML += `
-                    <tr>
-                        <td class="ps-4 fw-bold text-warning">${m.dn}</td>
-                        <td class="fw-bold">${m.name}</td>
-                        <td>${m.rank}</td>
-                        <td><span class="badge ${m.duty ? 'bg-success' : 'bg-dark text-muted'}">${m.duty ? 'Dienst' : 'Offline'}</span></td>
-                        <td class="text-end pe-4 text-muted small">TK-${m.dn}-X</td>
-                    </tr>
-                `;
-            });
+        // RECHNER
+        function runCalc() {
+            const car = document.getElementById('c-car').value;
+            const mode = parseInt(document.getElementById('c-mode').value);
+            const ex = parseInt(document.getElementById('c-extra-time').value) || 0;
+            const st = parseInt(document.getElementById('c-stops').value) || 0;
+            const wa = parseInt(document.getElementById('c-wait').value) || 0;
+            
+            const p = pricing[car];
+            let total = p.base[mode];
+            let html = `<tr><td><b>Grundpauschale</b><br><small>${car.toUpperCase()} - ${mode === 2 ? '1 Std' : 'Fahrt'}</small></td><td class="text-end">${total.toLocaleString()} EUR</td></tr>`;
+
+            if(ex > 0) { total += (ex * p.extra); html += `<tr><td>Zusatzzeit (${ex}x 15m)</td><td class="text-end">${(ex*p.extra).toLocaleString()} EUR</td></tr>`; }
+            if(st > 0) { total += (st * p.stop); html += `<tr><td>Zusatzstopps (${st}x)</td><td class="text-end">${(st*p.stop).toLocaleString()} EUR</td></tr>`; }
+            if(wa > 0) { total += (wa * p.wait); html += `<tr><td>Standzeit (${wa}x 15m)</td><td class="text-end">${(wa*p.wait).toLocaleString()} EUR</td></tr>`; }
+            
+            if(document.getElementById('c-out').checked) { total += p.out; html += `<tr><td>Außerhalb Kerngebiet</td><td class="text-end">${p.out.toLocaleString()} EUR</td></tr>`; }
+            
+            if(document.getElementById('c-spontan').checked) {
+                let cost = Math.max(Math.round(total * 0.25), p.minSpontan);
+                total += cost; html += `<tr><td>Spontanaufschlag</td><td class="text-end">${cost.toLocaleString()} EUR</td></tr>`;
+            }
+            if(document.getElementById('c-kolonne').checked) {
+                let cost = Math.max(Math.round(total * 0.20), p.minKol);
+                total += cost; html += `<tr><td>Kolonnenaufschlag</td><td class="text-end">${cost.toLocaleString()} EUR</td></tr>`;
+            }
+
+            document.getElementById('r-items').innerHTML = html;
+            document.getElementById('r-total').innerText = total.toLocaleString() + " EUR";
+            document.getElementById('r-date').innerText = new Date().toLocaleDateString();
         }
 
-        // --- ADMIN ---
+        // ADMIN
         function adminAddUser() {
             const n = document.getElementById('adm-name').value;
             const d = document.getElementById('adm-dn').value;
             const r = document.getElementById('adm-rank').value;
             const p = document.getElementById('adm-pass').value;
-
-            if(!n || !d || !p) return alert("Fehlende Informationen!");
-            members.push({dn: d, name: n, pass: p, rank: r, total: 0, duty: false, status: "Frei", color: "#00ff66"});
-            save();
-            renderAdmin();
-            renderMembers();
-            logMsg(`Neuer Benutzer angelegt: ${n}`);
-            alert("Mitarbeiter erfolgreich hinzugefügt!");
+            if(!n || !p) return;
+            members.push({dn: d, name: n, pass: p, rank: r, total: 0, duty: false, status: "Offline", color: "#666"});
+            save(); renderAdmin(); log("Mitarbeiter angelegt: " + n);
         }
 
         function renderAdmin() {
-            const tb = document.getElementById('adm-table-body');
+            const tb = document.getElementById('adm-table');
             tb.innerHTML = '';
             members.forEach((m, i) => {
-                tb.innerHTML += `
-                    <tr>
-                        <td>${m.dn}</td>
-                        <td class="fw-bold">${m.name}</td>
-                        <td>${m.rank}</td>
-                        <td class="text-end">
-                            <button class="btn btn-sm btn-danger" onclick="adminDeleteUser(${i})"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
+                tb.innerHTML += `<tr><td>${m.dn}</td><td>${m.name}</td><td>${m.rank}</td><td><button class="btn btn-sm btn-danger" onclick="deleteUser(${i})">Löschen</button></td></tr>`;
             });
         }
 
-        function adminDeleteUser(i) {
-            if(confirm(`Möchtest du ${members[i].name} wirklich entlassen?`)) {
-                logMsg(`Mitarbeiter gelöscht: ${members[i].name}`);
-                members.splice(i, 1);
-                save();
-                renderAdmin();
-                renderMembers();
-            }
-        }
-
-        function updateOwnPassword() {
-            const val = document.getElementById('pw-change').value;
-            if(val.length < 4) return alert("Passwort zu kurz (min. 4 Zeichen)!");
-            currentUser.pass = val;
-            save();
-            alert("Passwort wurde erfolgreich geändert!");
-            logMsg("Eigenes Passwort aktualisiert.");
-        }
-
-        // --- RECHNER ---
-        function runCalc() {
-            const car = document.getElementById('c-car').value;
-            const mode = document.getElementById('c-mode').value;
-            const out = document.getElementById('c-out').checked;
-            
-            const prices = {
-                's-klasse': [12000, 22000, 30000],
-                'stretch': [22000, 40000, 50000],
-                'patriot': [35000, 50000, 60000]
-            };
-
-            let total = prices[car][mode];
-            let listHtml = `<tr><td>Grundtarif (${car})</td><td class="text-end">${total.toLocaleString()} EUR</td></tr>`;
-            
-            if(out) {
-                total += 10000;
-                listHtml += `<tr><td>Zuschlag: Fernfahrt/Außerorts</td><td class="text-end">10.000 EUR</td></tr>`;
-            }
-
-            document.getElementById('r-items').innerHTML = listHtml;
-            document.getElementById('r-total').innerText = total.toLocaleString() + " EUR";
-            document.getElementById('r-date').innerText = new Date().toLocaleDateString();
-        }
-
-        // --- ZEUGNIS ---
-        function generateZeugnis() {
-            const n = document.getElementById('z-name').value;
-            const g = document.getElementById('z-gender').value;
-            const s = document.getElementById('z-start').value;
-            const e = document.getElementById('z-end').value;
-
-            if(!n || !s) return alert("Bitte Name und Eintrittsdatum füllen!");
-
-            const text = `
-                ${g} ${n} war vom ${s} bis zum ${e || 'heute'} als Chauffeur in unserem Unternehmen tätig.<br><br>
-                Während dieser Zeit hat sich ${g} ${n} stets durch höchste Zuverlässigkeit, Diskretion und erstklassigen Service gegenüber unseren anspruchsvollen Fahrgästen ausgezeichnet. Das Führen von Luxuslimousinen sowie die Koordination komplexer Fahrtrouten im Stadtgebiet Köln gehörten zu den Kernaufgaben.<br><br>
-                Wir danken für die geleistete Arbeit und wünschen für die private und berufliche Zukunft nur das Beste.
-            `;
-            
-            document.getElementById('zeugnis-text').innerHTML = text;
-            document.getElementById('z-today').innerText = new Date().toLocaleDateString();
-            document.getElementById('zeugnis-preview-area').classList.remove('d-none');
-            logMsg(`Zeugnis erstellt für ${n}`);
-        }
-
-        // --- HELPERS ---
-        function formatTime(s) {
-            const h = Math.floor(s / 3600);
-            const m = Math.floor((s % 3600) / 60);
-            const sec = s % 60;
+        // HELPERS
+        function deleteUser(i) { members.splice(i, 1); save(); renderAdmin(); }
+        function save() { localStorage.setItem('tk_central_db', JSON.stringify(members)); }
+        function formatTime(s) { 
+            const h = Math.floor(s/3600); const m = Math.floor((s%3600)/60); const sec = s%60;
             return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
         }
-
+        function updateAkte() { document.getElementById('ak-total').innerText = formatTime(currentUser.total); }
+        function log(m) {
+            const box = document.getElementById('log-box');
+            box.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${m}</div>` + box.innerHTML;
+        }
         function switchPage(id, btn) {
             document.querySelectorAll('.page-node').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             document.getElementById('page-'+id).classList.add('active');
             btn.classList.add('active');
         }
-
-        function save() { localStorage.setItem('taxi_full_db', JSON.stringify(members)); }
-
-        function logMsg(m) {
-            const t = new Date().toLocaleTimeString();
-            const b = document.getElementById('log-box');
-            b.innerHTML = `<div><span style="color:#666">[${t}]</span> ${m}</div>` + b.innerHTML;
-        }
-
-        function downloadPDF(el, name) {
-            const element = document.getElementById(el);
-            const opt = { 
-                margin: 10, 
-                filename: name + '.pdf', 
-                image: { type: 'jpeg', quality: 0.98 }, 
-                html2canvas: { scale: 2 }, 
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-            };
-            html2pdf().set(opt).from(element).save();
+        function downloadInvoice() {
+            const el = document.getElementById('rechnung-view');
+            html2pdf().from(el).set({ margin: 10, filename: 'TaxiRechnung.pdf', html2canvas: { scale: 2 } }).save();
         }
     </script>
 </body>
