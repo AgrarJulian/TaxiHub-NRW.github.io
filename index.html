@@ -3,1126 +3,1018 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Köln | Enterprise Dispatch & Management System</title>
+    <title>Taxi Köln | Ultimate Enterprise OS v2.0</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --taxi-yellow: #facc15;
-            --taxi-yellow-glow: rgba(250, 204, 21, 0.4);
-            --bg-dark: #0b0f14;
-            --card-bg: #141920;
-            --border-color: rgba(255, 255, 255, 0.08);
+            --bg-main: #06080a;
+            --sidebar: #0d1117;
+            --card: #161b22;
+            --border: rgba(255, 255, 255, 0.08);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: #f1f5f9;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-main);
+            color: #f0f6fc;
+            overflow: hidden;
         }
 
         .mono { font-family: 'JetBrains Mono', monospace; }
-        .taxi-yellow { color: var(--taxi-yellow); }
-        .bg-taxi-yellow { background-color: var(--taxi-yellow); }
         
-        /* Glassmorphism & UI */
-        .glass {
-            background: rgba(20, 25, 32, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color);
-        }
-
-        .sidebar-item {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            padding: 0.9rem 1.25rem;
-            border-radius: 0.85rem;
-            color: #94a3b8;
-            font-weight: 500;
-            margin-bottom: 0.4rem;
-        }
-
-        .sidebar-item:hover, .sidebar-item.active {
-            background: var(--taxi-yellow);
-            color: #000;
-            box-shadow: 0 4px 15px var(--taxi-yellow-glow);
-            transform: translateX(4px);
-        }
-
-        /* Intro Section */
-        #intro-container {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 1.2s ease-in-out;
-        }
-
-        /* Status Badges */
-        .status-pill {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .st-frei { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
-        .st-besetzt { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
-        .st-pause { background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.2); }
-        .st-weg { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2); }
-        .st-vip { background: var(--taxi-yellow-glow); color: var(--taxi-yellow); border: 1px solid var(--taxi-yellow); }
+        /* Glassmorphism & UI Elements */
+        .glass-card { background: var(--card); border: 1px solid var(--border); border-radius: 1.5rem; }
+        .sidebar-item { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .sidebar-item:hover { background: rgba(250, 204, 21, 0.1); color: var(--taxi-yellow); }
+        .sidebar-item.active { background: var(--taxi-yellow); color: #000; font-weight: 700; shadow: 0 10px 15px -3px rgba(250, 204, 21, 0.4); }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--taxi-yellow); }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
 
-        .panel-content { animation: slideIn 0.4s ease-out; }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Animations */
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-up { animation: slideUp 0.4s ease-out forwards; }
+        
+        /* Badge Styles */
+        .rank-badge { padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+
+        /* Form Controls */
+        input, select, textarea { background: #0d1117 !important; border: 1px solid var(--border) !important; color: white !important; transition: border-color 0.2s; }
+        input:focus { border-color: var(--taxi-yellow) !important; outline: none; }
+
+        /* Print Styles for Invoices */
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
         }
-
-        /* Chart Containers */
-        .chart-box { min-height: 300px; }
-
-        .hidden { display: none !important; }
-
-        /* Skeleton Loading */
-        .skeleton {
-            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-        @keyframes loading { to { background-position: -200% 0; } }
     </style>
 </head>
-<body>
+<body class="antialiased">
 
-    <div id="intro-container">
-        <video id="intro-video" width="100%" height="100%" style="object-fit: cover;" autoplay muted playsinline>
-            <source src="images/GTA_Style_Taxi_Chase_A_black_limousine_with_gold_rims_and_neon_yellow_4ziL6-2u.mp4" type="video/mp4">
-        </video>
-        <div class="absolute bottom-12 flex flex-col items-center gap-4">
-            <div class="w-64 h-1 bg-white/10 rounded-full overflow-hidden">
-                <div id="intro-bar" class="h-full bg-taxi-yellow w-0 transition-all duration-[4000ms] ease-linear"></div>
+    <div id="auth-overlay" class="fixed inset-0 z-[9999] bg-black flex items-center justify-center hidden">
+        <div class="text-center animate-slide-up">
+            <div class="w-20 h-20 bg-taxi-yellow rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                <i data-lucide="lock" class="text-black w-10 h-10"></i>
             </div>
-            <button onclick="endIntro()" class="px-8 py-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 backdrop-blur-xl text-white font-bold text-xs tracking-widest transition">INTRO ÜBERSPRINGEN</button>
+            <h2 class="text-3xl font-extrabold mb-2 uppercase italic">Session abgelaufen</h2>
+            <p class="text-gray-500 text-sm mb-8">Aus Sicherheitsgründen wurde dein System gesperrt.</p>
+            <button onclick="location.reload()" class="bg-taxi-yellow text-black px-8 py-3 rounded-xl font-bold hover:scale-105 transition">ERNEUT ANMELDEN</button>
         </div>
     </div>
 
-    <div id="landing-page" class="hidden opacity-0 transition-opacity duration-1000">
-        <nav class="flex justify-between items-center px-6 md:px-24 py-6 glass sticky top-0 z-50">
-            <div class="flex items-center gap-4">
-                <img src="images/Logo.png" alt="Logo" class="h-12 w-auto">
-                <div class="flex flex-col">
-                    <span class="text-2xl font-black italic tracking-tighter leading-none">TAXI <span class="taxi-yellow">KÖLN</span></span>
-                    <span class="text-[9px] uppercase tracking-[0.3em] text-gray-500">Premium Chauffeur Service</span>
-                </div>
-            </div>
-            <div class="hidden lg:flex gap-10 text-xs font-bold uppercase tracking-widest text-gray-400">
-                <a href="#prices" class="hover:text-yellow-400 transition">Tarife</a>
-                <a href="#service" class="hover:text-yellow-400 transition">Leistungen</a>
-                <a href="#team" class="hover:text-yellow-400 transition">Das Team</a>
-            </div>
-            <button onclick="showLogin()" class="bg-taxi-yellow text-black px-8 py-3 rounded-2xl font-black text-sm hover:scale-105 transition shadow-[0_0_20px_rgba(250,204,21,0.3)]">MITARBEITER PORTAL</button>
-        </nav>
-
-        <section class="relative min-h-[90vh] flex items-center justify-center text-center px-6 overflow-hidden">
-            <img src="images/banner.png" class="absolute inset-0 w-full h-full object-cover opacity-20 z-[-1]" alt="Banner">
-            <div class="absolute inset-0 bg-gradient-to-t from-bg-dark via-transparent to-transparent"></div>
-            
-            <div class="max-w-5xl z-10">
-                <h1 class="text-7xl md:text-[120px] font-black italic mb-6 leading-[0.9] tracking-tighter">FAHRE <span class="taxi-yellow">PREMIUM</span></h1>
-                <p class="text-xl md:text-2xl text-gray-400 mb-12 font-light max-w-2xl mx-auto">Der exklusivste Limousinen- und Taxiservice in Los Santos. 24/7 einsatzbereit für Ihren Erfolg.</p>
-                <div class="flex flex-col sm:flex-row gap-6 justify-center">
-                    <button onclick="showLogin()" class="bg-taxi-yellow text-black px-12 py-5 rounded-3xl font-black text-xl flex items-center justify-center gap-3 group">
-                        JETZT STARTEN <i data-lucide="chevron-right" class="group-hover:translate-x-1 transition"></i>
-                    </button>
-                    <a href="#prices" class="glass px-12 py-5 rounded-3xl font-black text-xl hover:bg-white/5 transition">PREISLISTE</a>
-                </div>
-            </div>
-        </section>
-
-        <section id="prices" class="py-32 px-6 md:px-24 bg-black/30">
-            <div class="text-center mb-24">
-                <h2 class="text-5xl font-black italic uppercase mb-4 tracking-tighter text-white">UNSERE <span class="taxi-yellow">FLOTTE</span></h2>
-                <p class="text-gray-500 italic">"Normale Fahrten innerhalb der Stadt sind für alle Bürger kostenlos."</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <div class="glass p-12 rounded-[3rem] border-b-8 border-taxi-yellow hover:translate-y-[-10px] transition duration-500">
-                    <div class="bg-yellow-500/10 w-16 h-16 rounded-2xl flex items-center justify-center mb-8"><i data-lucide="shield-check" class="taxi-yellow w-8 h-8"></i></div>
-                    <h3 class="text-3xl font-black mb-2 italic">Extended S-Klasse</h3>
-                    <p class="text-gray-500 text-sm mb-8">Diskretion und maximaler Komfort für Business-Gäste.</p>
-                    <div class="space-y-4 text-lg">
-                        <div class="flex justify-between border-b border-white/5 pb-2"><span>Einfach</span><span class="taxi-yellow font-bold">12.000€</span></div>
-                        <div class="flex justify-between border-b border-white/5 pb-2"><span>Hin & Rück</span><span class="taxi-yellow font-bold">22.000€</span></div>
-                        <div class="flex justify-between"><span>1 Stunde</span><span class="taxi-yellow font-bold">30.000€</span></div>
-                    </div>
-                </div>
-                <div class="glass p-12 rounded-[3rem] border-b-8 border-taxi-yellow scale-110 shadow-2xl relative bg-yellow-500/5">
-                    <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-taxi-yellow text-black font-black px-8 py-2 rounded-full text-xs tracking-widest">TOP SELLER</div>
-                    <div class="bg-yellow-500/20 w-16 h-16 rounded-2xl flex items-center justify-center mb-8"><i data-lucide="star" class="taxi-yellow w-8 h-8"></i></div>
-                    <h3 class="text-3xl font-black mb-2 italic">Stretch-Limo</h3>
-                    <p class="text-gray-500 text-sm mb-8">Platz für die ganze Crew. Minibar & Sound-System inklusive.</p>
-                    <div class="space-y-4 text-lg">
-                        <div class="flex justify-between border-b border-white/5 pb-2"><span>Einfach</span><span class="taxi-yellow font-bold">22.000€</span></div>
-                        <div class="flex justify-between border-b border-white/5 pb-2"><span>Hin & Rück</span><span class="taxi-yellow font-bold">40.000€</span></div>
-                        <div class="flex justify-between"><span>1 Stunde</span><span class="taxi-yellow font-bold">50.000€</span></div>
-                    </div>
-                </div>
-                <div class="glass p-12 rounded-[3rem] border-b-8 border-taxi-yellow hover:translate-y-[-10px] transition duration-500">
-                    <div class="bg-yellow-500/10 w-16 h-16 rounded-2xl flex items-center justify-center mb-8"><i data-lucide="truck" class="taxi-yellow w-8 h-8"></i></div>
-                    <h3 class="text-3xl font-black mb-2 italic">Patriot Limo</h3>
-                    <p class="text-gray-500 text-sm mb-8">Panzerung und Präsenz. Für Fahrten in gefährliche Gebiete.</p>
-                    <div class="space-y-4 text-lg">
-                        <div class="flex justify-between border-b border-white/5 pb-2"><span>Einfach</span><span class="taxi-yellow font-bold">35.000€</span></div>
-                        <div class="flex justify-between border-b border-white/5 pb-2"><span>Hin & Rück</span><span class="taxi-yellow font-bold">50.000€</span></div>
-                        <div class="flex justify-between"><span>1 Stunde</span><span class="taxi-yellow font-bold">60.000€</span></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mt-32 glass p-12 rounded-[4rem] flex flex-col lg:flex-row items-center gap-16">
-                <div class="flex-grow">
-                    <h4 class="text-4xl font-black italic mb-6">UNSER <span class="taxi-yellow">VERSPRECHEN</span></h4>
-                    <p class="text-gray-400 text-lg leading-relaxed mb-8">Wir garantieren eine Abholzeit von unter 5 Minuten in der Innenstadt. Unsere Fahrer sind professionell ausgebildet und ortskundig.</p>
-                    <div class="grid grid-cols-2 gap-8">
-                        <div class="flex items-center gap-4"><i data-lucide="clock" class="taxi-yellow"></i> <span>24/7 Live Support</span></div>
-                        <div class="flex items-center gap-4"><i data-lucide="map-pin" class="taxi-yellow"></i> <span>Ganz Los Santos</span></div>
-                    </div>
-                </div>
-                <img src="images/preise.png" class="max-w-md w-full rounded-3xl shadow-2xl rotate-2 hover:rotate-0 transition duration-700" alt="Preise Grafik">
-            </div>
-        </section>
-
-        <footer class="py-20 border-t border-white/5 text-center bg-black/50">
-            <img src="images/Logo.png" class="h-20 mx-auto mb-8 grayscale hover:grayscale-0 transition duration-500">
-            <p class="text-gray-600 text-xs uppercase tracking-[0.6em]">Taxi Köln Nordrhein-Westfalen RP</p>
-            <div class="mt-10 flex justify-center gap-8 text-gray-800 text-[10px] font-bold">
-                <span>DEVELOPED BY AGRAR.JULIAN</span>
-                <span>•</span>
-                <span>HOSTED BY NORIXIUS</span>
-            </div>
-        </footer>
-    </div>
-
-    <div id="login-modal" class="fixed inset-0 z-[1000] glass flex items-center justify-center hidden">
-        <div class="bg-[#141920] p-12 rounded-[3rem] w-full max-w-md border border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.8)] relative">
-            <button onclick="hideLogin()" class="absolute top-8 right-8 text-gray-500 hover:text-white transition"><i data-lucide="x"></i></button>
-            <div class="text-center mb-10">
-                <div class="bg-taxi-yellow/10 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6"><i data-lucide="key" class="taxi-yellow w-10 h-10"></i></div>
-                <h2 class="text-4xl font-black italic tracking-tighter uppercase mb-2">SYSTEM <span class="taxi-yellow">LOGIN</span></h2>
-                <p class="text-gray-500 text-[10px] uppercase tracking-widest font-bold">Authorized Personnel Only</p>
-            </div>
-            <div class="space-y-5">
-                <div>
-                    <label class="text-[9px] font-black text-gray-500 uppercase ml-2 mb-2 block">Dienstnummer / Name</label>
-                    <input type="text" id="log-name" placeholder="Name eingeben..." class="w-full bg-black p-5 rounded-2xl border border-white/5 focus:border-yellow-500 outline-none transition text-sm">
-                </div>
-                <div>
-                    <label class="text-[9px] font-black text-gray-500 uppercase ml-2 mb-2 block">Sicherheitsschlüssel</label>
-                    <input type="password" id="log-pw" placeholder="••••••••" class="w-full bg-black p-5 rounded-2xl border border-white/5 focus:border-yellow-500 outline-none transition text-sm">
-                </div>
-                <button onclick="doLogin()" class="w-full bg-taxi-yellow text-black font-black py-5 rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition text-lg mt-4">TERMINAL STARTEN</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="app" class="hidden flex h-screen overflow-hidden bg-bg-dark">
+    <div class="flex h-screen overflow-hidden">
         
-        <aside class="w-80 bg-[#0d1116] border-r border-white/5 flex flex-col p-8 z-[100]">
-            <div class="flex items-center gap-4 mb-12">
-                <img src="images/Logo.png" class="h-10">
+        <aside class="w-80 bg-[#0d1117] border-r border-white/5 flex flex-col p-6 space-y-8 z-50">
+            <div class="flex items-center gap-4 px-2">
+                <div class="relative">
+                    <div class="w-12 h-12 bg-taxi-yellow rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(250,204,21,0.3)]">
+                        <i data-lucide="taxi" class="text-black w-7 h-7"></i>
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-[#0d1117] rounded-full"></div>
+                </div>
                 <div>
-                    <h1 class="text-xl font-black italic leading-none">TAXI <span class="taxi-yellow text-xs">MDT</span></h1>
-                    <span id="system-time" class="text-[9px] text-gray-500 mono">00:00:00</span>
+                    <h1 class="text-xl font-black italic leading-none">TAXI <span class="text-yellow-400">KÖLN</span></h1>
+                    <span class="text-[10px] text-gray-500 font-bold tracking-[0.2em] uppercase">Enterprise Management</span>
                 </div>
             </div>
 
-            <nav class="flex-grow space-y-1">
-                <div onclick="showTab('dash')" class="sidebar-item active" data-tab="dash"><i data-lucide="layout-grid" class="mr-3 w-5"></i> Dashboard</div>
-                <div onclick="showTab('dispatch')" class="sidebar-item" data-tab="dispatch"><i data-lucide="radio" class="mr-3 w-5"></i> Leitstelle</div>
-                <div onclick="showTab('rides')" class="sidebar-item" data-tab="rides"><i data-lucide="navigation" class="mr-3 w-5"></i> Fahrtenbuch</div>
-                <div onclick="showTab('calc')" class="sidebar-item" data-tab="calc"><i data-lucide="file-text" class="mr-3 w-5"></i> Rechnungswesen</div>
-                <div onclick="showTab('stats')" class="sidebar-item" data-tab="stats"><i data-lucide="bar-chart-big" class="mr-3 w-5"></i> Statistiken</div>
-                <div onclick="showTab('staff')" class="sidebar-item" data-tab="staff"><i data-lucide="users-round" class="mr-3 w-5"></i> Personal</div>
-                <div onclick="showTab('forum')" class="sidebar-item" data-tab="forum"><i data-lucide="message-square" class="mr-3 w-5"></i> Mitarbeiter Forum</div>
-                <div onclick="showTab('admin')" id="nav-admin" class="sidebar-item hidden border-t border-white/5 mt-4 pt-4 text-red-400" data-tab="admin"><i data-lucide="settings-2" class="mr-3 w-5"></i> Admin Panel</div>
+            <nav class="flex-grow space-y-1 overflow-y-auto">
+                <div class="text-[10px] font-black text-gray-600 uppercase tracking-widest px-4 mb-3">Zentrale Steuerung</div>
+                <div onclick="switchTab('dashboard')" class="sidebar-item active p-4 rounded-2xl flex items-center gap-3" data-tab-btn="dashboard">
+                    <i data-lucide="layout-grid" class="w-5 h-5"></i> <span>Dashboard</span>
+                </div>
+                <div onclick="switchTab('dispatch')" class="sidebar-item p-4 rounded-2xl flex items-center gap-3" data-tab-btn="dispatch">
+                    <i data-lucide="radio" class="w-5 h-5"></i> <span>Leitstelle</span>
+                    <span id="live-dispatch-badge" class="ml-auto bg-red-600 text-[10px] text-white px-2 py-0.5 rounded-full animate-pulse">0</span>
+                </div>
+                <div onclick="switchTab('rides')" class="sidebar-item p-4 rounded-2xl flex items-center gap-3" data-tab-btn="rides">
+                    <i data-lucide="book-marked" class="w-5 h-5"></i> <span>Fahrtenbuch</span>
+                </div>
+
+                <div class="text-[10px] font-black text-gray-600 uppercase tracking-widest px-4 mt-8 mb-3">Administration</div>
+                <div onclick="switchTab('staff')" class="sidebar-item p-4 rounded-2xl flex items-center gap-3" data-tab-btn="staff">
+                    <i data-lucide="users-2" class="w-5 h-5"></i> <span>Personal-Akte</span>
+                </div>
+                <div onclick="switchTab('docs')" class="sidebar-item p-4 rounded-2xl flex items-center gap-3" data-tab-btn="docs">
+                    <i data-lucide="folder-kanban" class="w-5 h-5"></i> <span>Dokumente</span>
+                </div>
+                <div onclick="switchTab('billing')" class="sidebar-item p-4 rounded-2xl flex items-center gap-3" data-tab-btn="billing">
+                    <i data-lucide="banknote" class="w-5 h-5"></i> <span>Rechnungswesen</span>
+                </div>
+
+                <div class="text-[10px] font-black text-gray-600 uppercase tracking-widest px-4 mt-8 mb-3">Community & Feedback</div>
+                <div onclick="switchTab('forum')" class="sidebar-item p-4 rounded-2xl flex items-center gap-3" data-tab-btn="forum">
+                    <i data-lucide="message-square" class="w-5 h-5"></i> <span>Mitarbeiter-Forum</span>
+                </div>
+                <div onclick="switchTab('complaints')" class="sidebar-item p-4 rounded-2xl flex items-center gap-3" data-tab-btn="complaints">
+                    <i data-lucide="shield-alert" class="w-5 h-5"></i> <span>Beschwerden</span>
+                </div>
+
+                <div id="admin-menu" class="hidden">
+                    <div class="text-[10px] font-black text-red-500 uppercase tracking-widest px-4 mt-8 mb-3">System-Kern</div>
+                    <div onclick="switchTab('audit')" class="sidebar-item p-4 rounded-2xl flex items-center gap-3 text-red-400" data-tab-btn="audit">
+                        <i data-lucide="database" class="w-5 h-5"></i> <span>Audit-Logs</span>
+                    </div>
+                </div>
             </nav>
 
-            <div class="pt-6 border-t border-white/5 mt-6">
-                <div class="glass p-5 rounded-[2rem] flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-taxi-yellow text-black flex items-center justify-center font-black text-xl shadow-lg" id="u-icon">?</div>
-                    <div class="flex-grow overflow-hidden">
-                        <p class="text-sm font-black truncate" id="u-name">NAME</p>
-                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest" id="u-rank">RANG</p>
+            <div class="pt-6 border-t border-white/5">
+                <div class="bg-white/5 p-4 rounded-2xl flex items-center gap-3">
+                    <div id="user-avatar" class="w-10 h-10 rounded-xl bg-taxi-yellow text-black flex items-center justify-center font-black text-sm">JS</div>
+                    <div class="flex-grow min-w-0">
+                        <h4 id="user-name" class="text-sm font-bold truncate">Lade...</h4>
+                        <p id="user-rank-display" class="text-[9px] text-gray-500 font-black uppercase">Rang</p>
                     </div>
-                    <button onclick="location.reload()" class="text-red-500 hover:scale-110 transition p-2"><i data-lucide="power" class="w-5"></i></button>
+                    <button onclick="logout()" class="text-gray-500 hover:text-red-500 transition"><i data-lucide="power" class="w-4 h-4"></i></button>
                 </div>
             </div>
         </aside>
 
-        <main class="flex-grow overflow-y-auto p-12 relative bg-[#0b0f14]">
+        <main class="flex-grow flex flex-col relative overflow-hidden">
             
-            <div id="tab-dash" class="panel-content space-y-10">
-                <div class="flex justify-between items-end">
-                    <div>
-                        <h2 class="text-5xl font-black italic tracking-tighter uppercase mb-2">HOME <span class="taxi-yellow">BASE</span></h2>
-                        <p class="text-gray-500 text-xs font-bold tracking-widest uppercase">Willkommen im Taxi Köln Netzwerk</p>
-                    </div>
-                    <div class="flex gap-4 items-center">
-                        <div id="status-timer" class="mono text-2xl font-bold bg-black/40 px-6 py-2 rounded-2xl border border-white/5">00:00:00</div>
-                        <div id="my-status-badge" class="status-pill st-pause">Offline</div>
+            <header class="h-20 border-b border-white/5 flex items-center justify-between px-10 bg-[#06080a]/80 backdrop-blur-xl z-40">
+                <div class="flex items-center gap-4">
+                    <div class="relative group no-print">
+                        <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-taxi-yellow"></i>
+                        <input type="text" id="global-search" oninput="handleGlobalSearch()" placeholder="Suche in Fahrten, Mitarbeitern, Dokumenten..." class="bg-white/5 border border-white/5 pl-12 pr-6 py-2.5 rounded-xl text-xs w-96 focus:w-[500px] transition-all">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div class="glass p-8 rounded-[2.5rem] flex flex-col justify-between h-56 border-l-8 border-taxi-yellow">
-                        <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Dienst-Status</p>
-                        <select id="set-my-status" onchange="updateMyStatus(this.value)" class="bg-black/50 border border-white/10 p-4 rounded-xl text-sm font-bold outline-none focus:border-yellow-500 transition">
-                            <option value="frei">🟢 FREI / BEREIT</option>
-                            <option value="besetzt">🔴 BESETZT</option>
-                            <option value="pause" selected>🟣 PAUSE</option>
-                            <option value="weg">🔵 AUF DEM WEG</option>
-                            <option value="vip">🟡 VIP FAHRT</option>
-                        </select>
-                        <button onclick="toggleDuty()" id="duty-btn" class="w-full bg-green-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-green-500 transition">DIENST STARTEN</button>
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2 no-print">
+                        <button onclick="openModal('ride-modal')" class="bg-taxi-yellow text-black px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 hover:brightness-110 active:scale-95 transition">
+                            <i data-lucide="plus" class="w-4 h-4"></i> NEUE FAHRT
+                        </button>
+                        <button onclick="openModal('staff-modal')" class="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 hover:bg-white/10 transition">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i> PERSONAL
+                        </button>
+                        <button onclick="triggerBackup()" class="p-2.5 bg-white/5 border border-white/10 rounded-xl hover:text-taxi-yellow transition" title="Backup erstellen">
+                            <i data-lucide="save" class="w-4 h-4"></i>
+                        </button>
                     </div>
-                    <div class="glass p-8 rounded-[2.5rem] h-56 flex flex-col justify-between">
-                        <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Aktive Sitzung</p>
-                        <h3 class="text-5xl font-black mono" id="session-clock">00:00</h3>
-                        <p class="text-gray-600 text-[10px] font-bold italic uppercase">Arbeitszeit wird aufgezeichnet</p>
-                    </div>
-                    <div class="glass p-8 rounded-[2.5rem] h-56 flex flex-col justify-between">
-                        <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Offene Aufträge</p>
-                        <h3 class="text-6xl font-black taxi-yellow mono" id="count-rides-open">0</h3>
-                        <button onclick="showTab('dispatch')" class="text-xs font-bold text-gray-400 hover:text-white transition">LEITSTELLE ÖFFNEN ➔</button>
-                    </div>
-                    <div class="glass p-8 rounded-[2.5rem] h-56 flex flex-col justify-between bg-yellow-500/5">
-                        <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Eigene Fahrten</p>
-                        <h3 class="text-6xl font-black mono" id="count-my-rides">0</h3>
-                        <p class="text-gray-600 text-[10px] font-bold italic uppercase">Heute abgeschlossen</p>
-                    </div>
-                </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                    <div class="glass p-10 rounded-[3rem]">
-                        <h3 class="text-xl font-black mb-8 flex items-center gap-3 italic uppercase tracking-tighter"><i data-lucide="list-tree" class="taxi-yellow"></i> System-Logs</h3>
-                        <div id="log-list" class="space-y-4 max-h-[300px] overflow-y-auto pr-4 text-[11px] mono text-gray-500">
-                            </div>
-                    </div>
-                    <div class="glass p-10 rounded-[3rem]">
-                        <h3 class="text-xl font-black mb-8 flex items-center gap-3 italic uppercase tracking-tighter"><i data-lucide="info" class="taxi-yellow"></i> News & Ankündigungen</h3>
-                        <div class="space-y-6">
-                            <div class="border-l-2 border-taxi-yellow pl-6">
-                                <p class="text-sm font-bold text-white">Neue Patriot Limousinen eingetroffen!</p>
-                                <p class="text-xs text-gray-500 mt-1">Die Werkstatt hat 3 neue gepanzerte Fahrzeuge freigegeben.</p>
-                            </div>
-                            <div class="border-l-2 border-white/10 pl-6">
-                                <p class="text-sm font-bold text-gray-400">Wartungsarbeiten am MDT</p>
-                                <p class="text-xs text-gray-500 mt-1">Sonntag ab 04:00 Uhr wird das Funk-Modul aktualisiert.</p>
-                            </div>
+                    <div class="h-8 w-[1px] bg-white/10"></div>
+
+                    <div class="flex items-center gap-4">
+                        <div class="text-right">
+                            <p class="text-[10px] text-gray-500 font-black uppercase">Systemzeit</p>
+                            <p id="clock" class="text-sm font-bold mono taxi-yellow">00:00:00</p>
+                        </div>
+                        <div class="relative">
+                            <button onclick="toggleNotifs()" class="p-2.5 bg-white/5 rounded-xl relative group">
+                                <i data-lucide="bell" class="w-5 h-5 text-gray-400 group-hover:text-white transition"></i>
+                                <span id="notif-ping" class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            <div id="tab-dispatch" class="panel-content hidden space-y-10">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h2 class="text-5xl font-black italic tracking-tighter uppercase mb-2">RADIO <span class="taxi-yellow">DISPATCH</span></h2>
-                        <p class="text-gray-500 text-xs font-bold tracking-widest uppercase">Zentrale Auftragsverwaltung & Einheiten-Status</p>
-                    </div>
-                    <div class="flex gap-4">
-                        <button onclick="openRideModal()" class="bg-taxi-yellow text-black px-8 py-3 rounded-2xl font-black text-sm shadow-lg flex items-center gap-2 transition hover:scale-105 active:scale-95"><i data-lucide="plus-circle" class="w-5"></i> NEUER AUFTRAG</button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-10">
-                    <div class="xl:col-span-1 space-y-6">
-                        <h3 class="text-sm font-black uppercase tracking-widest text-gray-500 px-2">Verfügbare Einheiten</h3>
-                        <div id="dispatch-staff-list" class="space-y-3">
+            <div id="content-container" class="flex-grow overflow-y-auto p-10 space-y-10 bg-[#06080a]">
+                
+                <section id="tab-dashboard" class="tab-content animate-slide-up space-y-8">
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <h2 class="text-5xl font-black italic uppercase tracking-tighter">Command <span class="text-yellow-400">Center</span></h2>
+                            <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mt-2 flex items-center gap-2">
+                                <span class="status-dot bg-green-500"></span> Live Betriebszustand Köln
+                            </p>
+                        </div>
+                        <div class="flex gap-4">
+                            <div id="duty-timer-box" class="glass-card px-8 py-4 flex flex-col items-center">
+                                <span class="text-[9px] font-black text-gray-500 uppercase mb-1">Dienstzeit</span>
+                                <span id="duty-timer" class="text-2xl font-black mono italic">00:00:00</span>
                             </div>
-                    </div>
-                    <div class="xl:col-span-2 space-y-6">
-                        <h3 class="text-sm font-black uppercase tracking-widest text-gray-500 px-2">Aktive Aufträge</h3>
-                        <div class="glass rounded-[2.5rem] overflow-hidden">
-                            <table class="w-full text-left">
-                                <thead class="bg-black/40 text-[10px] font-black uppercase tracking-widest text-gray-500">
-                                    <tr>
-                                        <th class="p-6">Standort / Ziel</th>
-                                        <th class="p-6">Kunde</th>
-                                        <th class="p-6">Einheit</th>
-                                        <th class="p-6">Status</th>
-                                        <th class="p-6 text-right">Aktion</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="dispatch-rides-table" class="divide-y divide-white/5">
-                                    </tbody>
-                            </table>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div id="tab-rides" class="panel-content hidden space-y-10">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-5xl font-black italic tracking-tighter uppercase">RIDE <span class="taxi-yellow">ARCHIVE</span></h2>
-                    <div class="flex gap-3">
-                        <input type="text" id="ride-search" oninput="renderRidesTable()" placeholder="Suche nach Kunde/Fahrer..." class="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl outline-none focus:border-yellow-500 transition text-sm">
-                        <button onclick="exportRidesToExcel()" class="glass px-6 py-3 rounded-2xl text-xs font-black uppercase hover:bg-white/10 transition">Excel Export</button>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="glass-card p-8 border-l-4 border-taxi-yellow flex flex-col justify-between">
+                            <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Mein Status</p>
+                            <select id="user-status-select" onchange="updateLiveStatus(this.value)" class="w-full mt-4 bg-[#0d1117] p-3 rounded-xl font-bold text-sm">
+                                <option value="offline">🔴 Offline / Pause</option>
+                                <option value="available">🟢 Bereit für Fahrt</option>
+                                <option value="busy">🟡 Im Einsatz</option>
+                                <option value="way">🔵 Auf Anfahrt</option>
+                            </select>
+                            <button id="duty-toggle-btn" onclick="toggleDutyState()" class="mt-4 w-full py-3 bg-green-600 rounded-xl font-black text-[11px] shadow-lg shadow-green-900/20 uppercase tracking-widest">Dienst Starten</button>
+                        </div>
+                        <div class="glass-card p-8 flex flex-col justify-between">
+                            <div class="flex justify-between items-start">
+                                <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Offene Aufträge</p>
+                                <i data-lucide="trending-up" class="w-4 h-4 text-green-500"></i>
+                            </div>
+                            <h3 id="stat-rides-open" class="text-5xl font-black my-2">0</h3>
+                            <p class="text-[10px] text-gray-400 font-bold italic">Wartezeit ca. 4 Min.</p>
+                        </div>
+                        <div class="glass-card p-8 flex flex-col justify-between">
+                            <div class="flex justify-between items-start">
+                                <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Personal im Dienst</p>
+                                <i data-lucide="users" class="w-4 h-4 text-blue-500"></i>
+                            </div>
+                            <h3 id="stat-staff-online" class="text-5xl font-black my-2">0</h3>
+                            <p class="text-[10px] text-gray-400 font-bold italic"><span id="stat-staff-total">0</span> registrierte Fahrer</p>
+                        </div>
+                        <div class="glass-card p-8 bg-yellow-400/5 flex flex-col justify-between border-t-4 border-yellow-400">
+                            <p class="text-[10px] font-black text-yellow-500 uppercase tracking-widest">Meine Erfolge</p>
+                            <div id="user-achievements" class="flex gap-2 mt-4">
+                                </div>
+                            <p class="text-[9px] text-gray-400 mt-4 uppercase font-bold">Nächstes Ziel: 100 Fahrten</p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="glass rounded-[3rem] overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-black/40 text-[10px] font-black uppercase tracking-widest text-gray-500">
-                            <tr>
-                                <th class="p-6">ID</th>
-                                <th class="p-6">Datum</th>
-                                <th class="p-6">Strecke</th>
-                                <th class="p-6">Kunde</th>
-                                <th class="p-6">Fahrer</th>
-                                <th class="p-6">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="full-rides-table" class="divide-y divide-white/5 text-sm">
-                            </tbody>
-                    </table>
-                </div>
-            </div>
+                    <div id="system-alerts-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        </div>
 
-            <div id="tab-calc" class="panel-content hidden space-y-12 max-w-6xl mx-auto">
-                <div class="text-center">
-                    <h2 class="text-5xl font-black italic tracking-tighter uppercase">BILLING <span class="taxi-yellow">CENTER</span></h2>
-                    <p class="text-gray-500 text-xs font-bold mt-2 uppercase tracking-widest">Offizieller Rechnungs-Editor & PDF Export</p>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                    <div class="space-y-8">
-                        <div class="glass p-10 rounded-[3rem] space-y-6">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="text-[10px] font-black text-gray-500 uppercase mb-2 block px-2">Rechnungs-ID</label>
-                                    <input type="text" id="inv-num" class="w-full bg-black/50 border border-white/5 p-4 rounded-2xl outline-none mono text-taxi-yellow" readonly>
-                                </div>
-                                <div>
-                                    <label class="text-[10px] font-black text-gray-500 uppercase mb-2 block px-2">Datum</label>
-                                    <input type="text" id="inv-date" class="w-full bg-black/50 border border-white/5 p-4 rounded-2xl outline-none mono" readonly>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 glass-card p-10">
+                            <div class="flex justify-between items-center mb-8">
+                                <h4 class="text-lg font-black italic uppercase">Wochen-Performance</h4>
+                                <div class="flex gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-taxi-yellow"></span>
+                                    <span class="text-[10px] font-bold text-gray-500 uppercase">Fahrtenanzahl</span>
                                 </div>
                             </div>
-                            <div>
-                                <label class="text-[10px] font-black text-gray-500 uppercase mb-2 block px-2">Kunde / Firma</label>
-                                <input type="text" id="inv-client" oninput="updateInvoicePreview()" placeholder="Vollständiger Name..." class="w-full bg-black border border-white/10 p-5 rounded-2xl outline-none focus:border-yellow-500 transition">
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="text-[10px] font-black text-gray-500 uppercase mb-2 block px-2">Haupt-Tarif</label>
-                                    <select id="inv-type" onchange="updateInvoicePreview()" class="w-full bg-black border border-white/10 p-5 rounded-2xl outline-none focus:border-yellow-500 transition">
-                                        <option value="0">Standard Taxi (0€)</option>
-                                        <option value="12000">Extended S-Klasse (12.000€)</option>
-                                        <option value="22000">Stretch-Limo (22.000€)</option>
-                                        <option value="35000">Patriot-Limo (35.000€)</option>
-                                    </select>
+                            <canvas id="performanceChart" class="max-h-[350px] w-full"></canvas>
+                        </div>
+                        <div class="glass-card p-8 flex flex-col">
+                            <h4 class="text-lg font-black italic uppercase mb-6">Letzte Aktivitäten</h4>
+                            <div id="mini-audit-log" class="space-y-4 overflow-y-auto flex-grow max-h-[350px] pr-2">
                                 </div>
-                                <div>
-                                    <label class="text-[10px] font-black text-gray-500 uppercase mb-2 block px-2">Extras (KM / Zeit)</label>
-                                    <input type="number" id="inv-extra" oninput="updateInvoicePreview()" value="0" class="w-full bg-black border border-white/10 p-5 rounded-2xl outline-none focus:border-yellow-500 transition">
+                        </div>
+                    </div>
+                </section>
+
+                <section id="tab-dispatch" class="tab-content animate-slide-up hidden space-y-8">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-5xl font-black italic uppercase tracking-tighter">Radio <span class="text-red-500">Dispatch</span></h2>
+                            <p id="dispatcher-status" class="text-gray-500 text-xs font-bold uppercase mt-2">Leitstelle aktuell: <span class="text-red-500">Nicht besetzt</span></p>
+                        </div>
+                        <button onclick="takeDispatchDuty()" class="bg-red-600/10 border border-red-600/30 text-red-500 px-6 py-3 rounded-2xl text-[11px] font-black hover:bg-red-600 hover:text-white transition uppercase">Leitstelle Übernehmen</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+                        <div class="space-y-4">
+                            <div class="text-[10px] font-black text-gray-600 uppercase tracking-widest px-2">Verfügbare Einheiten</div>
+                            <div id="dispatch-units" class="space-y-3 overflow-y-auto max-h-[700px]">
+                                </div>
+                        </div>
+                        <div class="xl:col-span-3 space-y-6">
+                            <div class="text-[10px] font-black text-gray-600 uppercase tracking-widest px-2">Aktive & Offene Aufträge</div>
+                            <div class="glass-card overflow-hidden">
+                                <table class="w-full text-left border-collapse">
+                                    <thead class="bg-white/5 text-[10px] font-black uppercase text-gray-500 tracking-widest">
+                                        <tr>
+                                            <th class="p-6">Zeit</th>
+                                            <th class="p-6">Route / Kunde</th>
+                                            <th class="p-6">Fahrzeug</th>
+                                            <th class="p-6">Einheit</th>
+                                            <th class="p-6">Status</th>
+                                            <th class="p-6 text-right">Zuweisung</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dispatch-table-body" class="divide-y divide-white/5">
+                                        </tbody>
+                                </table>
+                            </div>
+
+                            <div class="text-[10px] font-black text-gray-600 uppercase tracking-widest px-2 mt-10">Dispatch-Entscheidungs-Historie</div>
+                            <div id="dispatch-timeline" class="glass-card p-8 space-y-4 mono text-[11px] text-gray-400">
+                                </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="tab-rides" class="tab-content animate-slide-up hidden space-y-8">
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <h2 class="text-5xl font-black italic uppercase tracking-tighter">Logbuch <span class="text-yellow-400">Archiv</span></h2>
+                            <p class="text-gray-500 text-xs font-bold uppercase mt-2 italic">Lückenlose Dokumentation aller Fahrzeugbewegungen</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="relative">
+                                <i data-lucide="filter" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                                <input type="text" id="ride-search-filter" oninput="renderRideArchive()" placeholder="Nach Fahrer oder Ziel suchen..." class="bg-[#0d1117] pl-12 pr-6 py-3 rounded-2xl text-xs w-72">
+                            </div>
+                            <button onclick="exportDataToExcel('rides')" class="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl text-[11px] font-black uppercase hover:bg-white/10">Export CSV</button>
+                        </div>
+                    </div>
+
+                    <div class="glass-card overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-white/5 text-[10px] font-black uppercase text-gray-500">
+                                <tr>
+                                    <th class="p-6">Datum/Zeit</th>
+                                    <th class="p-6">Fahrer</th>
+                                    <th class="p-6">Route (Von -> Zu)</th>
+                                    <th class="p-6">Distanz</th>
+                                    <th class="p-6">Typ</th>
+                                    <th class="p-6">Umsatz</th>
+                                    <th class="p-6 text-right">Beleg</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ride-archive-body" class="divide-y divide-white/5">
+                                </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="tab-billing" class="tab-content animate-slide-up hidden space-y-10 max-w-7xl mx-auto">
+                    <div class="text-center">
+                        <h2 class="text-5xl font-black italic uppercase tracking-tighter">Finance <span class="text-yellow-400">Portal</span></h2>
+                        <p class="text-gray-500 text-[10px] font-black tracking-[0.4em] uppercase mt-4 italic">Digitale Rechnungsstellung & Inkasso-Modul</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+                        <div class="glass-card p-12 border-l-8 border-taxi-yellow space-y-8 shadow-2xl">
+                            <div class="flex justify-between items-center">
+                                <h4 class="text-xl font-black uppercase italic">Neue Rechnung</h4>
+                                <span class="mono text-xs text-gray-500" id="live-invoice-id">TX-0000</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-black text-gray-500 uppercase px-1">Kundenname</label>
+                                    <input type="text" id="bill-client" oninput="liveUpdateInvoice()" placeholder="z.B. Frank Miller" class="w-full p-4 rounded-2xl text-sm font-bold">
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-black text-gray-500 uppercase px-1">Datum</label>
+                                    <input type="date" id="bill-date" oninput="liveUpdateInvoice()" class="w-full p-4 rounded-2xl text-sm">
                                 </div>
                             </div>
-                            <button onclick="saveAndGeneratePDF()" class="w-full bg-white text-black font-black py-5 rounded-3xl shadow-2xl hover:bg-taxi-yellow transition flex items-center justify-center gap-3 text-lg">
-                                <i data-lucide="printer"></i> PDF GENERIEREN & SPEICHERN
+
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-gray-500 uppercase px-1">Service Tarif</label>
+                                <select id="bill-type" onchange="liveUpdateInvoice()" class="w-full p-4 rounded-2xl text-sm font-bold">
+                                    <option value="0">Individueller Betrag</option>
+                                    <option value="12000">VIP S-Klasse (Basis: 12.000€)</option>
+                                    <option value="25000">Stretch Limousine (Basis: 25.000€)</option>
+                                    <option value="50000">Heli-Transport (Basis: 50.000€)</option>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-6">
+                                <div class="col-span-1 space-y-2">
+                                    <label class="text-[10px] font-black text-gray-500 uppercase px-1">Distanz (KM)</label>
+                                    <input type="number" id="bill-km" oninput="liveUpdateInvoice()" value="0" class="w-full p-4 rounded-2xl text-sm font-bold">
+                                </div>
+                                <div class="col-span-1 space-y-2">
+                                    <label class="text-[10px] font-black text-gray-500 uppercase px-1">Bonus/Malus %</label>
+                                    <input type="number" id="bill-modifier" oninput="liveUpdateInvoice()" value="0" class="w-full p-4 rounded-2xl text-sm font-bold">
+                                </div>
+                                <div class="col-span-1 space-y-2">
+                                    <label class="text-[10px] font-black text-gray-500 uppercase px-1">Währung</label>
+                                    <input type="text" value="€ (Euro)" disabled class="w-full p-4 rounded-2xl text-sm opacity-50 font-black">
+                                </div>
+                            </div>
+
+                            <button onclick="finaliseInvoice()" class="w-full py-6 bg-white text-black font-black text-lg rounded-2xl hover:bg-taxi-yellow transition transform active:scale-95 shadow-xl shadow-yellow-500/10 uppercase">Rechnung Ausstellen & Archivieren</button>
+                        </div>
+
+                        <div class="flex flex-col items-center">
+                            <span class="text-[10px] font-black text-gray-600 uppercase mb-4 tracking-widest italic">Vorschau Dokument (DIN A4)</span>
+                            <div id="invoice-preview-container" class="bg-white text-black w-full min-h-[600px] shadow-[0_30px_60px_-12px_rgba(0,0,0,0.5)] p-16 rounded-sm font-serif relative">
+                                </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="tab-docs" class="tab-content animate-slide-up hidden space-y-8">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-5xl font-black italic uppercase tracking-tighter">Document <span class="text-yellow-400">Vault</span></h2>
+                            <p class="text-gray-500 text-xs font-bold uppercase mt-2">Zentrale Verwaltung & Revisionssicherheit</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <button onclick="openModal('zeugnis-modal')" class="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl text-[11px] font-black uppercase flex items-center gap-2 hover:bg-white/10 transition">
+                                <i data-lucide="file-badge" class="w-4 h-4"></i> Zeugnis erstellen
                             </button>
                         </div>
                     </div>
 
-                    <div class="flex flex-col items-center">
-                        <span class="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-4 italic">Digitale Rechnungs-Vorschau</span>
-                        <div id="digital-invoice" class="bg-white text-black w-full min-h-[600px] p-12 shadow-2xl rounded-sm font-serif relative">
-                            </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-stats" class="panel-content hidden space-y-12">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-5xl font-black italic tracking-tighter uppercase">ANALYTICS <span class="taxi-yellow">HUB</span></h2>
-                    <div class="flex gap-2">
-                        <button onclick="renderCharts()" class="glass px-6 py-2 rounded-xl text-[10px] font-black uppercase">Refresh Data</button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="glass p-10 rounded-[3rem]">
-                        <p class="text-[10px] font-black text-gray-500 uppercase mb-6 tracking-widest">Statusverteilung Aktuell</p>
-                        <div class="chart-box flex items-center justify-center">
-                            <canvas id="chart-status"></canvas>
+                    <div class="flex gap-6 items-center bg-white/5 p-6 rounded-[2rem] border border-white/5">
+                        <div class="flex-grow relative">
+                            <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                            <input type="text" id="doc-search" oninput="renderDocumentList()" placeholder="Dateien durchsuchen..." class="bg-[#06080a] pl-12 pr-6 py-3 rounded-2xl text-xs w-full">
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="filterDocs('all')" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase bg-taxi-yellow text-black">Alle</button>
+                            <button onclick="filterDocs('Rechnung')" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase bg-white/5 hover:bg-white/10">Rechnungen</button>
+                            <button onclick="filterDocs('Zeugnis')" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase bg-white/5 hover:bg-white/10">Zeugnisse</button>
+                            <button onclick="filterDocs('Vertrag')" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase bg-white/5 hover:bg-white/10">Verträge</button>
                         </div>
                     </div>
-                    <div class="lg:col-span-2 glass p-10 rounded-[3rem]">
-                        <p class="text-[10px] font-black text-gray-500 uppercase mb-6 tracking-widest">Wöchentliches Fahrtenaufkommen</p>
-                        <div class="chart-box">
-                            <canvas id="chart-activity"></canvas>
+
+                    <div id="document-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        </div>
+                </section>
+
+                <section id="tab-staff" class="tab-content animate-slide-up hidden space-y-8">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-5xl font-black italic uppercase tracking-tighter">Personal <span class="text-yellow-400">Kartei</span></h2>
+                        <div class="flex gap-4">
+                             <div class="text-right">
+                                <p class="text-[9px] text-gray-500 font-black uppercase">Personalstand</p>
+                                <p id="staff-count-total" class="text-xl font-black">0 Mitarbeiter</p>
+                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="glass p-10 rounded-[3rem]">
-                        <p class="text-[10px] font-black text-gray-500 uppercase mb-6 tracking-widest">Top-Performer (Fahrten)</p>
-                        <canvas id="chart-drivers"></canvas>
-                    </div>
-                    <div class="glass p-10 rounded-[3rem] flex flex-col justify-center text-center">
-                        <p class="text-[10px] font-black text-gray-500 uppercase mb-2 tracking-widest">Erfolgsquote</p>
-                        <h4 class="text-8xl font-black taxi-yellow italic">98.4%</h4>
-                        <p class="text-gray-500 text-xs mt-4">Abgeschlossene Aufträge vs. Stornierungen</p>
-                    </div>
-                </div>
-            </div>
 
-            <div id="tab-staff" class="panel-content hidden space-y-12">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-5xl font-black italic tracking-tighter uppercase">STAFF <span class="taxi-yellow">MANAGEMENT</span></h2>
-                    <p class="text-gray-500 font-bold uppercase text-[10px] tracking-widest">Aktive Dienstverhältnisse</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8" id="staff-grid">
-                    </div>
-            </div>
-
-            <div id="tab-forum" class="panel-content hidden space-y-12 max-w-5xl mx-auto">
-                <div class="flex justify-between items-end">
-                    <div>
-                        <h2 class="text-5xl font-black italic tracking-tighter uppercase">EMPLOYEE <span class="taxi-yellow">FORUM</span></h2>
-                        <p class="text-gray-500 text-xs font-bold mt-2 uppercase tracking-widest">Fehlerberichte, Feedback & Bewertungen</p>
-                    </div>
-                    <button onclick="openForumModal()" class="bg-taxi-yellow text-black px-8 py-3 rounded-2xl font-black text-sm shadow-xl">NEUEN BEITRAG ERSTELLEN</button>
-                </div>
-
-                <div class="space-y-6" id="forum-list">
-                    </div>
-            </div>
-
-            <div id="tab-admin" class="panel-content hidden space-y-12">
-                <h2 class="text-5xl font-black italic tracking-tighter uppercase text-red-500">ADMIN <span class="text-white">CONTROL</span></h2>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                    <div class="glass p-10 rounded-[3rem]">
-                        <h3 class="text-xl font-black mb-8 italic uppercase tracking-tighter">Account Verwaltung</h3>
-                        <div class="space-y-4">
-                            <div class="flex flex-col gap-4">
-                                <input type="text" id="adm-new-user" placeholder="Benutzername..." class="bg-black border border-white/10 p-4 rounded-xl outline-none focus:border-red-500 text-sm">
-                                <input type="password" id="adm-new-pw" placeholder="Standard Passwort..." class="bg-black border border-white/10 p-4 rounded-xl outline-none focus:border-red-500 text-sm">
-                                <select id="adm-new-rank" class="bg-black border border-white/10 p-4 rounded-xl text-sm outline-none">
-                                    <option value="Azubi">Azubi</option>
-                                    <option value="Fahrer">Fahrer</option>
-                                    <option value="Dispatch">Dispatcher</option>
-                                    <option value="Leitung">Leitung</option>
-                                </select>
-                                <button onclick="adminCreateAccount()" class="bg-red-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-red-500 transition">ACCOUNT ERSTELLEN</button>
-                            </div>
+                    <div id="staff-list-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                         </div>
+                </section>
+
+                <section id="tab-forum" class="tab-content animate-slide-up hidden space-y-8 max-w-4xl mx-auto">
+                    <div class="flex justify-between items-end mb-10">
+                        <div>
+                            <h2 class="text-5xl font-black italic uppercase tracking-tighter">Staff <span class="text-yellow-400">Forum</span></h2>
+                            <p class="text-gray-500 text-xs font-bold uppercase mt-2">Interner Austausch & Ankündigungen</p>
+                        </div>
+                        <button onclick="openModal('forum-modal')" class="bg-taxi-yellow text-black px-6 py-3 rounded-2xl font-black text-xs uppercase shadow-xl shadow-yellow-500/10">Neuer Beitrag</button>
                     </div>
+
+                    <div id="forum-posts-container" class="space-y-8">
+                        </div>
+                </section>
+
+                <section id="tab-complaints" class="tab-content animate-slide-up hidden space-y-10">
+                    <h2 class="text-5xl font-black italic uppercase tracking-tighter">Beschwerde <span class="text-red-500">Management</span></h2>
                     
-                    <div class="glass p-10 rounded-[3rem]">
-                        <h3 class="text-xl font-black mb-8 italic uppercase tracking-tighter">System Archiv</h3>
-                        <div class="space-y-4" id="admin-archive-list">
-                            <p class="text-xs text-gray-600 italic">Keine archivierten Mitarbeiter gefunden.</p>
+                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-12">
+                        <div class="glass-card p-10 h-fit space-y-6">
+                            <h4 class="font-black uppercase text-sm italic">Vorfall melden</h4>
+                            <div class="space-y-4">
+                                <input type="text" id="comp-client-name" placeholder="Kunde..." class="w-full p-4 rounded-xl text-sm">
+                                <select id="comp-staff-select" class="w-full p-4 rounded-xl text-sm">
+                                    </select>
+                                <textarea id="comp-description" placeholder="Genaue Beschreibung des Vorfalls..." rows="5" class="w-full p-4 rounded-xl text-sm"></textarea>
+                                <button onclick="submitNewComplaint()" class="w-full py-4 bg-red-600 text-white font-black rounded-xl uppercase tracking-widest text-[11px] shadow-lg shadow-red-900/20">Eintrag Erstellen</button>
+                            </div>
+                        </div>
+                        <div class="xl:col-span-2 glass-card overflow-hidden">
+                            <table class="w-full text-left">
+                                <thead class="bg-white/5 text-[10px] font-black uppercase text-gray-500">
+                                    <tr>
+                                        <th class="p-6">Eingang</th>
+                                        <th class="p-6">Mitarbeiter</th>
+                                        <th class="p-6">Status</th>
+                                        <th class="p-6 text-right">Aktion</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="complaint-table-body" class="divide-y divide-white/5 text-sm">
+                                    </tbody>
+                            </table>
                         </div>
                     </div>
-                </div>
-            </div>
+                </section>
 
+                <section id="tab-audit" class="tab-content animate-slide-up hidden space-y-8">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-5xl font-black italic uppercase tracking-tighter text-red-500">System <span class="text-white">Audit</span></h2>
+                        <button onclick="clearAuditLogs()" class="text-xs font-black uppercase text-red-500/50 hover:text-red-500 transition border border-red-500/20 px-4 py-2 rounded-xl">Logs bereinigen</button>
+                    </div>
+                    <div class="glass-card p-10 mono text-[11px] text-gray-400 space-y-2 h-[650px] overflow-y-auto" id="global-audit-log">
+                        </div>
+                </section>
+
+            </div>
         </main>
     </div>
 
-    <div id="modal-ride" class="fixed inset-0 z-[2000] glass flex items-center justify-center hidden">
-        <div class="bg-[#141920] p-10 rounded-[3rem] w-full max-w-lg border border-white/10">
-            <h3 class="text-3xl font-black italic mb-8 uppercase">Fahrt <span class="taxi-yellow">Erfassen</span></h3>
-            <div class="space-y-4">
-                <input type="text" id="r-start" placeholder="Standort (z.B. Legion Square)" class="w-full bg-black p-4 rounded-2xl border border-white/5 outline-none focus:border-yellow-500 transition text-sm">
-                <input type="text" id="r-end" placeholder="Ziel (z.B. LS Airport)" class="w-full bg-black p-4 rounded-2xl border border-white/5 outline-none focus:border-yellow-500 transition text-sm">
-                <input type="text" id="r-client" placeholder="Kundenname" class="w-full bg-black p-4 rounded-2xl border border-white/5 outline-none focus:border-yellow-500 transition text-sm">
-                <select id="r-driver" class="w-full bg-black p-4 rounded-2xl border border-white/5 text-sm outline-none"></select>
-                <button onclick="saveNewRide()" class="w-full bg-taxi-yellow text-black font-black py-5 rounded-2xl shadow-xl mt-6">AUFTRAG IN DAS SYSTEM SPEISEN</button>
-                <button onclick="closeRideModal()" class="w-full text-gray-600 text-xs font-bold uppercase mt-2">Abbrechen</button>
+    <div id="ride-modal" class="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-md flex items-center justify-center hidden p-6">
+        <div class="glass-card w-full max-w-2xl p-10 animate-slide-up shadow-[0_0_100px_rgba(250,204,21,0.1)]">
+            <div class="flex justify-between items-center mb-10">
+                <h3 class="text-3xl font-black italic uppercase">Fahrt <span class="text-yellow-400">Anlegen</span></h3>
+                <button onclick="closeModal('ride-modal')" class="text-gray-500 hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+            <div class="grid grid-cols-2 gap-6 mb-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-500 uppercase">Abholort</label>
+                    <input type="text" id="r-start" placeholder="z.B. Legion Square" class="w-full p-4 rounded-xl text-sm">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-500 uppercase">Zielort</label>
+                    <input type="text" id="r-end" placeholder="z.B. LS Airport" class="w-full p-4 rounded-xl text-sm">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-6 mb-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-500 uppercase">Kunde</label>
+                    <input type="text" id="r-client" placeholder="Name..." class="w-full p-4 rounded-xl text-sm">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-500 uppercase">Fahrzeugtyp</label>
+                    <select id="r-type" class="w-full p-4 rounded-xl text-sm font-bold">
+                        <option value="Normal">🚕 Normale Fahrt</option>
+                        <option value="Limo">🖤 Limo Fahrt</option>
+                        <option value="Heli">🚁 Helikopter Flug</option>
+                    </select>
+                </div>
+            </div>
+            <div class="space-y-2 mb-10">
+                <label class="text-[10px] font-black text-gray-500 uppercase">Einheit zuweisen</label>
+                <select id="r-assign-staff" class="w-full p-4 rounded-xl text-sm">
+                    <option value="">Leitstelle entscheidet (OFFEN)</option>
+                </select>
+            </div>
+            <button onclick="submitRideEntry()" class="w-full py-5 bg-taxi-yellow text-black font-black rounded-2xl text-lg uppercase shadow-2xl hover:scale-[1.01] transition">Im Logbuch speichern</button>
+        </div>
+    </div>
+
+    <div id="staff-modal" class="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-md flex items-center justify-center hidden p-6">
+        <div class="glass-card w-full max-w-lg p-10 animate-slide-up">
+            <h3 class="text-2xl font-black italic uppercase mb-8">Personal <span class="text-yellow-400">Einstellen</span></h3>
+            <div class="space-y-6">
+                <input type="text" id="s-name" placeholder="Vollständiger Name..." class="w-full p-4 rounded-xl text-sm">
+                <select id="s-rank" class="w-full p-4 rounded-xl text-sm">
+                    <option value="Praktikant">Praktikant</option>
+                    <option value="Azubi">Azubi</option>
+                    <option value="Jr. Fahrer">Jr. Fahrer</option>
+                    <option value="Fahrer">Fahrer</option>
+                    <option value="Sr. Fahrer">Sr. Fahrer</option>
+                    <option value="Stlv Geschäftsführung">Stlv Geschäftsführung</option>
+                    <option value="Geschäftsführung">Geschäftsführung</option>
+                </select>
+                <input type="password" id="s-pw" placeholder="Standard-Passwort..." class="w-full p-4 rounded-xl text-sm">
+                <button onclick="addNewStaff()" class="w-full py-4 bg-white text-black font-black rounded-xl uppercase tracking-widest hover:bg-taxi-yellow transition">Personalakte anlegen</button>
+                <button onclick="closeModal('staff-modal')" class="w-full text-center text-xs font-black text-gray-600 uppercase">Abbrechen</button>
             </div>
         </div>
     </div>
 
-    <div id="modal-forum" class="fixed inset-0 z-[2000] glass flex items-center justify-center hidden">
-        <div class="bg-[#141920] p-10 rounded-[3rem] w-full max-w-lg border border-white/10">
-            <h3 class="text-3xl font-black italic mb-8 uppercase">Neuer <span class="taxi-yellow">Beitrag</span></h3>
-            <div class="space-y-4">
-                <select id="f-type" class="w-full bg-black p-4 rounded-2xl border border-white/5 text-sm outline-none">
-                    <option value="fehler">Fehler / Bug melden</option>
-                    <option value="feedback">Allgemeines Feedback</option>
-                    <option value="website">Website Bewertung</option>
+    <div id="zeugnis-modal" class="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-md flex items-center justify-center hidden p-6">
+        <div class="glass-card w-full max-w-xl p-10 animate-slide-up">
+            <h3 class="text-2xl font-black italic uppercase mb-8">Zeugnis <span class="text-blue-400">Generator</span></h3>
+            <div class="space-y-6">
+                <select id="z-staff-select" class="w-full p-4 rounded-xl text-sm font-bold"></select>
+                <select id="z-rating" class="w-full p-4 rounded-xl text-sm">
+                    <option value="excellent">Note 1: Stets zu unserer vollsten Zufriedenheit</option>
+                    <option value="good">Note 2: Stets zu unserer vollen Zufriedenheit</option>
+                    <option value="ok">Note 3: Zu unserer vollen Zufriedenheit</option>
                 </select>
-                <input type="text" id="f-title" placeholder="Titel des Beitrags..." class="w-full bg-black p-4 rounded-2xl border border-white/5 outline-none focus:border-yellow-500 transition text-sm">
-                <textarea id="f-text" rows="4" placeholder="Deine Nachricht..." class="w-full bg-black p-4 rounded-2xl border border-white/5 outline-none focus:border-yellow-500 transition text-sm"></textarea>
-                <div class="flex items-center gap-4 px-2">
-                    <span class="text-xs text-gray-500 font-bold uppercase">Bewertung:</span>
-                    <select id="f-stars" class="bg-black border border-white/5 text-yellow-500 rounded px-2 py-1">
-                        <option value="5">⭐⭐⭐⭐⭐</option>
-                        <option value="4">⭐⭐⭐⭐</option>
-                        <option value="3">⭐⭐⭐</option>
-                        <option value="2">⭐⭐</option>
-                        <option value="1">⭐</option>
-                    </select>
+                <textarea id="z-custom-text" placeholder="Besondere Leistungen / Erfolge..." rows="4" class="w-full p-4 rounded-xl text-sm"></textarea>
+                <button onclick="processZeugnis()" class="w-full py-5 bg-blue-600 text-white font-black rounded-xl uppercase shadow-lg shadow-blue-900/30">Dokument finalisieren</button>
+                <button onclick="closeModal('zeugnis-modal')" class="w-full text-center text-xs font-black text-gray-600 uppercase">Schließen</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="forum-modal" class="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-md flex items-center justify-center hidden p-6">
+        <div class="glass-card w-full max-w-2xl p-10 animate-slide-up">
+            <h3 class="text-2xl font-black italic uppercase mb-8">Community <span class="text-yellow-400">Post</span></h3>
+            <div class="space-y-6">
+                <input type="text" id="f-title" placeholder="Titel der Nachricht..." class="w-full p-4 rounded-xl text-sm font-bold">
+                <textarea id="f-content" placeholder="Deine Nachricht an das Team..." rows="6" class="w-full p-4 rounded-xl text-sm"></textarea>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="f-important" class="w-4 h-4 rounded bg-red-500">
+                    <label class="text-xs font-bold text-red-500 uppercase">Wichtig / Ankündigung</label>
                 </div>
-                <button onclick="submitForumPost()" class="w-full bg-taxi-yellow text-black font-black py-5 rounded-2xl shadow-xl mt-6">BEITRAG VERÖFFENTLICHEN</button>
-                <button onclick="closeForumModal()" class="w-full text-gray-600 text-xs font-bold uppercase mt-2">Schließen</button>
+                <button onclick="postToForum()" class="w-full py-5 bg-taxi-yellow text-black font-black rounded-xl uppercase">Veröffentlichen</button>
+                <button onclick="closeModal('forum-modal')" class="w-full text-center text-xs font-black text-gray-600 uppercase">Abbrechen</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- SYSTEM CORE ---
-        lucide.createIcons();
+        // --- DATA ARCHITECTURE ---
+        const DB_KEY = 'taxi_koln_enterprise_v2';
         const TOAST = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
 
-        // Database
-        let users = JSON.parse(localStorage.getItem('txk_users')) || [
-            { name: "Chris Schreiner", pw: "Bka26a", rank: "Leitung", icon: "CS", archived: false },
-            { name: "Marco Krause", pw: "Bka26b", rank: "Leitung", icon: "MK", archived: false },
-            { name: "Maverick Stone", pw: "Bka26r", rank: "Azubi", icon: "MS", archived: false }
-        ];
+        let state = JSON.parse(localStorage.getItem(DB_KEY)) || {
+            users: [
+                { id: 1, name: "Chris Schreiner", rank: "Geschäftsführung", icon: "CS", pw: "Bka26a", points: 2450, rides: 142, online: false, status: 'offline', lastActive: Date.now() },
+                { id: 2, name: "Marco Krause", rank: "Stlv Geschäftsführung", icon: "MK", pw: "Bka26b", points: 1800, rides: 89, online: false, status: 'offline', lastActive: Date.now() },
+                { id: 3, name: "Maverick Stone", rank: "Sr. Fahrer", icon: "MS", pw: "Bka26r", points: 950, rides: 45, online: false, status: 'offline', lastActive: Date.now() }
+            ],
+            rides: [],
+            docs: [],
+            forum: [],
+            complaints: [],
+            audit: [],
+            dispatcher: null,
+            systemAlerts: []
+        };
 
-        let rides = JSON.parse(localStorage.getItem('txk_rides')) || [];
-        let forumPosts = JSON.parse(localStorage.getItem('txk_forum')) || [];
-        let systemLogs = JSON.parse(localStorage.getItem('txk_logs')) || [];
+        let currentUser = state.users[0]; // Simulation
+        let isDutyActive = false;
+        let dutyStartTime = null;
+        let dutySeconds = 0;
+        let inactivityCounter = 0;
+        let activeFilter = 'all';
 
-        let currentUser = null;
-        let isDuty = false;
-        let dutyStart = null;
-        let dutyInterval = null;
-        let sessionSeconds = 0;
-
-        // --- AUTH & INTRO ---
-        function endIntro() {
-            document.getElementById('intro-bar').style.width = '100%';
-            setTimeout(() => {
-                const intro = document.getElementById('intro-container');
-                const landing = document.getElementById('landing-page');
-                intro.style.opacity = '0';
-                setTimeout(() => {
-                    intro.classList.add('hidden');
-                    landing.classList.remove('hidden');
-                    setTimeout(() => landing.style.opacity = '1', 50);
-                }, 1000);
-            }, 500);
-        }
-        document.getElementById('intro-video').onended = endIntro;
-        setTimeout(() => { document.getElementById('intro-bar').style.width = '70%'; }, 100);
-
-        function showLogin() { document.getElementById('login-modal').classList.remove('hidden'); }
-        function hideLogin() { document.getElementById('login-modal').classList.add('hidden'); }
-
-        function doLogin() {
-            const n = document.getElementById('log-name').value;
-            const p = document.getElementById('log-pw').value;
-            const user = users.find(u => u.name === n && u.pw === p && !u.archived);
-
-            if(user) {
-                currentUser = user;
-                localStorage.setItem('txk_last_user', n);
-                document.getElementById('landing-page').classList.add('hidden');
-                document.getElementById('login-modal').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-                
-                document.getElementById('u-name').innerText = user.name;
-                document.getElementById('u-rank').innerText = user.rank;
-                document.getElementById('u-icon').innerText = user.icon;
-                
-                if(user.rank === 'Leitung') document.getElementById('nav-admin').classList.remove('hidden');
-                
-                addSystemLog(`Login erfolgreich durch ${user.name}`);
-                initSystem();
-                TOAST.fire({ icon: 'success', title: `Willkommen, ${user.name}` });
-            } else {
-                TOAST.fire({ icon: 'error', title: 'Zugang verweigert!' });
-            }
-        }
-
-        // --- SYSTEM INITIALIZATION ---
-        function initSystem() {
-            updateClocks();
-            setInterval(updateClocks, 1000);
-            renderDashboard();
-            renderStaff();
-            renderForum();
-            updateInvoicePreview();
+        // --- INITIALIZATION ---
+        function init() {
             lucide.createIcons();
-        }
-
-        function updateClocks() {
-            const now = new Date();
-            document.getElementById('system-time').innerText = now.toLocaleTimeString();
-            if(isDuty) {
-                sessionSeconds++;
-                const h = Math.floor(sessionSeconds / 3600).toString().padStart(2, '0');
-                const m = Math.floor((sessionSeconds % 3600) / 60).toString().padStart(2, '0');
-                const s = (sessionSeconds % 60).toString().padStart(2, '0');
-                document.getElementById('session-clock').innerText = `${m}:${s}`;
-                document.getElementById('status-timer').innerText = `${h}:${m}:${s}`;
-            }
-        }
-
-        function showTab(tab) {
-            document.querySelectorAll('.panel-content').forEach(p => p.classList.add('hidden'));
-            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-            document.getElementById('tab-' + tab).classList.remove('hidden');
-            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+            startClocks();
+            renderAll();
+            checkSecurity();
             
-            if(tab === 'dispatch') renderDispatch();
-            if(tab === 'stats') renderCharts();
-            if(tab === 'rides') renderRidesTable();
-            if(tab === 'staff') renderStaff();
-            if(tab === 'forum') renderForum();
-            if(tab === 'admin') renderAdmin();
+            // Interaction listeners
+            document.addEventListener('mousemove', resetInactivity);
+            document.addEventListener('keypress', resetInactivity);
+            setInterval(securityTick, 1000);
+            
+            // Auto-Save every 30s
+            setInterval(saveState, 30000);
+            
+            addAuditEntry("System Kern gestartet", "SYSTEM");
+        }
+
+        function saveState() {
+            localStorage.setItem(DB_KEY, JSON.stringify(state));
+        }
+
+        function startClocks() {
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('clock').innerText = now.toLocaleTimeString('de-DE');
+                
+                if (isDutyActive) {
+                    dutySeconds++;
+                    document.getElementById('duty-timer').innerText = new Date(dutySeconds * 1000).toISOString().substr(11, 8);
+                }
+            }, 1000);
+        }
+
+        function resetInactivity() {
+            inactivityCounter = 0;
+        }
+
+        function securityTick() {
+            inactivityCounter++;
+            if (inactivityCounter > 1800) { // 30 Minutes
+                document.getElementById('auth-overlay').classList.remove('hidden');
+            }
+        }
+
+        // --- UI NAVIGATION ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.querySelector(`[data-tab-btn="${tabId}"]`).classList.add('active');
+            
+            renderTabSpecifics(tabId);
             lucide.createIcons();
         }
 
-        // --- DASHBOARD ---
+        function renderTabSpecifics(tabId) {
+            if (tabId === 'dashboard') renderDashboard();
+            if (tabId === 'dispatch') renderDispatch();
+            if (tabId === 'rides') renderRideArchive();
+            if (tabId === 'staff') renderStaffList();
+            if (tabId === 'docs') renderDocumentList();
+            if (tabId === 'forum') renderForumFeed();
+            if (tabId === 'complaints') renderComplaints();
+            if (tabId === 'audit') renderGlobalAudit();
+        }
+
+        // --- DASHBOARD LOGIC ---
         function renderDashboard() {
-            document.getElementById('count-rides-open').innerText = rides.filter(r => r.status === 'offen').length;
-            document.getElementById('count-my-rides').innerText = rides.filter(r => r.driver === currentUser.name && r.status === 'done').length;
-            
-            const logsBox = document.getElementById('log-list');
-            logsBox.innerHTML = systemLogs.slice(-20).reverse().map(l => `
-                <div class="flex gap-3 border-b border-white/5 pb-2">
-                    <span class="text-taxi-yellow">[${l.time}]</span>
-                    <span>${l.msg}</span>
-                </div>
-            `).join('');
-        }
+            document.getElementById('user-name').innerText = currentUser.name;
+            document.getElementById('user-rank-display').innerText = currentUser.rank;
+            document.getElementById('user-avatar').innerText = currentUser.icon;
 
-        function toggleDuty() {
-            const btn = document.getElementById('duty-btn');
-            const badge = document.getElementById('my-status-badge');
-            isDuty = !isDuty;
-            
-            if(isDuty) {
-                btn.innerText = "DIENST BEENDEN";
-                btn.classList.replace('bg-green-600', 'bg-red-600');
-                badge.innerText = "Im Dienst";
-                badge.className = "status-pill st-frei";
-                updateMyStatus('frei');
-                addSystemLog(`${currentUser.name} ist nun im Dienst`);
-            } else {
-                btn.innerText = "DIENST STARTEN";
-                btn.classList.replace('bg-red-600', 'bg-green-600');
-                badge.innerText = "Offline";
-                badge.className = "status-pill st-pause";
-                updateMyStatus('pause');
-                addSystemLog(`${currentUser.name} hat den Dienst beendet`);
-                sessionSeconds = 0;
-                document.getElementById('session-clock').innerText = "00:00";
+            if (currentUser.rank === 'Geschäftsführung' || currentUser.rank === 'Stlv Geschäftsführung') {
+                document.getElementById('admin-menu').classList.remove('hidden');
             }
-        }
 
-        function updateMyStatus(val) {
-            const badge = document.getElementById('my-status-badge');
-            badge.className = "status-pill st-" + val;
-            badge.innerText = val.toUpperCase();
-            document.getElementById('set-my-status').value = val;
-            addSystemLog(`${currentUser.name} Status: ${val}`);
-            renderDispatch();
-        }
+            // Stats
+            document.getElementById('stat-rides-open').innerText = state.rides.filter(r => r.status === 'Offen').length;
+            document.getElementById('stat-staff-online').innerText = state.users.filter(u => u.status !== 'offline').length;
+            document.getElementById('stat-staff-total').innerText = state.users.length;
 
-        // --- DISPATCH ---
-        function renderDispatch() {
-            // Staff List in Dispatch
-            const staffList = document.getElementById('dispatch-staff-list');
-            staffList.innerHTML = users.filter(u => !u.archived).map(u => `
-                <div class="glass p-4 rounded-2xl flex items-center justify-between border-l-4 ${u.name === currentUser.name ? 'border-taxi-yellow' : 'border-transparent'}">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center font-bold text-[10px]">${u.icon}</div>
-                        <span class="text-sm font-bold">${u.name}</span>
+            // Activity Feed
+            const miniLog = document.getElementById('mini-audit-log');
+            miniLog.innerHTML = state.audit.slice(-8).reverse().map(log => `
+                <div class="flex gap-4 text-[11px] items-start group">
+                    <span class="mono text-gray-600 mt-0.5">${log.time}</span>
+                    <div class="flex-grow">
+                        <span class="text-white font-bold">${log.user}:</span>
+                        <span class="text-gray-500 group-hover:text-gray-300 transition">${log.msg}</span>
                     </div>
-                    <span class="status-pill st-pause text-[9px]">Standby</span>
                 </div>
             `).join('');
 
-            // Rides in Dispatch
-            const ridesTable = document.getElementById('dispatch-rides-table');
-            const activeRides = rides.filter(r => r.status !== 'done' && r.status !== 'storno');
-            ridesTable.innerHTML = activeRides.length ? activeRides.map(r => `
+            // Achievements
+            const achBox = document.getElementById('user-achievements');
+            achBox.innerHTML = '';
+            if (currentUser.rides >= 100) achBox.innerHTML += `<div title="Meisterfahrer" class="w-10 h-10 bg-yellow-400 rounded-xl flex items-center justify-center text-black shadow-lg"><i data-lucide="crown" class="w-5"></i></div>`;
+            if (currentUser.points >= 2000) achBox.innerHTML += `<div title="Großverdiener" class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white shadow-lg"><i data-lucide="gem" class="w-5"></i></div>`;
+            achBox.innerHTML += `<div title="System-Mitglied" class="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center text-white shadow-lg"><i data-lucide="verified" class="w-5"></i></div>`;
+
+            updateSystemWarnings();
+            renderChart();
+            lucide.createIcons();
+        }
+
+        function updateSystemWarnings() {
+            const container = document.getElementById('system-alerts-container');
+            container.innerHTML = '';
+            
+            const openRides = state.rides.filter(r => r.status === 'Offen').length;
+            if (openRides > 3) {
+                container.innerHTML += `
+                    <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl flex items-center gap-3 animate-pulse">
+                        <i data-lucide="alert-circle" class="text-red-500 w-5"></i>
+                        <div>
+                            <p class="text-[10px] font-black text-red-500 uppercase">Hohe Auslastung</p>
+                            <p class="text-[11px] text-gray-300">${openRides} offene Fahrten ohne Zuweisung!</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const activeDispatch = state.dispatcher;
+            if (!activeDispatch) {
+                container.innerHTML += `
+                    <div class="bg-orange-500/10 border border-orange-500/20 p-4 rounded-2xl flex items-center gap-3">
+                        <i data-lucide="radio" class="text-orange-500 w-5"></i>
+                        <div>
+                            <p class="text-[10px] font-black text-orange-500 uppercase">Funkstille</p>
+                            <p class="text-[11px] text-gray-300">Kein Dispatcher im Dienst. Einheiten sind auf sich gestellt.</p>
+                        </div>
+                    </div>
+                `;
+            }
+            lucide.createIcons();
+        }
+
+        // --- DISPATCH LOGIC ---
+        function renderDispatch() {
+            // Units
+            const unitBox = document.getElementById('dispatch-units');
+            unitBox.innerHTML = state.users.map(u => `
+                <div class="glass-card p-5 flex items-center justify-between border-l-4 ${getStatusColor(u.status)}">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center font-black text-xs">${u.icon}</div>
+                        <div>
+                            <p class="text-xs font-bold">${u.name}</p>
+                            <p class="text-[9px] text-gray-500 uppercase font-bold">${u.rank}</p>
+                        </div>
+                    </div>
+                    <span class="text-[9px] font-black uppercase px-2 py-1 rounded-md bg-white/5">${u.status}</span>
+                </div>
+            `).join('');
+
+            // Missions
+            const table = document.getElementById('dispatch-table-body');
+            const openMissions = state.rides.filter(r => r.status !== 'Abgeschlossen');
+            
+            table.innerHTML = openMissions.length ? openMissions.map(r => `
                 <tr class="group hover:bg-white/5 transition">
+                    <td class="p-6 mono text-xs text-gray-500">${r.time}</td>
                     <td class="p-6">
-                        <div class="font-bold text-sm">${r.start}</div>
-                        <div class="text-[10px] text-gray-500 mono uppercase tracking-widest">➔ ${r.end}</div>
+                        <p class="text-sm font-bold text-white">${r.start} ➔ ${r.end}</p>
+                        <p class="text-[10px] text-gray-500 uppercase font-bold">${r.client}</p>
                     </td>
-                    <td class="p-6 text-sm">${r.client}</td>
-                    <td class="p-6 text-sm font-black taxi-yellow italic">${r.driver || '---'}</td>
-                    <td class="p-6"><span class="status-pill st-${r.status === 'offen' ? 'besetzt' : 'weg'}">${r.status}</span></td>
+                    <td class="p-6">
+                        <span class="text-[10px] font-black uppercase px-2 py-1 rounded bg-white/5 border border-white/5">${r.type}</span>
+                    </td>
+                    <td class="p-6">
+                        <span class="text-xs font-bold ${r.driver ? 'text-taxi-yellow' : 'text-red-500 italic'}">${r.driver || 'Nicht zugewiesen'}</span>
+                    </td>
+                    <td class="p-6">
+                        <span class="rank-badge ${r.status === 'Offen' ? 'bg-red-500/20 text-red-500' : 'bg-blue-500/20 text-blue-500'}">${r.status}</span>
+                    </td>
                     <td class="p-6 text-right">
-                        <div class="flex justify-end gap-2">
-                            <button onclick="updateRideStatus(${r.id}, 'done')" class="p-2 hover:bg-green-500/20 text-green-500 rounded-lg transition"><i data-lucide="check-circle-2" class="w-4"></i></button>
-                            <button onclick="deleteRide(${r.id})" class="p-2 hover:bg-red-500/20 text-red-500 rounded-lg transition"><i data-lucide="trash-2" class="w-4"></i></button>
+                        ${r.status === 'Offen' ? 
+                            `<button onclick="assignMission(${r.id})" class="bg-white/5 hover:bg-white/10 p-2 rounded-xl transition"><i data-lucide="user-check" class="w-4 h-4"></i></button>` :
+                            `<button onclick="completeMission(${r.id})" class="text-green-500 hover:scale-110 transition"><i data-lucide="check-circle-2" class="w-5 h-5"></i></button>`
+                        }
+                    </td>
+                </tr>
+            `).join('') : `<tr><td colspan="6" class="p-20 text-center text-gray-600 italic">Keine aktiven Aufträge im System...</td></tr>`;
+
+            document.getElementById('live-dispatch-badge').innerText = openMissions.length;
+            
+            // Dispatcher Status
+            document.getElementById('dispatcher-status').innerHTML = state.dispatcher ? 
+                `Leitstelle aktuell: <span class="text-green-500 font-black">${state.dispatcher}</span>` : 
+                `Leitstelle aktuell: <span class="text-red-500 font-black">Nicht besetzt</span>`;
+            
+            lucide.createIcons();
+        }
+
+        function getStatusColor(status) {
+            if (status === 'available') return 'border-green-500';
+            if (status === 'busy') return 'border-yellow-500';
+            if (status === 'offline') return 'border-white/10';
+            return 'border-blue-500';
+        }
+
+        function takeDispatchDuty() {
+            state.dispatcher = currentUser.name;
+            addAuditEntry("Hat die Leitstelle übernommen", "DISPATCH");
+            renderDispatch();
+            TOAST.fire({ icon: 'success', title: 'Du bist jetzt der aktive Dispatcher' });
+        }
+
+        function assignMission(rideId) {
+            const ride = state.rides.find(r => r.id === rideId);
+            Swal.fire({
+                title: 'Fahrer zuweisen',
+                input: 'select',
+                inputOptions: state.users.reduce((acc, curr) => ({...acc, [curr.name]: curr.name}), {}),
+                background: '#0d1117',
+                color: '#fff',
+                confirmButtonColor: '#facc15',
+                confirmButtonText: 'Zuweisen'
+            }).then(result => {
+                if (result.value) {
+                    ride.driver = result.value;
+                    ride.status = 'In Fahrt';
+                    addAuditEntry(`Auftrag #${rideId} an ${result.value} zugewiesen`, "DISPATCH");
+                    renderDispatch();
+                }
+            });
+        }
+
+        function completeMission(rideId) {
+            const ride = state.rides.find(r => r.id === rideId);
+            ride.status = 'Abgeschlossen';
+            addAuditEntry(`Auftrag von ${ride.client} erfolgreich beendet`, "SYSTEM");
+            renderDispatch();
+            TOAST.fire({ icon: 'success', title: 'Auftrag abgeschlossen' });
+        }
+
+        // --- RIDE ARCHIVE ---
+        function renderRideArchive() {
+            const query = document.getElementById('ride-search-filter').value.toLowerCase();
+            const body = document.getElementById('ride-archive-body');
+            
+            const filtered = state.rides.filter(r => 
+                r.driver?.toLowerCase().includes(query) || 
+                r.client.toLowerCase().includes(query) ||
+                r.end.toLowerCase().includes(query)
+            );
+
+            body.innerHTML = filtered.reverse().map(r => `
+                <tr class="hover:bg-white/5 transition border-b border-white/5">
+                    <td class="p-6">
+                        <p class="text-xs font-bold text-white">${r.date}</p>
+                        <p class="mono text-[10px] text-gray-500">${r.time}</p>
+                    </td>
+                    <td class="p-6">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-md bg-yellow-400/10 text-yellow-400 flex items-center justify-center text-[10px] font-black italic">DR</div>
+                            <span class="text-sm font-bold text-gray-300">${r.driver || 'N/A'}</span>
                         </div>
                     </td>
-                </tr>
-            `).join('') : '<tr><td colspan="5" class="p-10 text-center text-gray-600 italic">Keine aktiven Aufträge im System.</td></tr>';
-            lucide.createIcons();
-            document.getElementById('count-rides-open').innerText = rides.filter(r => r.status === 'offen').length;
-        }
-
-        function openRideModal() {
-            const sel = document.getElementById('r-driver');
-            sel.innerHTML = `<option value="">Kein Fahrer zugewiesen</option>` + users.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
-            document.getElementById('modal-ride').classList.remove('hidden');
-        }
-        function closeRideModal() { document.getElementById('modal-ride').classList.add('hidden'); }
-
-        function saveNewRide() {
-            const r = {
-                id: Date.now(),
-                start: document.getElementById('r-start').value,
-                end: document.getElementById('r-end').value,
-                client: document.getElementById('r-client').value,
-                driver: document.getElementById('r-driver').value,
-                status: 'offen',
-                time: new Date().toLocaleTimeString().slice(0,5),
-                date: new Date().toLocaleDateString()
-            };
-            if(!r.start || !r.client) return TOAST.fire({icon: 'warning', title: 'Daten unvollständig!'});
-            rides.push(r);
-            localStorage.setItem('txk_rides', JSON.stringify(rides));
-            closeRideModal();
-            renderDispatch();
-            addSystemLog(`Auftrag für ${r.client} erstellt`);
-            TOAST.fire({icon: 'success', title: 'Auftrag gespeichert'});
-        }
-
-        function updateRideStatus(id, stat) {
-            const r = rides.find(x => x.id === id);
-            if(r) {
-                r.status = stat;
-                localStorage.setItem('txk_rides', JSON.stringify(rides));
-                renderDispatch();
-                addSystemLog(`Auftrag ${id} Status -> ${stat}`);
-            }
-        }
-
-        function deleteRide(id) {
-            rides = rides.filter(r => r.id !== id);
-            localStorage.setItem('txk_rides', JSON.stringify(rides));
-            renderDispatch();
-        }
-
-        // --- ARCHIVE & HISTORY ---
-        function renderRidesTable() {
-            const term = document.getElementById('ride-search').value.toLowerCase();
-            const table = document.getElementById('full-rides-table');
-            const filtered = rides.filter(r => r.client.toLowerCase().includes(term) || r.driver.toLowerCase().includes(term));
-            
-            table.innerHTML = filtered.reverse().map(r => `
-                <tr class="hover:bg-white/5 transition">
-                    <td class="p-6 mono text-gray-500">#${r.id.toString().slice(-4)}</td>
-                    <td class="p-6">${r.date} <span class="text-[10px] text-gray-600">@ ${r.time}</span></td>
-                    <td class="p-6 font-bold text-xs uppercase">${r.start} ➔ ${r.end}</td>
-                    <td class="p-6">${r.client}</td>
-                    <td class="p-6 font-black taxi-yellow italic uppercase">${r.driver || 'Extern'}</td>
-                    <td class="p-6"><span class="status-pill st-${r.status === 'done' ? 'frei' : 'besetzt'}">${r.status}</span></td>
+                    <td class="p-6">
+                        <p class="text-xs font-black uppercase text-white">${r.start} <span class="text-taxi-yellow">➔</span> ${r.end}</p>
+                    </td>
+                    <td class="p-6 mono text-xs">${r.km || '0'} KM</td>
+                    <td class="p-6">
+                        <span class="text-[9px] font-black border border-white/10 px-2 py-1 rounded uppercase">${r.type}</span>
+                    </td>
+                    <td class="p-6 font-black text-sm text-green-500">${(r.km * 50).toLocaleString()} €</td>
+                    <td class="p-6 text-right">
+                        <button onclick="switchTab('billing')" class="text-gray-500 hover:text-white"><i data-lucide="receipt" class="w-4 h-4"></i></button>
+                    </td>
                 </tr>
             `).join('');
+            lucide.createIcons();
         }
 
-        function exportRidesToExcel() {
-            const ws = XLSX.utils.json_to_sheet(rides);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Fahrten");
-            XLSX.writeFile(wb, "TaxiKoeln_Fahrten.xlsx");
-        }
+        // --- BILLING LOGIC ---
+        function liveUpdateInvoice() {
+            const client = document.getElementById('bill-client').value || "MUSTER KUNDE";
+            const date = document.getElementById('bill-date').value || new Date().toLocaleDateString();
+            const select = document.getElementById('bill-type');
+            const base = parseInt(select.value);
+            const km = parseInt(document.getElementById('bill-km').value) || 0;
+            const mod = parseInt(document.getElementById('bill-modifier').value) || 0;
+            const typeName = select.options[select.selectedIndex].text.split('(')[0];
 
-        // --- BILLING CENTER ---
-        function updateInvoicePreview() {
-            const client = document.getElementById('inv-client').value || "MUSTERKUNDE / FIRMA";
-            const typeSel = document.getElementById('inv-type');
-            const typeLabel = typeSel.options[typeSel.selectedIndex].text.split('(')[0];
-            const base = parseInt(typeSel.value);
-            const extra = parseInt(document.getElementById('inv-extra').value) || 0;
-            const total = base + extra;
-            const invId = "TX-" + Date.now().toString().slice(-6);
-            const date = new Date().toLocaleDateString();
+            const subtotal = base + (km * 50);
+            const total = subtotal + (subtotal * (mod / 100));
 
-            document.getElementById('inv-num').value = invId;
-            document.getElementById('inv-date').value = date;
-
-            document.getElementById('digital-invoice').innerHTML = `
-                <div class="flex justify-between items-start border-b-2 border-black pb-8 mb-10">
+            document.getElementById('invoice-preview-container').innerHTML = `
+                <div class="flex justify-between items-start border-b-4 border-black pb-8 mb-10">
                     <div>
                         <h1 class="text-4xl font-black italic tracking-tighter">TAXI KÖLN</h1>
-                        <p class="text-[9px] uppercase tracking-widest font-bold text-gray-500">Premium Limousinen Service</p>
+                        <p class="text-[10px] uppercase font-bold text-gray-500 tracking-widest mt-1">Offizielles Transportdokument</p>
                     </div>
-                    <div class="text-right text-[10px] font-bold leading-tight">
-                        <p>Los Santos Central</p>
-                        <p>Vinewood Hills 102</p>
-                        <p>dispatch@taxi-koeln.ls</p>
+                    <div class="text-right text-[11px] font-bold leading-tight">
+                        <p>Betriebshof Köln-Süd</p>
+                        <p>Am Gleis 4 / Sektor 1</p>
+                        <p>LS, San Andreas</p>
                     </div>
-                </div>
-                
-                <div class="mb-12">
-                    <p class="text-[9px] uppercase text-gray-400 font-bold mb-2">Rechnungsempfänger:</p>
-                    <h3 class="text-2xl font-bold">${client.toUpperCase()}</h3>
                 </div>
 
-                <div class="grid grid-cols-2 gap-8 mb-12 text-[11px] font-bold">
-                    <div><span class="text-gray-400 uppercase mr-2">Rechnungsnummer:</span> ${invId}</div>
-                    <div class="text-right"><span class="text-gray-400 uppercase mr-2">Datum:</span> ${date}</div>
+                <div class="grid grid-cols-2 gap-10 mb-16">
+                    <div class="text-[12px]">
+                        <p class="text-gray-400 font-bold uppercase mb-2 tracking-widest">Rechnung für:</p>
+                        <h3 class="text-2xl font-black uppercase italic">${client}</h3>
+                    </div>
+                    <div class="text-right text-[12px]">
+                        <p class="mb-1"><strong>Datum:</strong> ${date}</p>
+                        <p class="mb-1"><strong>Rechnungs-Nr:</strong> TX-${Date.now().toString().slice(-6)}</p>
+                        <p><strong>Status:</strong> <span class="text-red-600 font-black">FÄLLIG</span></p>
+                    </div>
                 </div>
 
-                <table class="w-full text-left text-xs mb-12">
-                    <tr class="border-b border-gray-200">
-                        <th class="py-4 uppercase text-gray-400">Position / Dienstleistung</th>
-                        <th class="py-4 text-right uppercase text-gray-400">Betrag</th>
-                    </tr>
-                    <tr>
-                        <td class="py-6 font-bold uppercase">${typeLabel}</td>
-                        <td class="py-6 text-right font-mono">${base.toLocaleString()} €</td>
-                    </tr>
-                    <tr>
-                        <td class="py-6 font-bold uppercase">Zusatz (KM-Pauschale / Wartezeit)</td>
-                        <td class="py-6 text-right font-mono">${extra.toLocaleString()} €</td>
-                    </tr>
-                    <tr class="border-t-4 border-black font-black text-2xl">
-                        <td class="py-8">GESAMTBETRAG</td>
-                        <td class="py-8 text-right font-mono">${total.toLocaleString()} €</td>
-                    </tr>
+                <table class="w-full text-left text-[13px] mb-20 border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-gray-100">
+                            <th class="py-4 font-black uppercase text-gray-400 tracking-widest">Position / Service</th>
+                            <th class="py-4 text-right font-black uppercase text-gray-400 tracking-widest">Betrag</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="py-5 border-b border-gray-50 font-bold uppercase">${typeName}</td><td class="py-5 border-b border-gray-50 text-right font-mono">${base.toLocaleString()} €</td></tr>
+                        <tr><td class="py-5 border-b border-gray-50 font-bold uppercase">Distanz-Zuschlag (${km} KM)</td><td class="py-5 border-b border-gray-50 text-right font-mono">${(km * 50).toLocaleString()} €</td></tr>
+                        <tr class="text-gray-400"><td class="py-5 border-b border-gray-50 italic">Modifikator (${mod}%)</td><td class="py-5 border-b border-gray-50 text-right font-mono">${(subtotal * (mod/100)).toLocaleString()} €</td></tr>
+                        <tr class="bg-black text-white">
+                            <td class="p-6 font-black text-xl italic uppercase">Gesamtbetrag</td>
+                            <td class="p-6 text-right font-black text-2xl font-mono">${total.toLocaleString()} €</td>
+                        </tr>
+                    </tbody>
                 </table>
 
-                <div class="absolute bottom-12 left-12 right-12 text-center text-[9px] text-gray-400 border-t border-gray-100 pt-8">
-                    Vielen Dank für Ihre Fahrt. Bitte begleichen Sie den Betrag unmittelbar beim Fahrer oder via Überweisung.
+                <div class="text-[10px] text-gray-400 space-y-2 border-t border-gray-100 pt-6">
+                    <p><strong>Zahlungsfrist:</strong> Sofort nach Rechnungserhalt ohne Abzug.</p>
+                    <p>Der Gerichtsstand für alle Streitigkeiten aus diesem Vertrag ist Los Santos.</p>
+                    <div class="pt-10 flex justify-between">
+                        <div class="w-48 border-b border-black h-12 flex items-end text-[8px] uppercase font-bold text-gray-400">Unterschrift Fahrer</div>
+                        <div class="w-48 border-b border-black h-12 flex items-end text-[8px] uppercase font-bold text-gray-400">Unterschrift Kunde</div>
+                    </div>
                 </div>
             `;
         }
 
-        function saveAndGeneratePDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const client = document.getElementById('inv-client').value || "Kunde";
-            const base = parseInt(document.getElementById('inv-type').value);
-            const extra = parseInt(document.getElementById('inv-extra').value) || 0;
-            const id = document.getElementById('inv-num').value;
-
-            doc.setFillColor(250, 204, 21);
-            doc.rect(0, 0, 210, 15, 'F');
-            doc.setFont("courier", "bold");
-            doc.setFontSize(28);
-            doc.text("TAXI KOELN", 105, 40, {align: 'center'});
-            doc.setFontSize(10);
-            doc.text("RECHNUNGSBELEG", 105, 48, {align: 'center'});
+        function finaliseInvoice() {
+            const client = document.getElementById('bill-client').value;
+            if (!client) return TOAST.fire({ icon: 'error', title: 'Bitte Kunden angeben' });
             
-            doc.setFontSize(12);
-            doc.text(`RECHNUNG: ${id}`, 20, 70);
-            doc.text(`KUNDE: ${client}`, 20, 80);
-            doc.text(`DATUM: ${new Date().toLocaleDateString()}`, 20, 90);
-            
-            doc.line(20, 100, 190, 100);
-            doc.text("BESCHREIBUNG", 20, 115);
-            doc.text("BETRAG", 170, 115);
-            doc.line(20, 120, 190, 120);
-            
-            doc.text("BASIS-TARIF FAHRZEUG", 20, 135);
-            doc.text(`${base.toLocaleString()} EUR`, 170, 135);
-            doc.text("EXTRAS / KM / ZEIT", 20, 145);
-            doc.text(`${extra.toLocaleString()} EUR`, 170, 145);
-            
-            doc.setFontSize(18);
-            doc.text("TOTAL:", 20, 170);
-            doc.text(`${(base+extra).toLocaleString()} EUR`, 170, 170);
-            
-            doc.setFontSize(8);
-            doc.text("Dieses Dokument wurde digital erstellt und ist ohne Unterschrift gueltig.", 105, 280, {align: 'center'});
-            
-            doc.save(`TaxiKoeln_${id}_${client}.pdf`);
-            addSystemLog(`Rechnung ${id} für ${client} generiert`);
-            TOAST.fire({icon: 'success', title: 'PDF exportiert!'});
-        }
-
-        // --- STATS & CHARTS ---
-        let chartStatus = null;
-        let chartActivity = null;
-        let chartDrivers = null;
-
-        function renderCharts() {
-            const ctx1 = document.getElementById('chart-status').getContext('2d');
-            const ctx2 = document.getElementById('chart-activity').getContext('2d');
-            const ctx3 = document.getElementById('chart-drivers').getContext('2d');
-
-            if(chartStatus) chartStatus.destroy();
-            if(chartActivity) chartActivity.destroy();
-            if(chartDrivers) chartDrivers.destroy();
-
-            chartStatus = new Chart(ctx1, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Erledigt', 'Offen', 'In Fahrt'],
-                    datasets: [{
-                        data: [
-                            rides.filter(r => r.status === 'done').length,
-                            rides.filter(r => r.status === 'offen').length,
-                            rides.filter(r => r.status === 'fahrt').length
-                        ],
-                        backgroundColor: ['#22c55e', '#facc15', '#3b82f6'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { cutout: '80%', plugins: { legend: { position: 'bottom', labels: { color: '#64748b', font: { size: 10 } } } } }
-            });
-
-            chartActivity = new Chart(ctx2, {
-                type: 'line',
-                data: {
-                    labels: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
-                    datasets: [{
-                        label: 'Fahrten',
-                        data: [12, 19, 15, 25, 32, 45, 38],
-                        borderColor: '#facc15',
-                        tension: 0.4,
-                        fill: true,
-                        backgroundColor: 'rgba(250, 204, 21, 0.1)'
-                    }]
-                },
-                options: { scales: { y: { display: false }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
-            });
-
-            const driversData = users.map(u => ({ name: u.name, count: rides.filter(r => r.driver === u.name).length }));
-            chartDrivers = new Chart(ctx3, {
-                type: 'bar',
-                data: {
-                    labels: driversData.map(d => d.name),
-                    datasets: [{
-                        data: driversData.map(d => d.count),
-                        backgroundColor: '#facc15'
-                    }]
-                },
-                options: { indexAxis: 'y', plugins: { legend: { display: false } } }
-            });
-        }
-
-        // --- STAFF & ADMIN ---
-        function renderStaff() {
-            const grid = document.getElementById('staff-grid');
-            grid.innerHTML = users.filter(u => !u.archived).map(u => `
-                <div class="glass p-10 rounded-[3rem] text-center border-b-8 border-transparent hover:border-taxi-yellow transition duration-500">
-                    <div class="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center text-3xl font-black taxi-yellow mx-auto mb-6 shadow-xl">${u.icon}</div>
-                    <h4 class="text-xl font-black italic uppercase tracking-tighter">${u.name}</h4>
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">${u.rank}</p>
-                    <div class="mt-8 pt-8 border-t border-white/5 flex justify-between text-xs">
-                        <div><p class="font-black text-white">${rides.filter(r => r.driver === u.name).length}</p><p class="text-gray-600 uppercase text-[8px]">Fahrten</p></div>
-                        <div><p class="font-black text-green-500">Aktiv</p><p class="text-gray-600 uppercase text-[8px]">Status</p></div>
-                        <div><p class="font-black text-white">100%</p><p class="text-gray-600 uppercase text-[8px]">Rating</p></div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderAdmin() {
-            const archList = document.getElementById('admin-archive-list');
-            const archUsers = users.filter(u => u.archived);
-            archList.innerHTML = archUsers.length ? archUsers.map(u => `
-                <div class="flex justify-between items-center p-4 bg-black/40 rounded-xl border border-white/5">
-                    <span class="text-sm font-bold text-gray-500">${u.name} (${u.rank})</span>
-                    <button onclick="adminRestoreUser('${u.name}')" class="text-[10px] font-black text-green-500 uppercase">Wiederherstellen</button>
-                </div>
-            `).join('') : '<p class="text-xs text-gray-600 italic">Keine archivierten Mitarbeiter gefunden.</p>';
-        }
-
-        function adminCreateAccount() {
-            const n = document.getElementById('adm-new-user').value;
-            const p = document.getElementById('adm-new-pw').value;
-            const r = document.getElementById('adm-new-rank').value;
-            if(!n || !p) return;
-            users.push({ name: n, pw: p, rank: r, icon: n.split(' ').map(x => x[0]).join(''), archived: false });
-            localStorage.setItem('txk_users', JSON.stringify(users));
-            renderAdmin();
-            renderStaff();
-            TOAST.fire({icon: 'success', title: 'Account erstellt'});
-        }
-
-        function adminRestoreUser(name) {
-            const u = users.find(x => x.name === name);
-            if(u) u.archived = false;
-            localStorage.setItem('txk_users', JSON.stringify(users));
-            renderAdmin();
-            renderStaff();
-        }
-
-        // --- FORUM ---
-        function openForumModal() { document.getElementById('modal-forum').classList.remove('hidden'); }
-        function closeForumModal() { document.getElementById('modal-forum').classList.add('hidden'); }
-
-        function submitForumPost() {
-            const p = {
+            const doc = {
                 id: Date.now(),
-                author: currentUser.name,
-                title: document.getElementById('f-title').value,
-                text: document.getElementById('f-text').value,
-                type: document.getElementById('f-type').value,
-                stars: document.getElementById('f-stars').value,
-                time: new Date().toLocaleString(),
-                comments: []
+                type: 'Rechnung',
+                client: client,
+                date: new Date().toLocaleDateString(),
+                tags: ['Finance', 'Invoiced'],
+                size: '2.4 MB'
             };
-            if(!p.title || !p.text) return;
-            forumPosts.push(p);
-            localStorage.setItem('txk_forum', JSON.stringify(forumPosts));
-            closeForumModal();
-            renderForum();
-            TOAST.fire({icon: 'success', title: 'Beitrag geteilt'});
+            state.docs.push(doc);
+            addAuditEntry(`Rechnung erstellt für ${client}`, "FINANCE");
+            saveState();
+            TOAST.fire({ icon: 'success', title: 'Rechnung wurde archiviert' });
+            switchTab('docs');
         }
 
-        function renderForum() {
-            const list = document.getElementById('forum-list');
-            list.innerHTML = forumPosts.reverse().map(p => `
-                <div class="glass p-8 rounded-[2.5rem] border-l-4 ${p.type === 'fehler' ? 'border-red-500' : 'border-taxi-yellow'}">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-[10px] font-black uppercase tracking-widest ${p.type === 'fehler' ? 'text-red-500' : 'taxi-yellow'}">${p.type}</span>
-                        <div class="text-yellow-500 text-xs">${"⭐".repeat(p.stars)}</div>
+        // --- DOCS LOGIC ---
+        function renderDocumentList() {
+            const query = document.getElementById('doc-search').value.toLowerCase();
+            const grid = document.getElementById('document-grid');
+            
+            const filtered = state.docs.filter(d => 
+                (activeFilter === 'all' || d.type === activeFilter) &&
+                (d.client.toLowerCase().includes(query) || d.type.toLowerCase().includes(query))
+            );
+
+            grid.innerHTML = filtered.reverse().map(d => `
+                <div class="glass-card p-6 flex flex-col group hover:border-taxi-yellow transition">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-taxi-yellow group-hover:scale-110 transition">
+                            <i data-lucide="${d.type === 'Rechnung' ? 'receipt' : 'file-badge'}" class="w-6 h-6"></i>
+                        </div>
+                        <span class="text-[9px] font-black text-gray-600 uppercase tracking-widest">${d.date}</span>
                     </div>
-                    <h4 class="text-xl font-bold mb-2">${p.title}</h4>
-                    <p class="text-sm text-gray-400 mb-6">${p.text}</p>
-                    <div class="flex justify-between items-center text-[10px] font-bold text-gray-600 uppercase">
-                        <span>Von: ${p.author}</span>
-                        <span>${p.time}</span>
+                    <h4 class="font-black text-sm uppercase truncate">${d.type}</h4>
+                    <p class="text-xs text-gray-400 mt-1 italic">${d.client}</p>
+                    
+                    <div class="mt-8 flex gap-2">
+                        <button class="flex-grow bg-white/5 hover:bg-white/10 py-2.5 rounded-xl text-[10px] font-black uppercase transition">Open</button>
+                        <button onclick="deleteDoc(${d.id})" class="p-2.5 text-red-500/30 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </div>
                 </div>
             `).join('');
+            lucide.createIcons();
         }
 
-        // --- UTILS ---
-        function addSystemLog(msg) {
-            systemLogs.push({ time: new Date().toLocaleTimeString().slice(0,5), msg: msg });
-            localStorage.setItem('txk_logs', JSON.stringify(systemLogs));
-            renderDashboard();
+        function filterDocs(cat) {
+            activeFilter = cat;
+            renderDocumentList();
         }
 
-        // Init Clocks immediately
-        setInterval(() => {
-            const now = new Date();
-            document.querySelectorAll('.system-clock').forEach(c => c.innerText = now.toLocaleTimeString());
-        }, 1000);
-
-    </script>
-</body>
-</html>
+        // --- STAFF LOGIC ---
+        function renderStaffList() {
+            const grid = document.getElementById('staff-list-grid');
+            grid.innerHTML = state.users.map(u => `
+                <div class="glass-card p-10 relative group text-center">
+                    <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition flex gap-2">
+                        <button onclick="editStaff(${u.id})" class="p-2 text-gray-500 hover:text-white"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                    </div>
+                    <div class="w-24 h-24 bg-white/5 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-3xl font-black taxi
