@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Köln | OS 2.0 Management</title>
+    <title>Taxi Köln | Management</title>
     
     <link rel="icon" type="image/png" href="images/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -20,154 +20,78 @@
             --bg-sidebar: #000000;
             --border-color: #1f1f1f;
             --text-muted: #666;
-            
-            --status-frei: #00ff66;
-            --status-besetzt: #ff3333;
-            --status-pause: #ffaa00;
-            --status-ls: #0099ff;
         }
 
-        body { 
-            background-color: var(--bg-main); 
-            color: #efefef; 
-            font-family: 'Inter', sans-serif; 
-            margin: 0;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-        }
+        body { background-color: var(--bg-main); color: #efefef; font-family: 'Inter', sans-serif; margin: 0; height: 100vh; overflow: hidden; display: flex; }
 
-        /* --- LOGIN DESIGN --- */
-        #login-view {
-            position: fixed; inset: 0; z-index: 9999;
-            background: linear-gradient(135deg, #000 0%, #111 100%);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .login-box {
-            width: 100%; max-width: 400px; padding: 50px;
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 30px; text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        .login-input {
-            width: 100%; background: #1a1a1a; border: 1px solid #333;
-            padding: 15px; border-radius: 12px; color: white; margin-bottom: 15px;
-            transition: 0.3s;
-        }
-        .login-input:focus { border-color: var(--taxi-yellow); outline: none; box-shadow: 0 0 15px var(--taxi-yellow-glow); }
+        /* --- LOGIN --- */
+        #login-view { position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; align-items: center; justify-content: center; }
+        .login-box { width: 100%; max-width: 400px; padding: 40px; background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); text-align: center; }
+        .login-input { width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 12px; border-radius: 10px; color: white; margin-bottom: 10px; }
 
         /* --- SIDEBAR --- */
-        .sidebar {
-            width: 280px; background: var(--bg-sidebar);
-            border-right: 1px solid var(--border-color);
-            display: flex; flex-direction: column;
-        }
-        .sidebar-header { padding: 40px 30px; }
-        .logo-text { font-weight: 800; font-size: 1.4rem; letter-spacing: -1px; color: var(--taxi-yellow); }
+        .sidebar { width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        .nav-btn { display: flex; align-items: center; padding: 12px 20px; color: #888; text-decoration: none; border-radius: 10px; margin: 2px 15px; cursor: pointer; transition: 0.2s; }
+        .nav-btn:hover, .nav-btn.active { color: var(--taxi-yellow); background: #111; }
+        .nav-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; padding: 20px 0 5px 35px; }
+
+        /* --- CONTENT --- */
+        .content-area { flex-grow: 1; overflow-y: auto; padding: 40px; }
+        .glass-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
         
-        .nav-section { padding: 0 15px; margin-bottom: 30px; }
-        .nav-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; padding-left: 15px; margin-bottom: 10px; }
+        /* Rechner Styles Integration */
+        .rechner-container { background: #1e1e1e; border-radius: 12px; padding: 20px; color: white; }
+        .rechner-input { background: #2a2a2a; border: 1px solid #444; color: white; padding: 8px; border-radius: 5px; width: 100%; }
+        #invoice { background: white; color: black; padding: 30px; border-radius: 8px; margin-top: 20px; }
+
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .btn-yellow { background: var(--taxi-yellow); color: black; font-weight: bold; border: none; padding: 10px 20px; border-radius: 8px; }
         
-        .nav-btn {
-            display: flex; align-items: center; padding: 12px 15px;
-            color: #888; text-decoration: none; border-radius: 12px;
-            margin-bottom: 5px; transition: 0.2s; cursor: pointer;
-        }
-        .nav-btn i { font-size: 1.2rem; margin-right: 15px; }
-        .nav-btn:hover, .nav-btn.active { color: white; background: #111; }
-        .nav-btn.active { color: var(--taxi-yellow); background: var(--taxi-yellow-glow); }
-
-        /* --- MAIN CONTENT --- */
-        .content-area { flex-grow: 1; overflow-y: auto; padding: 50px; position: relative; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        
-        .stat-badge { background: #111; border: 1px solid #222; padding: 8px 20px; border-radius: 100px; display: flex; align-items: center; gap: 10px; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--status-frei); box-shadow: 0 0 10px var(--status-frei); }
-
-        /* --- CARDS & GRID --- */
-        .glass-card { 
-            background: var(--bg-card); border: 1px solid var(--border-color); 
-            border-radius: 24px; padding: 30px; height: 100%;
-            transition: 0.3s;
-        }
-        .glass-card:hover { border-color: #333; }
-        .card-title { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 20px; }
-
-        /* --- TIMER --- */
-        .timer-val { font-size: 3rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--taxi-yellow); }
-
-        /* --- LEITSTELLE UNITS --- */
-        .unit-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px; background: #080808; border-radius: 15px; margin-bottom: 10px;
-        }
-        .status-pill { padding: 4px 12px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
-
-        /* --- ANIMATIONS --- */
-        .fade-in { animation: fadeIn 0.5s ease forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .btn-yellow { background: var(--taxi-yellow); color: black; font-weight: 700; border-radius: 12px; border: none; padding: 12px 25px; transition: 0.3s; }
-        .btn-yellow:hover { transform: translateY(-2px); box-shadow: 0 5px 20px var(--taxi-yellow-glow); }
-        .btn-yellow:disabled { opacity: 0.3; transform: none; }
+        .fade-in { animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div id="login-view">
-        <div class="login-box fade-in">
-            <img src="images/logo.png" width="80" class="mb-4">
-            <h2 class="fw-bold mb-1">Taxi Köln</h2>
-            <p class="text-muted small mb-4">Management OS v2.0</p>
-            <input type="text" id="userInput" class="login-input" placeholder="Benutzername">
+        <div class="login-box">
+            <h3 class="fw-bold mb-4">TAXI KÖLN</h3>
+            <input type="text" id="userInput" class="login-input" placeholder="Name">
             <input type="password" id="passInput" class="login-input" placeholder="Passwort">
-            <button class="btn-yellow w-100" onclick="handleLogin()">SYSTEM STARTEN</button>
-            <div id="loginError" class="text-danger mt-3 small" style="display:none;">Zugriff verweigert.</div>
+            <button class="btn-yellow w-100 mt-3" onclick="handleLogin()">LOGIN</button>
+            <p id="loginError" class="text-danger mt-3 small" style="display:none;">Daten inkorrekt.</p>
         </div>
     </div>
 
-    <div id="app-area" style="display: none; width: 100%; display: flex;">
+    <div id="app-area" style="display: none; width: 100%;">
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-text">TAXI KÖLN</div>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-label">Zentrale</div>
-                <div class="nav-btn active" onclick="tab('dash', this)"><i class="bi bi-columns-gap"></i> Dashboard</div>
-                <div class="nav-btn" onclick="tab('calc', this)"><i class="bi bi-calculator"></i> Fahrtenrechner</div>
-                <div class="nav-btn" onclick="tab('ls', this)"><i class="bi bi-broadcast"></i> Leitstelle</div>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-label">Management</div>
-                <div class="nav-btn" onclick="tab('perso', this)"><i class="bi bi-person-lines-fill"></i> Personalakte</div>
-                <div class="nav-btn" onclick="tab('admin', this)"><i class="bi bi-shield-lock"></i> Admin Panel</div>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-label">Hilfe</div>
-                <div class="nav-btn" onclick="tab('supp', this)"><i class="bi bi-bug"></i> Support</div>
-                <div class="nav-btn" onclick="tab('patch', this)"><i class="bi bi-cpu"></i> Patchnotes</div>
-            </div>
+            <div class="p-4"><h4 class="fw-800 text-warning m-0">TAXI KÖLN</h4></div>
+            
+            <div class="nav-label">Zentrale</div>
+            <div class="nav-btn active" onclick="tab('dash', this)"><i class="bi bi-speedometer2 me-2"></i> Dashboard</div>
+            <div class="nav-btn" onclick="tab('calc', this)"><i class="bi bi-calculator me-2"></i> Fahrtenrechner</div>
+            <div class="nav-btn" onclick="tab('book', this)"><i class="bi bi-journal-text me-2"></i> Fahrtenbuch</div>
+            
+            <div class="nav-label">Management</div>
+            <div class="nav-btn" onclick="tab('perso', this)"><i class="bi bi-person-badge me-2"></i> Personalakte</div>
+            <div class="nav-btn" onclick="tab('admin', this)"><i class="bi bi-shield-lock me-2"></i> Admin Panel</div>
+            
+            <div class="nav-label">Sonstiges</div>
+            <div class="nav-btn" onclick="tab('supp', this)"><i class="bi bi-headset me-2"></i> Support</div>
+            <div class="nav-btn" onclick="tab('patch', this)"><i class="bi bi-sticky me-2"></i> Patchnotes</div>
 
             <div class="mt-auto p-4 border-top border-dark">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <div style="width: 40px; height: 40px; background: var(--taxi-yellow); border-radius: 10px; color: black; display: flex; align-items: center; justify-content: center; font-weight: 800;">CS</div>
-                    <div>
-                        <div class="small fw-bold" id="userNameSide">Chris Schreiner</div>
-                        <div class="small text-muted">Geschäftsführer</div>
-                    </div>
-                </div>
-                <button class="btn btn-dark btn-sm w-100" onclick="location.reload()">ABMELDEN</button>
+                <div class="small fw-bold" id="sideName">Name</div>
+                <div class="small text-muted" id="sideRank">Rang</div>
+                <button class="btn btn-link btn-sm p-0 text-danger text-decoration-none mt-2" onclick="location.reload()">Abmelden</button>
             </div>
         </aside>
 
         <main class="content-area">
-            <div class="top-bar">
-                <h2 class="fw-800 m-0" id="tab-title">Dashboard</h2>
-                <div class="stat-badge">
-                    <div class="status-dot" id="dot"></div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 id="tab-title">Dashboard</h2>
+                <div class="bg-dark px-3 py-2 rounded-pill border border-secondary">
+                    <span class="status-dot" id="dot" style="background: #00ff66;"></span>
                     <span id="status-text">Im Dienst</span>
                 </div>
             </div>
@@ -176,179 +100,331 @@
                 
                 <div id="tab-dash" class="fade-in">
                     <div class="row g-4">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="glass-card">
-                                <div class="card-title">Stempeluhr</div>
-                                <div class="timer-val" id="session-timer">00:00:00</div>
-                                <p class="text-muted small">Aktuelle Dienstsitzung</p>
-                                <hr class="border-dark my-4">
-                                <div class="row text-center">
-                                    <div class="col-6 border-end border-dark">
-                                        <div class="h4 m-0 fw-bold">14.2h</div>
-                                        <div class="small text-muted">Woche</div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="h4 m-0 fw-bold">124h</div>
-                                        <div class="small text-muted">Monat</div>
-                                    </div>
+                                <div class="text-muted small mb-2 uppercase">Aktuelle Sitzung</div>
+                                <div class="display-4 fw-bold text-warning mb-3" id="session-timer">00:00:00</div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-success flex-grow-1" id="start-btn" onclick="timerStart()">DIENST START</button>
+                                    <button class="btn btn-danger flex-grow-1" id="stop-btn" onclick="timerStop()" disabled>BEENDEN</button>
                                 </div>
-                                <div class="mt-5">
-                                    <button class="btn-yellow w-100 mb-3" id="start-btn" onclick="timerStart()">DIENST STARTEN</button>
-                                    <button class="btn btn-outline-danger w-100" id="stop-btn" onclick="timerStop()" disabled>DIENST BEENDEN</button>
+                                <div class="mt-4 pt-3 border-top border-dark">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted">Letzte Sitzung:</span>
+                                        <span id="last-session">00:00:00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-muted">Gesamte Dienstzeit:</span>
+                                        <span id="total-time">00:00:00</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-7">
+                        <div class="col-md-6">
                             <div class="glass-card">
-                                <div class="card-title">Schnell-Status</div>
-                                <div class="row g-3">
-                                    <div class="col-6"><button class="btn btn-dark w-100 py-3 border-success text-success" onclick="setStatus('Frei', '#00ff66')">FREI / FUNK</button></div>
-                                    <div class="col-6"><button class="btn btn-dark w-100 py-3 border-danger text-danger" onclick="setStatus('Besetzt', '#ff3333')">BESETZT</button></div>
-                                    <div class="col-6"><button class="btn btn-dark w-100 py-3 border-warning text-warning" onclick="setStatus('Pause', '#ffaa00')">PAUSE</button></div>
-                                    <div class="col-6"><button class="btn btn-dark w-100 py-3 border-primary text-primary" onclick="setStatus('Leitstelle', '#0099ff')">LEITSTELLE</button></div>
-                                </div>
-                                <div class="mt-4 p-4 bg-dark rounded-4">
-                                    <div class="card-title mb-2">Letzte Fahrt</div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span>Zentrale ➔ PD Köln</span>
-                                        <span class="text-warning fw-bold">12.500 €</span>
-                                    </div>
+                                <div class="text-muted small mb-3">Status setzen</div>
+                                <div class="row g-2">
+                                    <div class="col-6"><button class="btn btn-outline-success w-100" onclick="setStatus('Frei', '#00ff66')">FREI</button></div>
+                                    <div class="col-6"><button class="btn btn-outline-danger w-100" onclick="setStatus('Besetzt', '#ff3333')">BESETZT</button></div>
+                                    <div class="col-6"><button class="btn btn-outline-warning w-100" onclick="setStatus('Pause', '#ffaa00')">PAUSE</button></div>
+                                    <div class="col-6"><button class="btn btn-outline-info w-100" onclick="setStatus('Leitstelle', '#0099ff')">LEITSTELLE</button></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="tab-ls" class="fade-in" style="display:none;">
-                    <div class="row g-4">
-                        <div class="col-md-8">
-                            <div class="glass-card">
-                                <div class="card-title">Aktive Einheiten</div>
-                                <div class="unit-row">
-                                    <span><strong>[10-01]</strong> Chris Schreiner</span>
-                                    <span class="status-pill bg-success">FREI</span>
+                <div id="tab-calc" class="fade-in" style="display:none;">
+                    <div class="glass-card">
+                        <div class="no-print">
+                            <div class="mb-3">
+                                <label class="text-warning fw-bold">Name für Rechnung</label>
+                                <input type="text" id="calcUserName" class="rechner-input" readonly>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Fahrzeug</label>
+                                    <select id="car" class="rechner-input" onchange="calcPrice()">
+                                        <option value="s-klasse">Extended S-Klasse</option>
+                                        <option value="stretch">Stretch-Limousine</option>
+                                        <option value="patriot">Patriot Limousine</option>
+                                    </select>
                                 </div>
-                                <div class="unit-row">
-                                    <span><strong>[10-02]</strong> Marco Krause</span>
-                                    <span class="status-pill bg-danger">BESETZT</span>
+                                <div class="col-md-6">
+                                    <label>Modus</label>
+                                    <select id="type" class="rechner-input" onchange="calcPrice()">
+                                        <option value="0">Einfache Fahrt</option>
+                                        <option value="1">Hin- und Rückfahrt</option>
+                                        <option value="2">1 Stunde exklusiv</option>
+                                    </select>
                                 </div>
-                                <div class="unit-row">
-                                    <span><strong>[10-44]</strong> Julian Agrar</span>
-                                    <span class="status-pill bg-primary">LEITSTELLE</span>
+                                <div class="col-md-6">
+                                    <label>Zusatzzeit (15 Min Einheiten)</label>
+                                    <input type="number" id="extra-time" class="rechner-input" value="0" oninput="calcPrice()">
                                 </div>
+                                <div class="col-md-6">
+                                    <label>Zusatz-Stopps</label>
+                                    <input type="number" id="extra-stops" class="rechner-input" value="0" oninput="calcPrice()">
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <div class="form-check"><input type="checkbox" class="form-check-input" id="c-out" onchange="calcPrice()"> <label>Außerhalb Kerngebiet</label></div>
+                                <div class="form-check"><input type="checkbox" class="form-check-input" id="c-spontan" onchange="calcPrice()"> <label>Spontanbuchung (< 3 Std.)</label></div>
+                                <div class="form-check"><input type="checkbox" class="form-check-input" id="c-kolonne" onchange="calcPrice()"> <label>Kolonnenfahrt (+20%)</label></div>
+                            </div>
+                            <button class="btn-yellow w-100 mt-3" onclick="window.print()">RECHNUNG DRUCKEN</button>
+                        </div>
+
+                        <div id="invoice">
+                            <div class="d-flex justify-content-between border-bottom pb-2 mb-3">
+                                <strong>Taxi Köln</strong>
+                                <strong>RECHNUNG</strong>
+                            </div>
+                            <table class="table table-sm">
+                                <tbody id="invoice-items"></tbody>
+                            </table>
+                            <div class="text-end h4 mt-3">Gesamt: <span id="total-val">0</span> EUR</div>
+                            <div class="mt-3 small italic">Bearbeitet von: <span id="invoice-signer"></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-book" class="fade-in" style="display:none;">
+                    <div class="glass-card">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="small text-muted">Fahrer</label>
+                                <input type="text" id="book-driver" class="rechner-input" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-muted">Kilometer</label>
+                                <input type="number" id="book-km" class="rechner-input" placeholder="0">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-muted">Start</label>
+                                <input type="text" id="book-start" class="rechner-input" placeholder="Ort">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-muted">Ende</label>
+                                <input type="text" id="book-end" class="rechner-input" placeholder="Ort">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="small text-muted">Fahrt-Typ</label>
+                                <select id="book-type" class="rechner-input">
+                                    <option>Normale Fahrt (Kostenlos)</option>
+                                    <option>Helikopter (Premium)</option>
+                                    <option>Limo (Premium)</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="glass-card">
-                                <div class="card-title">Dispatching</div>
-                                <button class="btn btn-outline-warning w-100 mb-2">Globaler Funkspruch</button>
-                                <button class="btn btn-outline-light w-100 mb-2">Einheit zuweisen</button>
-                                <button class="btn btn-outline-danger w-100">Notfall-Alarm</button>
-                            </div>
+                        <button class="btn-yellow w-100 mt-3" onclick="addBookEntry()">EINTRAG SPEICHERN</button>
+                        
+                        <div class="mt-4">
+                            <div class="small text-muted mb-2">Letzte Fahrten</div>
+                            <div id="book-list"></div>
                         </div>
                     </div>
                 </div>
 
                 <div id="tab-perso" class="fade-in" style="display:none;">
                     <div class="glass-card">
-                        <div class="row">
-                            <div class="col-md-4 text-center border-end border-dark">
-                                <div style="width:150px; height:150px; background: #1a1a1a; border-radius: 30px; margin: 0 auto; display:flex; align-items:center; justify-content:center; font-size: 4rem;">👤</div>
-                                <h3 class="mt-3 mb-0" id="pers-name">Chris Schreiner</h3>
-                                <p class="text-warning">Geschäftsführer</p>
+                        <div class="row text-center align-items-center">
+                            <div class="col-md-4 border-end border-dark">
+                                <h2 id="p-name" class="fw-bold mb-0">--</h2>
+                                <p id="p-rank" class="text-warning">--</p>
                             </div>
-                            <div class="col-md-8 ps-md-5">
-                                <div class="card-title">Mitarbeiter Informationen</div>
-                                <div class="row g-4">
-                                    <div class="col-6">
-                                        <label class="text-muted small d-block">Mitarbeiter-ID</label>
-                                        <span class="fw-bold">TK-001</span>
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="text-muted small d-block">Einstellungsdatum</label>
-                                        <span class="fw-bold">01.01.2024</span>
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="text-muted small d-block">Fahrerlaubnis</label>
-                                        <span class="text-success fw-bold">Gültig ✓</span>
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="text-muted small d-block">Kontostand (Firmenanteil)</label>
-                                        <span class="text-warning fw-bold">450.000 €</span>
-                                    </div>
+                            <div class="col-md-8 text-start ps-4">
+                                <div class="row g-3">
+                                    <div class="col-4"><label class="text-muted d-block small">DN</label> <span id="p-dn" class="fw-bold">--</span></div>
+                                    <div class="col-4"><label class="text-muted d-block small">Fahrten</label> <span id="p-trips" class="fw-bold">0</span></div>
+                                    <div class="col-4"><label class="text-muted d-block small">Dienstzeit</label> <span id="p-total" class="fw-bold">00:00</span></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="tab-calc" style="display:none;" class="fade-in"><div class="glass-card"><h3>Rechner-Modul wird geladen...</h3></div></div>
-                <div id="tab-admin" style="display:none;" class="fade-in"><div class="glass-card text-danger"><h3>ZUGRIFF VERWEIGERT - ADMIN LEVEL ERFORDERLICH</h3></div></div>
-                <div id="tab-supp" style="display:none;" class="fade-in"><div class="glass-card"><h3>Support-Tickets folgen...</h3></div></div>
-                <div id="tab-patch" style="display:none;" class="fade-in"><div class="glass-card"><h3>OS 2.0 Update erfolgreich installiert.</h3></div></div>
+                <div id="tab-admin" class="fade-in" style="display:none;">
+                    <div class="glass-card">
+                        <h5>Mitarbeiter Verwaltung</h5>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover mt-3">
+                                <thead><tr><th>DN</th><th>Name</th><th>Rang</th><th>Rechte</th></tr></thead>
+                                <tbody>
+                                    <tr><td>01</td><td>Chris Schreiner</td><td>Geschäftsführung</td><td>Full Access</td></tr>
+                                    <tr><td>02</td><td>Marco Krause</td><td>Stlv Geschäftsführung</td><td>Full Access</td></tr>
+                                    <tr><td>28</td><td>Maverick Stone</td><td>Azubi</td><td>Standard</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-supp" class="fade-in" style="display:none;">
+                    <div class="glass-card">
+                        <div class="mb-4">
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLScjGyIFb2Z_di9xNqLpuoycT8OhpDXqRsD_WAP8hvxpo58p7w/viewform?usp=dialog" target="_blank" class="btn btn-outline-danger w-100 p-3 mb-2">FEHLER MELDEN</a>
+                            <a href="https://docs.google.com/forms/d/1AQbT_tArogRQJyUiRimHLSS3cg3TCeuu2TpZxk4hNks/edit" target="_blank" class="btn btn-outline-warning w-100 p-3">FEEDBACK GEBEN</a>
+                        </div>
+                        <div class="text-center p-3 bg-dark rounded border border-warning">
+                            <div class="small text-muted">Discord Kontakt</div>
+                            <div class="fw-bold">agrar.julian</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-patch" class="fade-in" style="display:none;">
+                    <div class="glass-card">
+                        <h6>Version 2.0.1</h6>
+                        <ul class="text-muted small">
+                            <li>Fahrtenbuch-Modul hinzugefügt</li>
+                            <li>Rechner-Logik aktualisiert</li>
+                            <li>Personalakten-Layout optimiert</li>
+                            <li>Bugfixes Stempeluhr</li>
+                        </ul>
+                    </div>
+                </div>
 
             </div>
         </main>
     </div>
 
     <script>
-        let seconds = 0;
-        let timer;
-        let currentU = "";
+        // DATA
+        const users = {
+            "Chris Schreiner": { pass: "Bka26r", dn: "01", rank: "Geschäftsführung", trips: 0, total: 0 },
+            "Marco Krause": { pass: "02", dn: "02", rank: "Stlv Geschäftsführung", trips: 0, total: 0 },
+            "Maverick Stone": { pass: "28", dn: "28", rank: "Azubi", trips: 0, total: 0 }
+        };
 
+        const config = {
+            's-klasse': { base: [12000, 22000, 30000], time: 8000, stop: 3000, out: 10000, minSpontan: 8000, minKol: 10000 },
+            'stretch':  { base: [22000, 40000, 50000], time: 12000, stop: 5000, out: 15000, minSpontan: 12000, minKol: 15000 },
+            'patriot':  { base: [35000, 50000, 60000], time: 15000, stop: 6000, out: 20000, minSpontan: 15000, minKol: 20000 }
+        };
+
+        let currentUser = null;
+        let seconds = 0;
+        let totalSeconds = 0;
+        let timer;
+
+        // LOGIN
         function handleLogin() {
             const u = document.getElementById('userInput').value;
             const p = document.getElementById('passInput').value;
-
-            if(u === "Chris Schreiner" && p === "Bka26r") {
-                currentU = u;
+            if(users[u] && users[u].pass === p) {
+                currentUser = users[u];
+                currentUser.name = u;
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('app-area').style.display = 'flex';
-                document.getElementById('userNameSide').innerText = u;
-                document.getElementById('pers-name').innerText = u;
+                
+                // Set UI
+                document.getElementById('sideName').innerText = u;
+                document.getElementById('sideRank').innerText = currentUser.rank;
+                document.getElementById('p-name').innerText = u;
+                document.getElementById('p-rank').innerText = currentUser.rank;
+                document.getElementById('p-dn').innerText = currentUser.dn;
+                document.getElementById('calcUserName').value = u;
+                document.getElementById('invoice-signer').innerText = u;
+                document.getElementById('book-driver').value = u;
+                calcPrice();
             } else {
                 document.getElementById('loginError').style.display = 'block';
             }
         }
 
+        // TABS
         function tab(id, el) {
-            // Hide all
-            const sections = ['dash', 'calc', 'ls', 'perso', 'admin', 'supp', 'patch'];
-            sections.forEach(s => document.getElementById('tab-' + s).style.display = 'none');
-            
-            // UI Update
+            const tabs = ['dash', 'calc', 'book', 'perso', 'admin', 'supp', 'patch'];
+            tabs.forEach(t => document.getElementById('tab-' + t).style.display = 'none');
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
-            
-            // Show new
             document.getElementById('tab-' + id).style.display = 'block';
             document.getElementById('tab-title').innerText = el.innerText.trim();
         }
 
+        // TIMER
         function timerStart() {
             document.getElementById('start-btn').disabled = true;
             document.getElementById('stop-btn').disabled = false;
             timer = setInterval(() => {
                 seconds++;
-                let h = Math.floor(seconds / 3600);
-                let m = Math.floor((seconds % 3600) / 60);
-                let s = seconds % 60;
-                document.getElementById('session-timer').innerText = 
-                    `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                document.getElementById('session-timer').innerText = formatTime(seconds);
             }, 1000);
         }
 
         function timerStop() {
             clearInterval(timer);
-            alert("Dienst beendet. Zeit wurde im System gespeichert.");
+            totalSeconds += seconds;
+            document.getElementById('last-session').innerText = formatTime(seconds);
+            document.getElementById('total-time').innerText = formatTime(totalSeconds);
+            document.getElementById('p-total').innerText = formatTime(totalSeconds);
+            seconds = 0;
+            document.getElementById('session-timer').innerText = "00:00:00";
             document.getElementById('start-btn').disabled = false;
             document.getElementById('stop-btn').disabled = true;
         }
 
-        function setStatus(txt, color) {
+        function formatTime(sec) {
+            let h = Math.floor(sec / 3600);
+            let m = Math.floor((sec % 3600) / 60);
+            let s = sec % 60;
+            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+
+        function setStatus(txt, col) {
             document.getElementById('status-text').innerText = txt;
-            document.getElementById('dot').style.background = color;
-            document.getElementById('dot').style.boxShadow = `0 0 10px ${color}`;
+            document.getElementById('dot').style.background = col;
+        }
+
+        // RECHNER LOGIK
+        function calcPrice() {
+            const car = document.getElementById('car').value;
+            const type = document.getElementById('type').value;
+            const exTime = parseInt(document.getElementById('extra-time').value) || 0;
+            const exStops = parseInt(document.getElementById('extra-stops').value) || 0;
+            const p = config[car];
+            
+            let total = p.base[type];
+            let html = `<tr><td>Grundpreis (${car})</td><td class="text-end">${total.toLocaleString()} €</td></tr>`;
+            
+            if(exTime > 0) {
+                let c = exTime * p.time; total += c;
+                html += `<tr><td>Zusatzzeit (${exTime}x)</td><td class="text-end">${c.toLocaleString()} €</td></tr>`;
+            }
+            if(exStops > 0) {
+                let c = exStops * p.stop; total += c;
+                html += `<tr><td>Stopps (${exStops}x)</td><td class="text-end">${c.toLocaleString()} €</td></tr>`;
+            }
+            if(document.getElementById('c-out').checked) {
+                total += p.out; html += `<tr><td>Außerhalb</td><td class="text-end">${p.out.toLocaleString()} €</td></tr>`;
+            }
+            
+            document.getElementById('invoice-items').innerHTML = html;
+            document.getElementById('total-val').innerText = total.toLocaleString();
+        }
+
+        // FAHRTENBUCH
+        function addBookEntry() {
+            const km = document.getElementById('book-km').value;
+            const start = document.getElementById('book-start').value;
+            const end = document.getElementById('book-end').value;
+            const type = document.getElementById('book-type').value;
+
+            if(!km || !start || !end) return alert("Bitte alle Felder ausfüllen!");
+
+            const entry = document.createElement('div');
+            entry.className = 'bg-dark p-2 mb-2 rounded border-start border-warning small';
+            entry.innerHTML = `<strong>${type}</strong>: ${start} ➔ ${end} (${km}km)`;
+            document.getElementById('book-list').prepend(entry);
+            
+            currentUser.trips++;
+            document.getElementById('p-trips').innerText = currentUser.trips;
+            
+            // Reset fields
+            document.getElementById('book-km').value = "";
+            document.getElementById('book-start').value = "";
+            document.getElementById('book-end').value = "";
         }
     </script>
 </body>
