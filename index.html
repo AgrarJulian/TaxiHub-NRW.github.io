@@ -1,1103 +1,1364 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxi Köln | Enterprise Dispatch v6.0</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --taxi-yellow: #facc15;
-            --taxi-yellow-glow: rgba(250, 204, 21, 0.35);
-            --bg-dark: #080a0f;
-            --card-bg: rgba(17, 24, 39, 0.7);
-            --border: rgba(255, 255, 255, 0.06);
-            --text-muted: #94a3b8;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-dark);
-            color: #f8fafc;
-            overflow: hidden;
-        }
-
-        .mono { font-family: 'JetBrains Mono', monospace; }
-        
-        /* Glassmorphism Evolution */
-        .glass {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
-        }
-
-        .glass-hover:hover {
-            background: rgba(31, 41, 55, 0.8);
-            border-color: rgba(250, 204, 21, 0.3);
-            transform: translateY(-2px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Video Intro Styles */
-        #intro-container {
-            position: fixed;
-            inset: 0;
-            z-index: 99999;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #intro-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .progress-bar-container {
-            position: absolute;
-            bottom: 15%;
-            width: 320px;
-            height: 2px;
-            background: rgba(255,255,255,0.1);
-        }
-
-        #intro-progress {
-            height: 100%;
-            background: var(--taxi-yellow);
-            width: 0%;
-            box-shadow: 0 0 15px var(--taxi-yellow);
-            transition: width 12s linear;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--taxi-yellow); }
-
-        /* Animations */
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-slide { animation: slideIn 0.5s ease-out forwards; }
-        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
-
-        /* Status Pills */
-        .badge {
-            padding: 4px 10px;
-            border-radius: 5px;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .bg-frei { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
-        .bg-besetzt { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
-        .bg-pause { background: rgba(168, 85, 247, 0.1); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.2); }
-        .bg-yellow { background: rgba(250, 204, 21, 0.1); color: var(--taxi-yellow); border: 1px solid var(--taxi-yellow); }
-
-        /* Sidebar Styling */
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 18px;
-            margin: 4px 16px;
-            border-radius: 12px;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .nav-item:hover {
-            color: white;
-            background: rgba(255,255,255,0.03);
-        }
-
-        .nav-item.active {
-            background: var(--taxi-yellow);
-            color: #000;
-            box-shadow: 0 8px 20px var(--taxi-yellow-glow);
-        }
-
-        /* Sidebar Badge */
-        .notif-dot {
-            width: 8px;
-            height: 8px;
-            background: #ef4444;
-            border-radius: 50%;
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            border: 2px solid var(--bg-dark);
-        }
-
-        /* Invoices Preview */
-        .invoice-paper {
-            background: white;
-            color: #1e293b;
-            padding: 60px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            min-height: 1000px;
-            position: relative;
-        }
-
-        /* Chat Styles */
-        .chat-container {
-            height: 350px;
-            overflow-y: auto;
-            background: rgba(0,0,0,0.2);
-            border-radius: 15px;
-            padding: 15px;
-        }
-
-        .chat-msg {
-            margin-bottom: 10px;
-            padding: 10px 14px;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.05);
-            max-width: 85%;
-        }
-
-        .chat-msg.mine {
-            background: var(--taxi-yellow);
-            color: black;
-            margin-left: auto;
-        }
-
-        /* Dashboard Pulse */
-        .pulse-online {
-            width: 10px;
-            height: 10px;
-            background: #22c55e;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #22c55e;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-        }
-
-        /* Landing Page Hero */
-        .hero-gradient {
-            background: radial-gradient(circle at top right, rgba(250, 204, 21, 0.08), transparent);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taxi Köln | HQ v8.0</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--y:#facc15;--bg:#05070d;--card:rgba(13,18,30,0.9);--border:rgba(255,255,255,0.07);--muted:#64748b;--green:#22c55e;--red:#ef4444;--blue:#3b82f6}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:#e2e8f0;overflow:hidden}
+.bebas{font-family:'Bebas Neue',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#1e293b;border-radius:10px}
+.glass{background:var(--card);backdrop-filter:blur(24px);border:1px solid var(--border)}
+.badge{padding:3px 9px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;display:inline-flex;align-items:center;gap:4px}
+.b-green{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.25)}
+.b-red{background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.25)}
+.b-yellow{background:rgba(250,204,21,.12);color:var(--y);border:1px solid rgba(250,204,21,.3)}
+.b-blue{background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.25)}
+.b-purple{background:rgba(168,85,247,.12);color:#a855f7;border:1px solid rgba(168,85,247,.25)}
+.b-gray{background:rgba(100,116,139,.1);color:#94a3b8;border:1px solid rgba(100,116,139,.2)}
+.b-orange{background:rgba(249,115,22,.12);color:#fb923c;border:1px solid rgba(249,115,22,.25)}
+.nav-item{display:flex;align-items:center;padding:10px 14px;margin:2px 10px;border-radius:10px;color:var(--muted);font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;gap:12px}
+.nav-item:hover{color:#e2e8f0;background:rgba(255,255,255,.03)}
+.nav-item.active{background:var(--y);color:#000}
+.nav-item i{width:15px;height:15px;flex-shrink:0}
+@keyframes pulse{0%{transform:scale(.95);box-shadow:0 0 0 0 rgba(34,197,94,.7)}70%{transform:scale(1);box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{transform:scale(.95);box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.pulse{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .35s ease-out forwards}
+.tab-view{display:none}.tab-view.active{display:block}
+.modal-bg{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;pointer-events:none}
+.modal-bg.open{opacity:1;pointer-events:all}
+.modal-box{background:#090d18;border:1px solid rgba(255,255,255,.09);border-radius:22px;width:100%;padding:32px;transform:scale(.96);transition:transform .2s;max-height:92vh;overflow-y:auto}
+.modal-bg.open .modal-box{transform:scale(1)}
+.inp{width:100%;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 15px;font-size:13px;color:#e2e8f0;outline:none;font-family:'Space Grotesk',sans-serif;transition:border .2s}
+.inp:focus{border-color:rgba(250,204,21,.5)}
+.inp option{background:#0a0e1a}
+label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);display:block;margin-bottom:5px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;transition:all .3s}
+.kpi:hover{border-color:rgba(250,204,21,.2);transform:translateY(-2px)}
+.btn-y{background:var(--y);color:#000;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-y:hover{transform:scale(1.03)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:10px;font-weight:600;font-size:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{padding:11px 15px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);border-bottom:1px solid var(--border)}
+.data-table td{padding:13px 15px;border-bottom:1px solid rgba(255,255,255,.03);font-size:12px}
+.data-table tr:hover td{background:rgba(255,255,255,.015)}
+.chat-wrap{overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.chat-msg{padding:9px 13px;border-radius:13px;max-width:84%;background:rgba(255,255,255,.05);font-size:11px;line-height:1.5}
+.chat-msg.mine{background:var(--y);color:#000;margin-left:auto;border-radius:13px 13px 4px 13px}
+.chat-msg:not(.mine){border-radius:13px 13px 13px 4px}
+.chat-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;opacity:.65}
+.sys-online{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.sys-warn{background:rgba(250,204,21,.1);color:var(--y);border:1px solid rgba(250,204,21,.2)}
+.sys-error{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.staff-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;cursor:pointer;transition:all .3s;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.staff-card:hover{border-color:rgba(250,204,21,.3);transform:translateY(-3px)}
+.avatar{display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;flex-shrink:0;border-radius:12px}
+.ride-row-mine{background:rgba(250,204,21,.04);border-left:2px solid var(--y)}
+.cb-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;font-size:12px;font-weight:600}
+.cb-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--y);cursor:pointer}
+@media print{body>*:not(#print-area){display:none!important}#print-area{display:block!important}}
+</style>
 </head>
-<body class="bg-bg-dark">
+<body>
 
-    <div id="intro-container">
-        <video id="intro-video" muted playsinline>
-            <source src="images/GTA_Style_Taxi_Chase_A_black_limousine_with_gold_rims_and_neon_yellow_4ziL6-2u.mp4" type="video/mp4">
-        </video>
-        <div class="progress-bar-container">
-            <div id="intro-progress"></div>
+<!-- ===== LANDING ===== -->
+<div id="landing" style="position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column">
+  <nav style="display:flex;justify-content:space-between;align-items:center;padding:20px 40px;border-bottom:1px solid var(--border)">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:34px;height:34px;background:var(--y);border-radius:10px;display:flex;align-items:center;justify-content:center">
+        <i data-lucide="zap" style="width:16px;height:16px;color:#000"></i>
+      </div>
+      <span class="bebas" style="font-size:22px;letter-spacing:.05em">Taxi <span style="color:var(--y)">Köln</span></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px" class="sys-online">
+        <div class="pulse" style="width:6px;height:6px"></div>
+        <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em">System Online</span>
+      </div>
+      <button onclick="openLogin()" class="btn-y" style="padding:10px 24px">Portal Login</button>
+    </div>
+  </nav>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:40px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(250,204,21,.06),transparent 70%);border-radius:50%;pointer-events:none"></div>
+    <div style="text-align:center;position:relative;z-index:1;max-width:640px">
+      <div class="badge b-yellow" style="margin-bottom:18px;padding:6px 14px;font-size:10px">Enterprise Dispatch v8.0</div>
+      <h1 class="bebas" style="font-size:clamp(64px,11vw,128px);line-height:.88;letter-spacing:.02em;margin-bottom:18px">Leitstellen<br><span style="color:var(--y)">Management</span></h1>
+      <p style="color:var(--muted);font-size:15px;max-width:440px;margin:0 auto 32px;line-height:1.6">Professionelle Taxi-Verwaltung — Echtzeit-Dispatch, Abrechnung & Personal.</p>
+      <button onclick="openLogin()" class="btn-y" style="padding:13px 40px;font-size:15px;border-radius:12px">SYSTEM STARTEN</button>
+    </div>
+  </div>
+  <footer style="padding:16px 40px;border-top:1px solid var(--border);text-align:center">
+    <p style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.1em">© 2026 Taxi Köln Enterprise — All Rights Reserved</p>
+  </footer>
+</div>
+
+<!-- ===== LOGIN MODAL ===== -->
+<div id="login-modal" class="modal-bg">
+  <div class="modal-box" style="max-width:420px">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="width:54px;height:54px;background:var(--y);border-radius:14px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center">
+        <i data-lucide="shield-check" style="width:26px;height:26px;color:#000"></i>
+      </div>
+      <h2 class="bebas" style="font-size:28px;letter-spacing:.04em">Mitarbeiter <span style="color:var(--y)">Login</span></h2>
+      <p style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.15em;margin-top:4px">Secure Access Point</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div><label class="lbl">Name</label><input type="text" id="log-name" placeholder="Vor- und Nachname" class="inp"></div>
+      <div><label class="lbl">Passwort</label><input type="password" id="log-pw" placeholder="••••••••" class="inp" onkeydown="if(event.key==='Enter')handleLogin()"></div>
+      <button onclick="handleLogin()" class="btn-y" style="width:100%;padding:13px;justify-content:center;font-size:14px;border-radius:11px;margin-top:6px">TERMINAL ÖFFNEN</button>
+      <button onclick="closeModal('login-modal')" class="btn-ghost" style="width:100%;padding:10px">Abbrechen</button>
+    </div>
+    <div style="margin-top:18px;padding:13px;background:rgba(250,204,21,.05);border:1px solid rgba(250,204,21,.15);border-radius:11px">
+      <p style="font-size:10px;color:var(--y);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px">Demo Zugänge</p>
+      <p style="font-size:11px;color:var(--muted)" class="mono">Chris Schreiner / Bka26a</p>
+      <p style="font-size:11px;color:var(--muted)" class="mono">Marco Krause / Bka26b</p>
+      <p style="font-size:11px;color:var(--muted)" class="mono">Maverick Stone / Bka26r</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app" style="display:none;height:100vh;flex-direction:row">
+
+  <!-- SIDEBAR -->
+  <aside style="width:252px;flex-shrink:0;background:#060810;border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:50">
+    <div style="padding:18px 14px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <div style="width:32px;height:32px;background:var(--y);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <i data-lucide="radio" style="width:15px;height:15px;color:#000"></i>
+      </div>
+      <div>
+        <div class="bebas" style="font-size:19px;letter-spacing:.05em;line-height:1">Taxi <span style="color:var(--y)">HQ</span></div>
+        <div class="mono" style="font-size:8px;color:var(--muted);font-weight:700;letter-spacing:.08em">v8.0 ENTERPRISE</div>
+      </div>
+    </div>
+    <nav id="sidebar-nav" style="flex:1;padding:10px 0;overflow-y:auto">
+      <div style="padding:0 10px 5px 14px;margin-top:8px"><span style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em">Main Console</span></div>
+      <div class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')"><i data-lucide="layout-dashboard"></i>Dashboard</div>
+      <div class="nav-item" id="nav-dispatch" onclick="switchTab('dispatch')"><i data-lucide="radio-tower"></i>Leitstelle</div>
+      <div class="nav-item" id="nav-myrides" onclick="switchTab('myrides')"><i data-lucide="navigation-2"></i>Meine Fahrten <span id="badge-myrides" style="display:none;background:#ef4444;color:#fff;border-radius:50%;width:16px;height:16px;font-size:8px;font-weight:700;display:none;align-items:center;justify-content:center;margin-left:auto" id="myrides-badge-el">0</span></div>
+      <div class="nav-item" id="nav-accounting" onclick="switchTab('accounting')"><i data-lucide="receipt"></i>Abrechnung</div>
+      <div style="padding:0 10px 5px 14px;margin-top:14px"><span style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em">Organisation</span></div>
+      <div class="nav-item" id="nav-staff" onclick="switchTab('staff')"><i data-lucide="users"></i>Personal</div>
+      <div class="nav-item" id="nav-reports" onclick="switchTab('reports')" style="position:relative"><i data-lucide="alert-triangle"></i>Meldungen<span id="badge-reports" style="display:none;width:7px;height:7px;background:#ef4444;border-radius:50%;position:absolute;top:10px;right:12px;border:1.5px solid #060810"></span></div>
+      <div class="nav-item" id="nav-zeugnis" onclick="switchTab('zeugnis')"><i data-lucide="file-badge"></i>Zeugnisse</div>
+      <div id="admin-section" style="display:none">
+        <div style="padding:0 10px 5px 14px;margin-top:14px"><span style="font-size:9px;font-weight:700;color:rgba(239,68,68,.6);text-transform:uppercase;letter-spacing:.12em">Administration</span></div>
+        <div class="nav-item" id="nav-admin" onclick="switchTab('admin')" style="color:#ef4444"><i data-lucide="shield-alert"></i>Admin Panel</div>
+      </div>
+    </nav>
+    <div style="padding:10px 10px 12px;border-top:1px solid var(--border)">
+      <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:11px;padding:11px;display:flex;align-items:center;gap:9px">
+        <div style="position:relative">
+          <div class="avatar" style="background:var(--y);color:#000;width:34px;height:34px;font-size:17px" id="user-initials">?</div>
+          <div id="user-status-dot" style="position:absolute;bottom:-2px;right:-2px;width:9px;height:9px;background:#475569;border-radius:50%;border:2px solid #060810"></div>
         </div>
-        <button onclick="endIntro()" class="absolute bottom-8 px-6 py-2 rounded-full border border-white/10 text-[10px] uppercase tracking-widest text-gray-500 hover:text-white transition">Intro überspringen</button>
-    </div>
-
-    <div id="landing-page" class="hidden min-h-screen hero-gradient flex flex-col">
-        <nav class="flex justify-between items-center px-12 py-8 glass sticky top-0 z-[100]">
-            <div class="flex items-center gap-4">
-                <img src="images/Logo.png" class="h-10">
-                <span class="text-2xl font-black italic tracking-tighter uppercase">Taxi <span class="text-yellow-400">Köln</span></span>
-            </div>
-            <div class="flex gap-10 items-center">
-                <div class="flex gap-2 items-center">
-                    <div class="pulse-online"></div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-green-500">System Online</span>
-                </div>
-                <button onclick="openLogin()" class="bg-yellow-400 text-black px-8 py-3 rounded-2xl font-black text-sm hover:scale-105 transition shadow-2xl shadow-yellow-400/20">Portal Login</button>
-            </div>
-        </nav>
-
-        <main class="flex-grow flex items-center justify-center px-6 relative overflow-hidden">
-            <div class="max-w-6xl text-center z-10">
-                <h1 class="text-7xl md:text-[140px] font-black italic uppercase leading-[0.85] tracking-tighter mb-8">
-                    Leitstellen <br> <span class="text-yellow-400">Management</span>
-                </h1>
-                <p class="text-gray-400 text-xl md:text-2xl font-light max-w-3xl mx-auto mb-12">Die nächste Generation der Taxi-Verwaltung. Effizient, Live und Sicher.</p>
-                <div class="flex flex-col md:flex-row gap-4 justify-center">
-                    <button onclick="openLogin()" class="bg-yellow-400 text-black px-12 py-5 rounded-3xl font-black text-xl hover:shadow-[0_0_40px_rgba(250,204,21,0.3)] transition-all">SYSTEM STARTEN</button>
-                    <button class="glass px-12 py-5 rounded-3xl font-bold text-xl hover:bg-white/5 transition">FLOTTEN ÜBERSICHT</button>
-                </div>
-            </div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-yellow-400/5 blur-[150px] rounded-full z-0"></div>
-        </main>
-
-        <footer class="p-8 text-center border-t border-white/5">
-            <p class="text-[10px] font-bold text-gray-600 uppercase tracking-widest">© 2026 Taxi Köln Enterprise Dispatch System | All Rights Reserved</p>
-        </footer>
-    </div>
-
-    <div id="login-modal" class="fixed inset-0 z-[10000] glass flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-[#0f172a] p-12 rounded-[3rem] w-full max-w-md border border-white/10 shadow-2xl relative">
-            <button onclick="closeLogin()" class="absolute top-8 right-8 text-gray-500 hover:text-white transition"><i data-lucide="x"></i></button>
-            <div class="text-center mb-10">
-                <div class="w-20 h-20 bg-yellow-400 rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-2xl shadow-yellow-400/20">
-                    <i data-lucide="shield-check" class="text-black w-10 h-10"></i>
-                </div>
-                <h2 class="text-3xl font-black uppercase italic">Mitarbeiter <span class="text-yellow-400">Login</span></h2>
-                <p class="text-[10px] text-gray-500 font-bold tracking-[0.4em] mt-2 uppercase">Secure Access Point</p>
-            </div>
-            <div class="space-y-4">
-                <input type="text" id="log-id" placeholder="Dienstnummer" class="w-full bg-black p-5 rounded-2xl border border-white/5 outline-none focus:border-yellow-400 transition text-white">
-                <input type="password" id="log-pw" placeholder="Passwort" class="w-full bg-black p-5 rounded-2xl border border-white/5 outline-none focus:border-yellow-400 transition text-white">
-                <button onclick="handleLogin()" class="w-full bg-yellow-400 text-black font-black py-5 rounded-2xl hover:scale-[1.02] active:scale-95 transition-all text-lg shadow-xl">TERMINAL ÖFFNEN</button>
-            </div>
+        <div style="flex:1;min-width:0;overflow:hidden">
+          <p style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="user-name">–</p>
+          <p style="font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em" id="user-rank">–</p>
         </div>
+        <button onclick="logout()" style="background:transparent;border:none;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;border-radius:7px;width:26px;height:26px;transition:color .2s" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
+          <i data-lucide="log-out" style="width:13px;height:13px"></i>
+        </button>
+      </div>
     </div>
+  </aside>
 
-    <div id="app" class="hidden flex h-screen overflow-hidden">
-        
-        <aside class="w-80 bg-[#0a0c12] border-r border-white/5 flex flex-col z-[100]">
-            <div class="p-8 flex items-center gap-4">
-                <div class="w-10 h-10 bg-yellow-400 rounded-xl flex items-center justify-center">
-                    <i data-lucide="radio" class="text-black w-6 h-6"></i>
+  <!-- MAIN -->
+  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+
+    <!-- TOPBAR -->
+    <header style="height:60px;background:#060810;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0">
+      <div>
+        <div style="font-size:9px;font-weight:700;color:var(--y);text-transform:uppercase;letter-spacing:.15em;margin-bottom:1px" id="tab-path">Zentrale / Übersicht</div>
+        <div class="bebas" style="font-size:20px;letter-spacing:.04em;line-height:1" id="tab-title">Dashboard</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div id="sys-badge" class="sys-online" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px">
+          <div class="pulse" style="width:6px;height:6px"></div>
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em" id="sys-text">Online</span>
+        </div>
+        <!-- Announce bell -->
+        <div style="position:relative">
+          <button onclick="toggleAnnDrop()" style="width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative">
+            <i data-lucide="bell" style="width:14px;height:14px"></i>
+            <span id="ann-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;border-radius:50%;width:13px;height:13px;font-size:8px;font-weight:700;align-items:center;justify-content:center;border:2px solid #060810">0</span>
+          </button>
+          <div id="ann-drop" style="display:none;position:absolute;right:0;top:calc(100% + 7px);width:290px;background:#090d18;border:1px solid var(--border);border-radius:14px;padding:14px;z-index:1000">
+            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Ankündigungen</div>
+            <div id="ann-list" style="display:flex;flex-direction:column;gap:7px;max-height:260px;overflow-y:auto">
+              <p style="font-size:11px;color:var(--muted);text-align:center;padding:14px;font-style:italic">Keine Nachrichten</p>
+            </div>
+          </div>
+        </div>
+        <!-- Clock -->
+        <div style="text-align:right">
+          <div class="mono" style="font-size:16px;font-weight:700;line-height:1" id="live-time">00:00:00</div>
+          <div style="font-size:9px;color:var(--muted);font-weight:600;margin-top:2px;text-transform:uppercase;letter-spacing:.05em" id="live-date">–</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <div id="content-area" style="flex:1;overflow-y:auto;padding:24px">
+
+      <!-- DASHBOARD -->
+      <div id="view-dashboard" class="tab-view active fade-up">
+        <!-- Quick Actions -->
+        <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+          <button id="qa-newride" class="btn-ghost" style="padding:9px 16px;display:flex;align-items:center;gap:7px;font-size:12px" onclick="switchTab('dispatch');setTimeout(openRideModal,80)"><i data-lucide="plus-circle" style="width:14px;height:14px;color:var(--y)"></i>Neue Fahrt</button>
+          <button id="qa-staff" class="btn-ghost" style="padding:9px 16px;display:flex;align-items:center;gap:7px;font-size:12px" onclick="switchTab('staff')"><i data-lucide="users" style="width:14px;height:14px;color:#60a5fa"></i>Personal</button>
+          <button id="qa-accounting" class="btn-ghost" style="padding:9px 16px;display:flex;align-items:center;gap:7px;font-size:12px" onclick="switchTab('accounting')"><i data-lucide="file-text" style="width:14px;height:14px;color:#34d399"></i>Rechnung</button>
+          <button id="qa-reports" class="btn-ghost" style="padding:9px 16px;display:flex;align-items:center;gap:7px;font-size:12px" onclick="switchTab('reports')"><i data-lucide="alert-triangle" style="width:14px;height:14px;color:#f97316"></i>Meldung</button>
+        </div>
+        <!-- KPIs -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
+          <div class="kpi" style="border-left:3px solid var(--y)">
+            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Fahrten heute</div>
+            <div class="bebas" style="font-size:40px;line-height:1" id="kpi-today">0</div>
+          </div>
+          <div class="kpi">
+            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Gesamt Fahrten</div>
+            <div class="bebas" style="font-size:40px;line-height:1" id="kpi-total">0</div>
+          </div>
+          <div class="kpi">
+            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Dienstzeit</div>
+            <div class="mono bebas" style="font-size:36px;line-height:1" id="kpi-duty">00:00:00</div>
+            <button onclick="toggleDuty()" id="duty-btn" style="margin-top:10px;width:100%;background:var(--green);color:#fff;border:none;border-radius:8px;padding:7px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;transition:all .2s">Dienst starten</button>
+          </div>
+          <div class="kpi">
+            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Letzte Aktivität</div>
+            <div style="font-size:13px;font-weight:700;margin-top:6px" id="kpi-last">Keine Daten</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px" id="kpi-last-time">–</div>
+          </div>
+        </div>
+        <!-- Feed + Chat -->
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:14px">
+          <div class="glass" style="border-radius:18px;padding:22px">
+            <div style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;margin-bottom:14px">
+              <i data-lucide="activity" style="width:14px;height:14px;color:var(--y)"></i> Aktivitäts-Feed
+            </div>
+            <div id="activity-log" style="display:flex;flex-direction:column;gap:9px;max-height:360px;overflow-y:auto;padding-right:4px"></div>
+          </div>
+          <div class="glass" style="border-radius:18px;padding:22px;display:flex;flex-direction:column">
+            <div style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;margin-bottom:14px">
+              <i data-lucide="message-circle" style="width:14px;height:14px;color:#60a5fa"></i> Dienst-Chat
+            </div>
+            <div id="chat-lock" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.3);border-radius:12px;padding:20px;text-align:center;margin-bottom:10px;min-height:200px">
+              <i data-lucide="lock" style="width:26px;height:26px;color:#334155;margin-bottom:9px"></i>
+              <p style="font-size:11px;font-weight:600;color:#475569">Nur im aktiven Dienst verfügbar</p>
+            </div>
+            <div id="chat-active" style="display:none;flex:1;flex-direction:column">
+              <div id="chat-messages" class="chat-wrap" style="flex:1;min-height:200px;max-height:280px;margin-bottom:9px"></div>
+              <div style="display:flex;gap:7px">
+                <input type="text" id="chat-input" placeholder="Nachricht..." class="inp" style="flex:1;padding:9px 13px;font-size:12px" onkeydown="if(event.key==='Enter')sendChat()">
+                <button onclick="sendChat()" style="width:38px;height:38px;background:var(--y);border:none;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <i data-lucide="send" style="width:13px;height:13px;color:#000"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DISPATCH (Leitstelle) -->
+      <div id="view-dispatch" class="tab-view fade-up">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h3 class="bebas" style="font-size:26px;letter-spacing:.04em">Radio <span style="color:var(--y)">Dispatch</span></h3>
+          <button id="btn-new-ride" onclick="openRideModal()" class="btn-y" style="padding:10px 20px">
+            <i data-lucide="plus" style="width:14px;height:14px"></i> Neue Fahrt
+          </button>
+        </div>
+        <div class="glass" style="border-radius:18px;overflow:hidden">
+          <table class="data-table" id="dispatch-table">
+            <thead><tr>
+              <th>Priorität</th><th>Kunde</th><th>Abholort</th><th>Fahrer</th><th>Status</th>
+              <th style="text-align:right">Aktionen</th>
+            </tr></thead>
+            <tbody id="ride-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MY RIDES (Fahrer-Ansicht) -->
+      <div id="view-myrides" class="tab-view fade-up">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h3 class="bebas" style="font-size:26px;letter-spacing:.04em">Meine <span style="color:var(--y)">Fahrten</span></h3>
+          <div id="myrides-badge" class="badge b-red" style="font-size:10px;padding:5px 12px"></div>
+        </div>
+        <!-- Offene Fahrten -->
+        <div style="margin-bottom:20px">
+          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Offene Aufträge</div>
+          <div id="my-open-rides" style="display:flex;flex-direction:column;gap:10px"></div>
+        </div>
+        <!-- Erledigte Fahrten -->
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Erledigte Fahrten</div>
+          <div class="glass" style="border-radius:18px;overflow:hidden">
+            <table class="data-table">
+              <thead><tr><th>Abholort</th><th>Zielort</th><th>KM</th><th>Abgeschlossen</th></tr></thead>
+              <tbody id="my-done-rides"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCOUNTING -->
+      <div id="view-accounting" class="tab-view fade-up">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px">
+          <div class="glass" style="border-radius:18px;padding:26px">
+            <div class="bebas" style="font-size:22px;letter-spacing:.04em;margin-bottom:18px">Live <span style="color:var(--y)">Invoice Engine</span></div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div><label class="lbl">Fahrzeugtyp</label>
+                  <select id="inv-car" class="inp" onchange="updateInvoice()">
+                    <option value="sedan">Mercedes S-Klasse</option><option value="van">Business Van</option>
+                    <option value="stretch">Stretch Limousine</option><option value="suv">SUV Patriot</option>
+                  </select>
                 </div>
+                <div><label class="lbl">Leistungstyp</label>
+                  <select id="inv-service" class="inp" onchange="updateInvoice()">
+                    <option value="transfer">Transfer</option><option value="round">Hin & Rückfahrt</option><option value="hourly">Stundenbuchung</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div><label class="lbl">Anzahl / Stunden</label><input type="number" id="inv-qty" value="1" min="1" class="inp" oninput="updateInvoice()"></div>
+                <div><label class="lbl">Extras / Zuschläge (€)</label><input type="number" id="inv-extras" value="0" class="inp" oninput="updateInvoice()"></div>
+              </div>
+              <div style="background:rgba(0,0,0,.3);border-radius:12px;padding:16px">
+                <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Kunde</div>
+                <input type="text" id="inv-client" placeholder="Kundenname / Firma" class="inp" style="margin-bottom:8px" oninput="updateInvoice()">
+                <input type="text" id="inv-route" placeholder="Strecke z.B. HBF → Flughafen" class="inp" oninput="updateInvoice()">
+              </div>
+              <button onclick="printInvoice()" class="btn-y" style="width:100%;padding:13px;justify-content:center;font-size:14px;border-radius:11px">RECHNUNG DRUCKEN</button>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Vorschau</div>
+            <div id="printable-invoice" style="background:#fff;color:#1e293b;padding:40px;border-radius:6px;font-family:'Space Grotesk',sans-serif;transform:scale(.82);transform-origin:top left;width:122%">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid #e2e8f0">
                 <div>
-                    <h1 class="text-xl font-black italic tracking-tighter uppercase leading-none">Taxi <span class="text-yellow-400">HQ</span></h1>
-                    <span class="text-[9px] text-gray-500 mono font-bold uppercase mt-1 block">v6.0.4 Enterprise</span>
+                  <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.05em;color:#0f172a">TAXI KÖLN</div>
+                  <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.1em">Chauffeur Service NRW</div>
+                  <div style="font-size:10px;color:#94a3b8;margin-top:7px">Kölner Ring 1 · 50667 Köln<br>Tel: +49 221 000 0000</div>
                 </div>
+                <div style="text-align:right">
+                  <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:.04em;color:#0f172a">RECHNUNG</div>
+                  <div style="font-size:11px;color:#64748b;font-weight:600">Nr: <span id="p-num" style="color:#0f172a;font-weight:700">–</span></div>
+                  <div style="font-size:11px;color:#64748b;font-weight:600;margin-top:2px">Datum: <span id="p-date" style="color:#0f172a;font-weight:700">–</span></div>
+                </div>
+              </div>
+              <div style="margin-bottom:24px">
+                <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">Rechnungsempfänger</div>
+                <div style="font-size:17px;font-weight:700;color:#0f172a" id="p-client">Privatkunde</div>
+                <div style="font-size:11px;color:#64748b;margin-top:2px" id="p-route">–</div>
+              </div>
+              <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
+                <thead><tr style="background:#f8fafc;font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.1em">
+                  <th style="padding:9px 12px;text-align:left;border-bottom:1px solid #e2e8f0">Beschreibung</th>
+                  <th style="padding:9px 12px;text-align:center;border-bottom:1px solid #e2e8f0">Anz.</th>
+                  <th style="padding:9px 12px;text-align:right;border-bottom:1px solid #e2e8f0">Einzelpreis</th>
+                  <th style="padding:9px 12px;text-align:right;border-bottom:1px solid #e2e8f0">Gesamt</th>
+                </tr></thead>
+                <tbody><tr>
+                  <td style="padding:12px;font-size:12px;color:#1e293b;border-bottom:1px solid #f1f5f9" id="p-desc">–</td>
+                  <td style="padding:12px;text-align:center;font-size:12px;color:#1e293b;border-bottom:1px solid #f1f5f9" id="p-qty">1</td>
+                  <td style="padding:12px;text-align:right;font-size:12px;color:#1e293b;border-bottom:1px solid #f1f5f9" id="p-unit">–</td>
+                  <td style="padding:12px;text-align:right;font-size:12px;font-weight:700;color:#0f172a;border-bottom:1px solid #f1f5f9" id="p-item">–</td>
+                </tr></tbody>
+              </table>
+              <div style="display:flex;justify-content:flex-end;margin-bottom:32px">
+                <div style="width:220px">
+                  <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:11px;color:#64748b;font-weight:600"><span>Zwischensumme</span><span id="p-sub">–</span></div>
+                  <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:11px;color:#64748b;font-weight:600"><span>Extras</span><span id="p-extras">–</span></div>
+                  <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:2px solid #0f172a;margin-top:5px">
+                    <span style="font-size:13px;font-weight:700;color:#0f172a">Endbetrag</span>
+                    <span style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#0f172a" id="p-final">–</span>
+                  </div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;padding-top:18px;border-top:1px solid #e2e8f0">
+                <div><div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">Aussteller</div><div style="font-size:13px;font-weight:700;color:#0f172a" id="p-issuer">–</div></div>
+                <div><div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">Unterschrift / Stempel</div><div style="height:36px;border-bottom:1px solid #0f172a"></div></div>
+              </div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <nav class="flex-grow mt-4 overflow-y-auto pr-2">
-                <p class="text-[9px] font-black text-gray-600 uppercase px-8 mb-4 tracking-widest">Main Console</p>
-                <div onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active"><i data-lucide="layout-dashboard" class="w-5 mr-4"></i> Dashboard</div>
-                <div onclick="switchTab('dispatch')" id="nav-dispatch" class="nav-item"><i data-lucide="radio-tower" class="w-5 mr-4"></i> Leitstelle</div>
-                <div onclick="switchTab('fleet')" id="nav-fleet" class="nav-item"><i data-lucide="car-front" class="w-5 mr-4"></i> Fuhrpark</div>
-                <div onclick="switchTab('accounting')" id="nav-accounting" class="nav-item"><i data-lucide="receipt" class="w-5 mr-4"></i> Abrechnung</div>
-                
-                <p class="text-[9px] font-black text-gray-600 uppercase px-8 mt-10 mb-4 tracking-widest">Organization</p>
-                <div onclick="switchTab('staff')" id="nav-staff" class="nav-item"><i data-lucide="users" class="w-5 mr-4"></i> Personal</div>
-                <div onclick="switchTab('reports')" id="nav-reports" class="nav-item relative"><i data-lucide="bug" class="w-5 mr-4"></i> Meldungen <span id="badge-reports" class="notif-dot hidden"></span></div>
-                <div onclick="switchTab('zeugnis')" id="nav-zeugnis" class="nav-item"><i data-lucide="file-badge" class="w-5 mr-4"></i> Zeugnisse</div>
-                
-                <p id="admin-label" class="text-[9px] font-black text-red-900 uppercase px-8 mt-10 mb-4 tracking-widest hidden">Administration</p>
-                <div onclick="switchTab('admin')" id="nav-admin" class="nav-item text-red-500 hidden"><i data-lucide="shield-alert" class="w-5 mr-4"></i> Admin Panel</div>
-            </nav>
+      <!-- REPORTS -->
+      <div id="view-reports" class="tab-view fade-up">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h3 class="bebas" style="font-size:26px;letter-spacing:.04em">Meldungs <span style="color:var(--y)">Zentrale</span></h3>
+          <button onclick="openModal('modal-report')" class="btn-y" style="padding:10px 20px"><i data-lucide="plus" style="width:14px;height:14px"></i> Neue Meldung</button>
+        </div>
+        <div id="report-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px"></div>
+      </div>
 
-            <div class="p-6 border-t border-white/5">
-                <div class="glass p-4 rounded-2xl flex items-center gap-4">
-                    <div class="relative">
-                        <div class="w-10 h-10 bg-yellow-400 rounded-xl flex items-center justify-center font-black text-black text-xl" id="user-initials">?</div>
-                        <div id="user-status-dot" class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-gray-600 border-2 border-[#0a0c12] rounded-full"></div>
-                    </div>
-                    <div class="flex-grow overflow-hidden">
-                        <p class="text-xs font-black truncate" id="user-name">Laden...</p>
-                        <p class="text-[9px] text-gray-500 uppercase font-bold" id="user-rank">Dienstnummer: --</p>
-                    </div>
-                    <button onclick="logout()" class="text-gray-500 hover:text-red-500 transition"><i data-lucide="log-out" class="w-5"></i></button>
-                </div>
-            </div>
-        </aside>
+      <!-- STAFF -->
+      <div id="view-staff" class="tab-view fade-up">
+        <h3 class="bebas" style="font-size:26px;letter-spacing:.04em;margin-bottom:18px">Personal <span style="color:var(--y)">Register</span></h3>
+        <div id="staff-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
+      </div>
 
-        <main class="flex-grow flex flex-col bg-[#080a0f] relative overflow-hidden">
-            
-            <header class="h-24 glass border-b border-white/5 flex justify-between items-center px-12 z-50">
-                <div class="flex flex-col">
-                    <h2 class="text-[10px] font-black text-yellow-400 uppercase tracking-[0.4em] mb-1" id="tab-path">Zentrale / Übersicht</h2>
-                    <h1 class="text-2xl font-black italic uppercase tracking-tighter" id="tab-title">Willkommen</h1>
-                </div>
+      <!-- ZEUGNIS -->
+      <div id="view-zeugnis" class="tab-view fade-up">
+        <h3 class="bebas" style="font-size:26px;letter-spacing:.04em;margin-bottom:18px">Zeugnisse <span style="color:var(--y)">& Dokumente</span></h3>
+        <div class="glass" style="border-radius:18px;padding:40px;text-align:center;color:var(--muted)">
+          <i data-lucide="file-badge" style="width:42px;height:42px;margin:0 auto 12px;opacity:.3"></i>
+          <p style="font-size:13px;font-weight:600">Bereich in Entwicklung</p>
+        </div>
+      </div>
 
-                <div class="flex items-center gap-8">
-                    <div class="hidden md:flex bg-white/5 rounded-xl px-4 py-2 border border-white/5 items-center gap-3">
-                        <i data-lucide="search" class="w-4 text-gray-500"></i>
-                        <input type="text" placeholder="Globale Suche..." class="bg-transparent outline-none text-xs w-48 font-bold">
-                    </div>
-                    
-                    <div class="relative">
-                        <button onclick="toggleAnnouncements()" class="w-12 h-12 glass rounded-xl flex items-center justify-center hover:bg-white/5 transition relative">
-                            <i data-lucide="bell" class="w-5 h-5"></i>
-                            <span id="announcement-count" class="absolute -top-1 -right-1 bg-red-600 text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-[#080a0f] hidden">0</span>
-                        </button>
-                        <div id="announcement-dropdown" class="absolute right-0 mt-4 w-80 glass rounded-3xl p-6 hidden z-[1000] animate-fade">
-                            <h3 class="text-xs font-black uppercase text-gray-500 mb-4 tracking-widest">Ankündigungen</h3>
-                            <div id="announcement-list" class="space-y-3 max-h-64 overflow-y-auto pr-2">
-                                <p class="text-[10px] text-gray-600 text-center py-4 italic">Keine neuen Nachrichten</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col text-right">
-                        <p id="live-time" class="text-xl font-black mono leading-none">00:00:00</p>
-                        <p id="live-date" class="text-[9px] text-gray-500 uppercase font-bold tracking-widest mt-1">Sonntag, 12. April</p>
-                    </div>
-                </div>
-            </header>
-
-            <div class="flex-grow overflow-y-auto p-12 relative" id="content-container">
-                
-                <div id="view-dashboard" class="tab-view space-y-10 animate-fade">
-                    
-                    <div class="flex gap-4 mb-6">
-                        <button onclick="switchTab('dispatch'); openRideModal();" class="glass px-6 py-4 rounded-2xl flex items-center gap-3 hover:bg-yellow-400 hover:text-black transition-all group">
-                            <i data-lucide="plus-circle" class="w-5 group-hover:scale-110 transition"></i>
-                            <span class="text-xs font-black uppercase italic">Neue Fahrt</span>
-                        </button>
-                        <button onclick="switchTab('staff')" class="glass px-6 py-4 rounded-2xl flex items-center gap-3 hover:bg-white/10 transition-all group">
-                            <i data-lucide="user-plus" class="w-5 text-yellow-400"></i>
-                            <span class="text-xs font-black uppercase italic">Personal</span>
-                        </button>
-                        <button onclick="switchTab('fleet')" class="glass px-6 py-4 rounded-2xl flex items-center gap-3 hover:bg-white/10 transition-all group">
-                            <i data-lucide="book-open" class="w-5 text-blue-400"></i>
-                            <span class="text-xs font-black uppercase italic">Fahrtenbuch</span>
-                        </button>
-                        <div class="ml-auto glass px-6 py-4 rounded-2xl flex items-center gap-3">
-                            <div class="pulse-online"></div>
-                            <span class="text-[10px] font-black uppercase tracking-widest text-green-500">Systemstatus: Optimal</span>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div class="glass p-8 rounded-[2.5rem] border-l-4 border-yellow-400 relative overflow-hidden group">
-                            <i data-lucide="navigation-2" class="absolute -bottom-4 -right-4 w-32 h-32 text-white/[0.02] group-hover:text-yellow-400/5 transition-all"></i>
-                            <p class="text-[10px] font-black text-gray-500 uppercase mb-4 tracking-widest">Eigene Fahrten heute</p>
-                            <h3 class="text-5xl font-black italic tracking-tighter" id="my-rides-count">0</h3>
-                        </div>
-                        <div class="glass p-8 rounded-[2.5rem] relative overflow-hidden group">
-                            <p class="text-[10px] font-black text-gray-500 uppercase mb-4 tracking-widest">Dienstzeit heute</p>
-                            <h3 class="text-5xl font-black italic tracking-tighter mono" id="my-duty-timer">00:00</h3>
-                            <button onclick="toggleDuty()" id="duty-btn" class="mt-4 w-full bg-green-500 text-white font-black py-3 rounded-xl hover:bg-green-400 transition text-[10px] uppercase">Dienst starten</button>
-                        </div>
-                        <div class="glass p-8 rounded-[2.5rem] relative overflow-hidden group">
-                            <p class="text-[10px] font-black text-gray-500 uppercase mb-4 tracking-widest">Letzte Aktivität</p>
-                            <h3 class="text-xl font-bold uppercase italic mt-4" id="my-last-action">Keine Daten</h3>
-                            <p class="text-[9px] text-gray-600 font-bold mt-1 uppercase" id="my-last-time">--:--</p>
-                        </div>
-                        <div class="glass p-8 rounded-[2.5rem] border-t border-white/5">
-                            <p class="text-[10px] font-black text-gray-500 uppercase mb-4 tracking-widest">Zentrale Feed</p>
-                            <div class="space-y-3" id="mini-feed">
-                                </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div class="lg:col-span-2 glass p-10 rounded-[3rem]">
-                            <h3 class="text-xl font-black italic uppercase mb-8 flex items-center gap-4">
-                                <i data-lucide="activity" class="text-yellow-400"></i> Aktivitäts-Feed
-                            </h3>
-                            <div id="activity-log" class="space-y-4 max-h-[400px] overflow-y-auto pr-6">
-                                </div>
-                        </div>
-                        
-                        <div class="glass p-10 rounded-[3rem] flex flex-col h-full border-b-4 border-yellow-400">
-                            <h3 class="text-xl font-black italic uppercase mb-8 flex items-center gap-4">
-                                <i data-lucide="message-circle" class="text-blue-400"></i> Dienst-Chat
-                            </h3>
-                            <div id="chat-lock" class="flex-grow flex flex-col items-center justify-center text-center p-8 bg-black/40 rounded-3xl mb-4">
-                                <i data-lucide="lock" class="w-12 h-12 text-gray-700 mb-4"></i>
-                                <p class="text-xs font-bold text-gray-500 uppercase leading-relaxed">Chat nur im aktiven Dienst verfügbar</p>
-                            </div>
-                            <div id="chat-active" class="hidden flex flex-col flex-grow h-full">
-                                <div id="chat-messages" class="chat-container mb-4"></div>
-                                <div class="flex gap-2">
-                                    <input type="text" id="chat-input" placeholder="Nachricht..." class="flex-grow bg-black/50 border border-white/5 p-4 rounded-xl text-xs outline-none focus:border-yellow-400 transition">
-                                    <button onclick="sendChatMessage()" class="w-14 h-14 bg-yellow-400 text-black rounded-xl flex items-center justify-center"><i data-lucide="send" class="w-5"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-dispatch" class="tab-view hidden animate-fade space-y-8">
-                    <div class="flex justify-between items-center mb-8">
-                        <h3 class="text-3xl font-black italic uppercase">Radio <span class="text-yellow-400">Dispatch</span></h3>
-                        <button onclick="openRideModal()" class="bg-yellow-400 text-black px-8 py-4 rounded-2xl font-black text-sm flex items-center gap-3 shadow-2xl shadow-yellow-400/20 hover:scale-105 transition">
-                            <i data-lucide="plus"></i> NEUE FAHRT ANLEGEN
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
-                        <div class="xl:col-span-3 glass rounded-[2.5rem] overflow-hidden">
-                            <table class="w-full text-left">
-                                <thead class="bg-white/[0.02] text-[10px] font-black uppercase tracking-widest text-gray-500">
-                                    <tr>
-                                        <th class="p-6">Priorität</th>
-                                        <th class="p-6">Kunde & Route</th>
-                                        <th class="p-6">Zuweisung</th>
-                                        <th class="p-6">Status</th>
-                                        <th class="p-6 text-right">Aktionen</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="ride-table-body" class="divide-y divide-white/5">
-                                    </tbody>
-                            </table>
-                        </div>
-                        
-                        <div class="glass p-8 rounded-[2.5rem]">
-                            <h4 class="text-xs font-black uppercase text-gray-500 mb-6 tracking-widest">Einheiten im Dienst</h4>
-                            <div id="unit-list" class="space-y-4">
-                                </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-accounting" class="tab-view hidden animate-fade space-y-12">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                        <div class="glass p-12 rounded-[3rem] space-y-8">
-                            <h3 class="text-2xl font-black italic uppercase tracking-tighter">Live <span class="text-yellow-400">Invoice Engine</span></h3>
-                            
-                            <div class="grid grid-cols-2 gap-6">
-                                <div class="space-y-2">
-                                    <label class="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-2">Fahrzeugtyp</label>
-                                    <select id="inv-car-type" class="w-full bg-black p-4 rounded-2xl border border-white/5 outline-none focus:border-yellow-400 transition" onchange="updateLiveInvoice()">
-                                        <option value="sedan">Mercedes S-Klasse (Limousine)</option>
-                                        <option value="van">Business Van (V-Klasse)</option>
-                                        <option value="stretch">Stretch Limousine</option>
-                                        <option value="patriot">SUV Patriot Limo</option>
-                                    </select>
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-2">Leistungstyp</label>
-                                    <select id="inv-service" class="w-full bg-black p-4 rounded-2xl border border-white/5 outline-none focus:border-yellow-400 transition" onchange="updateLiveInvoice()">
-                                        <option value="transfer">Einfacher Transfer</option>
-                                        <option value="round">Hin- und Rückfahrt</option>
-                                        <option value="hourly">Stundenbuchung (Exklusiv)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-6">
-                                <div class="space-y-2">
-                                    <label class="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-2">Anzahl (Einheiten / Std)</label>
-                                    <input type="number" id="inv-qty" value="1" min="1" class="w-full bg-black p-4 rounded-2xl border border-white/5 outline-none focus:border-yellow-400 transition" oninput="updateLiveInvoice()">
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-2">Extras / Nachtzuschlag</label>
-                                    <input type="number" id="inv-extras" value="0" class="w-full bg-black p-4 rounded-2xl border border-white/5 outline-none focus:border-yellow-400 transition" oninput="updateLiveInvoice()">
-                                </div>
-                            </div>
-
-                            <div class="p-8 bg-black/40 rounded-3xl space-y-4">
-                                <p class="text-[10px] font-black text-gray-500 uppercase mb-4 tracking-widest">Kundeninformationen</p>
-                                <input type="text" id="inv-client-name" placeholder="Kundenname / Firma" class="w-full bg-transparent border-b border-white/10 p-2 text-sm outline-none focus:border-yellow-400 transition" oninput="updateLiveInvoice()">
-                                <input type="text" id="inv-route" placeholder="Strecke (z.B. Köln HBF -> Airport)" class="w-full bg-transparent border-b border-white/10 p-2 text-sm outline-none focus:border-yellow-400 transition" oninput="updateLiveInvoice()">
-                            </div>
-
-                            <button onclick="window.print()" class="w-full bg-yellow-400 text-black font-black py-5 rounded-2xl text-lg hover:shadow-2xl transition shadow-yellow-400/20">RECHNUNG ABSCHLIEẞEN & DRUCKEN</button>
-                        </div>
-
-                        <div class="invoice-paper scale-[0.8] origin-top" id="printable-invoice">
-                            <div class="flex justify-between items-start mb-16">
-                                <div>
-                                    <img src="images/Logo.png" class="h-16 mb-4 grayscale">
-                                    <h2 class="text-2xl font-black italic uppercase tracking-tighter">Taxi Köln Enterprise</h2>
-                                    <p class="text-[10px] text-gray-400 uppercase font-bold">Chauffeur Service NRW</p>
-                                </div>
-                                <div class="text-right">
-                                    <h1 class="text-5xl font-black text-gray-100 uppercase tracking-tighter mb-4">RECHNUNG</h1>
-                                    <p class="text-xs font-bold text-gray-500 uppercase">Belegnummer: <span id="prev-inv-num" class="text-black">TK-2026-881</span></p>
-                                    <p class="text-xs font-bold text-gray-500 uppercase mt-1">Datum: <span id="prev-inv-date" class="text-black">12.04.2026</span></p>
-                                </div>
-                            </div>
-
-                            <div class="mb-12">
-                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Rechnungsempfänger</p>
-                                <p id="prev-client" class="text-xl font-bold">Privatkunde / Barzahler</p>
-                                <p id="prev-route" class="text-sm text-gray-500 italic mt-1">Keine Strecke angegeben</p>
-                            </div>
-
-                            <table class="w-full mb-12">
-                                <thead class="border-b-2 border-black">
-                                    <tr class="text-[10px] font-black uppercase text-left">
-                                        <th class="py-4">Beschreibung</th>
-                                        <th class="py-4 text-center">Anzahl</th>
-                                        <th class="py-4 text-right">Einzelpreis</th>
-                                        <th class="py-4 text-right">Gesamt</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-sm font-medium border-b border-gray-100">
-                                    <tr>
-                                        <td class="py-6" id="prev-desc">Standard Transfer</td>
-                                        <td class="py-6 text-center" id="prev-qty">1</td>
-                                        <td class="py-6 text-right" id="prev-unit">0.00 €</td>
-                                        <td class="py-6 text-right font-bold" id="prev-total-item">0.00 €</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <div class="flex justify-end">
-                                <div class="w-72 space-y-3">
-                                    <div class="flex justify-between text-xs font-bold text-gray-500 uppercase">
-                                        <span>Zwischensumme</span>
-                                        <span id="prev-sub">0.00 €</span>
-                                    </div>
-                                    <div class="flex justify-between text-xs font-bold text-gray-500 uppercase">
-                                        <span>USt. 0% (Tarif)</span>
-                                        <span>0.00 €</span>
-                                    </div>
-                                    <div class="flex justify-between pt-4 border-t-2 border-black">
-                                        <span class="text-sm font-black uppercase">Endbetrag</span>
-                                        <span class="text-3xl font-black" id="prev-final">0.00 €</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mt-32 grid grid-cols-2 gap-20">
-                                <div class="border-t border-black pt-4">
-                                    <p class="text-[9px] font-black uppercase mb-1">Aussteller (Dispatcher)</p>
-                                    <p class="text-sm font-black italic" id="prev-issuer">Mitarbeiter Name</p>
-                                </div>
-                                <div class="border-t border-black pt-4">
-                                    <p class="text-[9px] font-black uppercase mb-1">Unterschrift / Stempel</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-reports" class="tab-view hidden animate-fade space-y-8 max-w-6xl mx-auto">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-3xl font-black italic uppercase">Meldungs <span class="text-yellow-400">Zentrale</span></h3>
-                        <button onclick="openReportModal()" class="bg-yellow-400 text-black px-8 py-4 rounded-2xl font-black text-sm">NEUE MELDUNG</button>
-                    </div>
-
-                    <div id="report-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        </div>
-                </div>
-
-                <div id="view-admin" class="tab-view hidden animate-fade space-y-12">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                        <div class="glass p-12 rounded-[3rem] space-y-8">
-                            <h3 class="text-xl font-black uppercase italic text-red-500">Mitarbeiter Management</h3>
-                            <div class="space-y-4">
-                                <input type="text" id="adm-new-name" placeholder="Name" class="w-full bg-black p-4 rounded-xl border border-white/5 outline-none focus:border-red-500 transition">
-                                <input type="text" id="adm-new-num" placeholder="Dienstnummer (z.B. 01)" class="w-full bg-black p-4 rounded-xl border border-white/5 outline-none focus:border-red-500 transition">
-                                <select id="adm-new-rank" class="w-full bg-black p-4 rounded-xl border border-white/5 outline-none">
-                                    <option value="Auszubildender">Auszubildender</option>
-                                    <option value="Fahrer">Fahrer</option>
-                                    <option value="Leitstelle">Leitstelle</option>
-                                    <option value="Leitung">Leitung</option>
-                                </select>
-                                <button onclick="adminAddUser()" class="w-full bg-red-600 text-white font-black py-5 rounded-2xl shadow-xl shadow-red-600/20">ACCOUNT ERSTELLEN</button>
-                            </div>
-                        </div>
-                        <div class="glass p-12 rounded-[3rem] space-y-8">
-                            <h3 class="text-xl font-black uppercase italic">System Ankündigung</h3>
-                            <textarea id="adm-ann-text" placeholder="Nachricht an alle..." class="w-full h-32 bg-black p-4 rounded-xl border border-white/5 outline-none focus:border-yellow-400 transition"></textarea>
-                            <button onclick="adminPostAnnouncement()" class="w-full bg-yellow-400 text-black font-black py-5 rounded-2xl">POSTEN</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-staff" class="tab-view hidden animate-fade space-y-8">
-                    <div id="staff-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        </div>
-                </div>
-
-            </div>
-        </main>
-    </div>
-
-    <div id="modal-ride" class="fixed inset-0 z-[20000] glass flex items-center justify-center hidden opacity-0 transition-all duration-300">
-        <div class="bg-[#0f172a] p-12 rounded-[3rem] w-full max-w-xl border border-white/10 shadow-2xl">
-            <h3 class="text-2xl font-black italic uppercase mb-8">Dispatch <span class="text-yellow-400">Erteilung</span></h3>
-            <div class="space-y-6">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="r-client" placeholder="Kunde / Firma" class="w-full bg-black p-5 rounded-2xl border border-white/5 outline-none focus:border-yellow-400 transition">
-                    <select id="r-prio" class="w-full bg-black p-5 rounded-2xl border border-white/5 outline-none">
-                        <option value="standard">Standard</option>
-                        <option value="express">Express</option>
-                        <option value="vip">VIP / Hohe Priorität</option>
-                    </select>
-                </div>
-                <input type="text" id="r-start" placeholder="Abholort (Straße, Hausnr, Ort)" class="w-full bg-black p-5 rounded-2xl border border-white/5 outline-none focus:border-yellow-400 transition">
-                <input type="text" id="r-end" placeholder="Zielort (Straße, Hausnr, Ort)" class="w-full bg-black p-5 rounded-2xl border border-white/5 outline-none focus:border-yellow-400 transition">
-                <select id="r-driver" class="w-full bg-black p-5 rounded-2xl border border-white/5 outline-none">
-                    <option value="">Kein Fahrer zugewiesen</option>
+      <!-- ADMIN -->
+      <div id="view-admin" class="tab-view fade-up">
+        <h3 class="bebas" style="font-size:26px;letter-spacing:.04em;margin-bottom:18px;color:#ef4444">Admin <span style="color:var(--y)">Panel</span></h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <!-- Add user -->
+          <div class="glass" style="border-radius:18px;padding:26px">
+            <div style="font-size:14px;font-weight:700;color:#ef4444;margin-bottom:18px;display:flex;align-items:center;gap:7px"><i data-lucide="user-plus" style="width:14px;height:14px"></i>Neuen Account erstellen</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div><label class="lbl">Name</label><input type="text" id="adm-name" placeholder="Vor- und Nachname" class="inp"></div>
+              <div><label class="lbl">Passwort</label><input type="text" id="adm-pw" placeholder="Passwort" class="inp"></div>
+              <div><label class="lbl">Rang</label>
+                <select id="adm-rank" class="inp">
+                  <option>Geschäftsführung</option><option>Stlv Geschäftsführung</option>
+                  <option>Sr. Fahrer</option><option>Fahrer</option>
+                  <option>Jr. Fahrer</option><option>Azubi</option><option>Praktikant</option>
                 </select>
-                <button onclick="saveNewRide()" class="w-full bg-yellow-400 text-black font-black py-5 rounded-2xl text-lg">FAHRTAUFTRAG SENDEN</button>
-                <button onclick="closeRideModal()" class="w-full text-[10px] text-gray-600 font-black uppercase py-2">Abbrechen</button>
+              </div>
+              <!-- Permissions -->
+              <div style="background:rgba(0,0,0,.3);border-radius:11px;padding:14px">
+                <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Berechtigungen</div>
+                <div style="display:flex;flex-direction:column;gap:7px" id="perm-checkboxes">
+                  <!-- generated by JS -->
+                </div>
+              </div>
+              <button onclick="adminAddUser()" style="background:#ef4444;color:#fff;padding:12px;border-radius:10px;font-weight:700;font-size:13px;border:none;cursor:pointer;margin-top:4px">Account erstellen</button>
             </div>
-        </div>
-    </div>
-
-    <div id="modal-profile" class="fixed inset-0 z-[20000] glass flex items-center justify-center hidden opacity-0 transition-all">
-        <div class="bg-[#0f172a] p-12 rounded-[4rem] w-full max-w-2xl border border-white/10 shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-40 bg-yellow-400/5 blur-[80px]"></div>
-            <div class="relative z-10 flex flex-col items-center">
-                <div class="w-32 h-32 bg-yellow-400 rounded-[2.5rem] flex items-center justify-center text-4xl font-black text-black mb-6" id="prof-init">?</div>
-                <h2 class="text-4xl font-black uppercase italic mb-2" id="prof-name">--</h2>
-                <span class="badge bg-yellow mb-8" id="prof-rank">--</span>
-                
-                <div class="grid grid-cols-2 gap-4 w-full mb-10">
-                    <div class="glass p-6 rounded-3xl text-center">
-                        <p class="text-[9px] font-black uppercase text-gray-500 mb-2">Gesamtfahrten</p>
-                        <p class="text-2xl font-black" id="prof-total-rides">0</p>
-                    </div>
-                    <div class="glass p-6 rounded-3xl text-center">
-                        <p class="text-[9px] font-black uppercase text-gray-500 mb-2">Dienstzeit (Gesamt)</p>
-                        <p class="text-2xl font-black" id="prof-total-time">0h</p>
-                    </div>
-                </div>
-
-                <div class="w-full space-y-3">
-                    <h4 class="text-[10px] font-black uppercase text-gray-600 tracking-widest ml-4">Letzte Fahrten</h4>
-                    <div id="prof-ride-list" class="space-y-2 max-h-48 overflow-y-auto pr-2">
-                        </div>
-                </div>
-
-                <button onclick="closeProfileModal()" class="mt-10 text-[10px] font-black uppercase text-gray-500 border border-white/10 px-8 py-3 rounded-2xl hover:bg-white/5 transition">Schließen</button>
+          </div>
+          <!-- Announce + System -->
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div class="glass" style="border-radius:18px;padding:24px">
+              <div style="font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:7px"><i data-lucide="megaphone" style="width:14px;height:14px;color:var(--y)"></i>Ankündigung</div>
+              <textarea id="adm-ann" placeholder="Nachricht an alle Mitarbeiter..." class="inp" style="height:90px;resize:none;padding:11px"></textarea>
+              <button onclick="adminPostAnn()" class="btn-y" style="width:100%;padding:11px;justify-content:center;margin-top:10px">Veröffentlichen</button>
             </div>
+            <div class="glass" style="border-radius:18px;padding:24px">
+              <div style="font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px"><i data-lucide="settings" style="width:14px;height:14px;color:#60a5fa"></i>System-Status</div>
+              <div style="display:flex;flex-direction:column;gap:7px">
+                <button onclick="setSys('online')" style="background:rgba(34,197,94,.1);color:var(--green);padding:9px;border-radius:9px;font-weight:700;font-size:11px;border:1px solid rgba(34,197,94,.2);cursor:pointer">🟢 Online</button>
+                <button onclick="setSys('warn')" style="background:rgba(250,204,21,.1);color:var(--y);padding:9px;border-radius:9px;font-weight:700;font-size:11px;border:1px solid rgba(250,204,21,.2);cursor:pointer">🟡 Wartung</button>
+                <button onclick="setSys('error')" style="background:rgba(239,68,68,.1);color:var(--red);padding:9px;border-radius:9px;font-weight:700;font-size:11px;border:1px solid rgba(239,68,68,.2);cursor:pointer">🔴 Fehler</button>
+              </div>
+            </div>
+          </div>
         </div>
+        <!-- User Table -->
+        <div class="glass" style="border-radius:18px;overflow:hidden">
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Rang</th><th>Fahrten</th><th>Status</th><th>Berechtigungen</th><th style="text-align:right">Aktionen</th></tr></thead>
+            <tbody id="admin-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ===== MODALS ===== -->
+
+<!-- RIDE MODAL (Leitstelle) -->
+<div id="modal-ride" class="modal-bg">
+  <div class="modal-box" style="max-width:480px">
+    <h3 class="bebas" style="font-size:24px;letter-spacing:.04em;margin-bottom:18px">Fahrtauftrag <span style="color:var(--y)">erstellen</span></h3>
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="lbl">Kunde / Firma</label><input type="text" id="r-client" class="inp" placeholder="z.B. Herr Müller"></div>
+        <div><label class="lbl">Priorität</label>
+          <select id="r-prio" class="inp"><option value="standard">Standard</option><option value="express">Express</option><option value="vip">VIP</option></select>
+        </div>
+      </div>
+      <div><label class="lbl">Abholort</label><input type="text" id="r-pickup" class="inp" placeholder="Straße, Hausnr., Ort"></div>
+      <div><label class="lbl">Fahrer zuweisen</label><select id="r-driver" class="inp"><option value="">– Kein Fahrer –</option></select></div>
+      <div><label class="lbl">Anmerkung (optional)</label><input type="text" id="r-note" class="inp" placeholder="z.B. Rollatortransport"></div>
+      <button onclick="saveRide()" class="btn-y" style="width:100%;padding:12px;justify-content:center;font-size:14px;border-radius:11px;margin-top:4px">AUFTRAG SENDEN</button>
+      <button onclick="closeModal('modal-ride')" class="btn-ghost" style="width:100%;padding:10px">Abbrechen</button>
     </div>
+  </div>
+</div>
 
-    <script>
-        // --- DATA INITIALIZATION ---
-        let users = JSON.parse(localStorage.getItem('tx_users')) || [
-            { id: "01", name: "Chris Schreiner", pw: "Bka26a", rank: "Leitung", rides: 124, status: "offline", totalTime: 450, history: [] },
-            { id: "02", name: "Marco Ross", pw: "taxi123", rank: "Leitstelle", rides: 89, status: "offline", totalTime: 320, history: [] },
-            { id: "03", name: "Sarah Kraft", pw: "taxi456", rank: "Fahrer", rides: 210, status: "offline", totalTime: 580, history: [] }
-        ];
+<!-- COMPLETE RIDE MODAL (Fahrer) -->
+<div id="modal-complete" class="modal-bg">
+  <div class="modal-box" style="max-width:460px">
+    <h3 class="bebas" style="font-size:24px;letter-spacing:.04em;margin-bottom:18px">Fahrt <span style="color:var(--y)">abschließen</span></h3>
+    <div style="background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.2);border-radius:12px;padding:14px;margin-bottom:16px">
+      <div style="font-size:10px;font-weight:700;color:var(--y);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">Abholort</div>
+      <div style="font-size:14px;font-weight:700" id="complete-pickup">–</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div><label class="lbl">Zielort (wo wurde der Kunde abgesetzt?)</label><input type="text" id="comp-dest" class="inp" placeholder="Straße, Hausnr., Ort"></div>
+      <div><label class="lbl">Gefahrene KM (Anfahrt des Fahrers)</label><input type="number" id="comp-km" class="inp" placeholder="z.B. 12.5" step="0.1" min="0"></div>
+      <input type="hidden" id="comp-ride-id">
+      <button onclick="completeRide()" class="btn-y" style="width:100%;padding:12px;justify-content:center;font-size:14px;border-radius:11px;margin-top:4px">FAHRT ABSCHLIESSEN ✓</button>
+      <button onclick="closeModal('modal-complete')" class="btn-ghost" style="width:100%;padding:10px">Abbrechen</button>
+    </div>
+  </div>
+</div>
 
-        let rides = JSON.parse(localStorage.getItem('tx_rides')) || [];
-        let reports = JSON.parse(localStorage.getItem('tx_reports')) || [];
-        let announcements = JSON.parse(localStorage.getItem('tx_anns')) || [];
-        let globalLogs = JSON.parse(localStorage.getItem('tx_logs')) || [];
-        let chatMessages = JSON.parse(localStorage.getItem('tx_chat')) || [];
+<!-- REPORT MODAL -->
+<div id="modal-report" class="modal-bg">
+  <div class="modal-box" style="max-width:460px">
+    <h3 class="bebas" style="font-size:24px;letter-spacing:.04em;margin-bottom:18px">Neue <span style="color:var(--y)">Meldung</span></h3>
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div><label class="lbl">Titel</label><input type="text" id="rep-title" class="inp" placeholder="Kurze Beschreibung"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="lbl">Kategorie</label>
+          <select id="rep-cat" class="inp"><option value="bug">🐛 Bug</option><option value="improvement">💡 Verbesserung</option><option value="other">📌 Sonstiges</option></select>
+        </div>
+        <div><label class="lbl">Priorität</label>
+          <select id="rep-prio" class="inp"><option value="low">Niedrig</option><option value="medium">Mittel</option><option value="high">Hoch</option></select>
+        </div>
+      </div>
+      <div><label class="lbl">Beschreibung</label><textarea id="rep-desc" class="inp" style="height:90px;resize:none;padding:11px" placeholder="Detaillierte Beschreibung..."></textarea></div>
+      <button onclick="saveReport()" class="btn-y" style="width:100%;padding:12px;justify-content:center;font-size:14px;border-radius:11px">MELDUNG ABSENDEN</button>
+      <button onclick="closeModal('modal-report')" class="btn-ghost" style="width:100%;padding:10px">Abbrechen</button>
+    </div>
+  </div>
+</div>
 
-        let currentUser = null;
-        let isDutyActive = false;
-        let dutyStartTimestamp = null;
-        let dutyInterval = null;
+<!-- REPORT DETAIL MODAL -->
+<div id="modal-report-detail" class="modal-bg">
+  <div class="modal-box" style="max-width:520px">
+    <div id="rep-detail-body"></div>
+    <button onclick="closeModal('modal-report-detail')" class="btn-ghost" style="width:100%;padding:10px;margin-top:12px">Schließen</button>
+  </div>
+</div>
 
-        // --- AUTH & BOOTSTRAP ---
-        window.onload = () => {
-            lucide.createIcons();
-            startIntro();
-        };
+<!-- PROFILE MODAL -->
+<div id="modal-profile" class="modal-bg">
+  <div class="modal-box" style="max-width:440px">
+    <div style="display:flex;flex-direction:column;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:18px">
+      <div class="avatar" style="background:var(--y);color:#000;width:64px;height:64px;font-size:28px;margin-bottom:12px" id="prof-init">?</div>
+      <h2 class="bebas" style="font-size:26px;letter-spacing:.04em" id="prof-name">–</h2>
+      <span class="badge b-yellow" style="margin-top:5px" id="prof-rank">–</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:18px">
+      <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center">
+        <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">Fahrten</div>
+        <div class="bebas" style="font-size:22px" id="prof-rides">0</div>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center">
+        <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">Ges. KM</div>
+        <div class="bebas" style="font-size:22px" id="prof-km">0</div>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center">
+        <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">Status</div>
+        <div id="prof-status" style="margin-top:4px"></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:9px">Letzte Fahrten</div>
+      <div id="prof-history" style="display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto"></div>
+    </div>
+    <button onclick="closeModal('modal-profile')" class="btn-ghost" style="width:100%;padding:10px;margin-top:16px">Schließen</button>
+  </div>
+</div>
 
-        function startIntro() {
-            const video = document.getElementById('intro-video');
-            const progress = document.getElementById('intro-progress');
-            video.play();
-            setTimeout(() => progress.style.width = "100%", 100);
-            video.onended = () => endIntro();
-        }
+<!-- PRINT AREA -->
+<div id="print-area" style="display:none"></div>
 
-        function endIntro() {
-            document.getElementById('intro-container').style.display = 'none';
-            document.getElementById('landing-page').classList.remove('hidden');
-        }
+<script>
+// ============================================================
+//  DATA
+// ============================================================
+const RANKS = ['Geschäftsführung','Stlv Geschäftsführung','Sr. Fahrer','Fahrer','Jr. Fahrer','Azubi','Praktikant'];
+const ADMIN_RANKS = ['Geschäftsführung','Stlv Geschäftsführung'];
 
-        function openLogin() {
-            const m = document.getElementById('login-modal');
-            m.classList.remove('hidden');
-            setTimeout(() => m.classList.replace('opacity-0', 'opacity-100'), 10);
-        }
+const ALL_PERMS = [
+  { key:'dispatch',    label:'Leitstelle / Dispatch' },
+  { key:'newride',     label:'Neue Fahrt erstellen' },
+  { key:'accounting',  label:'Abrechnung' },
+  { key:'staff',       label:'Personal ansehen' },
+  { key:'reports',     label:'Meldungen' },
+  { key:'zeugnis',     label:'Zeugnisse' },
+  { key:'admin',       label:'Admin Panel' },
+];
 
-        function closeLogin() {
-            const m = document.getElementById('login-modal');
-            m.classList.replace('opacity-100', 'opacity-0');
-            setTimeout(() => m.classList.add('hidden'), 300);
-        }
+function defaultPerms(rank) {
+  const all = ALL_PERMS.map(p=>p.key);
+  if(ADMIN_RANKS.includes(rank)) return all;
+  if(rank==='Sr. Fahrer') return ['dispatch','newride','accounting','staff','reports','zeugnis'];
+  if(rank==='Fahrer')     return ['reports','zeugnis'];
+  if(rank==='Jr. Fahrer') return ['reports','zeugnis'];
+  if(rank==='Azubi')      return ['reports'];
+  if(rank==='Praktikant') return [];
+  return [];
+}
 
-        function handleLogin() {
-            const id = document.getElementById('log-id').value;
-            const pw = document.getElementById('log-pw').value;
-            const user = users.find(u => u.id === id && u.pw === pw);
+let users = JSON.parse(localStorage.getItem('tx8_users')) || [
+  { name:'Chris Schreiner',  pw:'Bka26a',  rank:'Geschäftsführung',       rides:124, status:'offline', totalKm:4820, history:[], perms: ALL_PERMS.map(p=>p.key) },
+  { name:'Marco Krause',     pw:'Bka26b',  rank:'Stlv Geschäftsführung',  rides:89,  status:'offline', totalKm:3200, history:[], perms: ALL_PERMS.map(p=>p.key) },
+  { name:'Maverick Stone',   pw:'Bka26r',  rank:'Azubi',                  rides:12,  status:'offline', totalKm:340,  history:[], perms: defaultPerms('Azubi') },
+];
 
-            if(user) {
-                currentUser = user;
-                initApp();
-                closeLogin();
-                document.getElementById('landing-page').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-                addLog(`${user.name} hat sich eingeloggt.`);
-                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Login erfolgreich', showConfirmButton: false, timer: 3000 });
-            } else {
-                Swal.fire('Login Fehler', 'Dienstnummer oder Passwort falsch!', 'error');
-            }
-        }
+let rides         = JSON.parse(localStorage.getItem('tx8_rides'))   || [];
+let reports       = JSON.parse(localStorage.getItem('tx8_reports')) || [];
+let announcements = JSON.parse(localStorage.getItem('tx8_anns'))    || [];
+let globalLogs    = JSON.parse(localStorage.getItem('tx8_logs'))    || [];
+let chatMessages  = JSON.parse(localStorage.getItem('tx8_chat'))    || [];
+let sysStatus     = localStorage.getItem('tx8_sys') || 'online';
 
-        function initApp() {
-            updateSidebar();
-            updateDashboard();
-            updateTime();
-            setInterval(updateTime, 1000);
-            setInterval(updateDashboard, 5000); // Live Updates every 5s
-            
-            if(currentUser.rank === 'Leitung') {
-                document.getElementById('nav-admin').classList.remove('hidden');
-                document.getElementById('admin-label').classList.remove('hidden');
-            }
-            lucide.createIcons();
-        }
+let currentUser  = null;
+let isDuty       = false;
+let dutyStart    = null;
 
-        function logout() { location.reload(); }
+// ============================================================
+//  BOOT
+// ============================================================
+window.onload = () => {
+  lucide.createIcons();
+  setInterval(tick, 1000);
+  tick();
+  renderPermCheckboxes();
+};
 
-        // --- CORE UI FUNCTIONS ---
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            
-            document.getElementById(`view-${tab}`).classList.remove('hidden');
-            document.getElementById(`nav-${tab}`).classList.add('active');
-            
-            document.getElementById('tab-path').innerText = `Zentrale / ${tab.toUpperCase()}`;
-            document.getElementById('tab-title').innerText = tab === 'dashboard' ? `Willkommen, ${currentUser.name.split(' ')[0]}` : tab;
-            
-            if(tab === 'dispatch') renderDispatch();
-            if(tab === 'reports') renderReports();
-            if(tab === 'staff') renderStaff();
-            if(tab === 'accounting') updateLiveInvoice();
-            
-            lucide.createIcons();
-        }
+function tick() {
+  const now = new Date();
+  setEl('live-time', now.toLocaleTimeString('de-DE'));
+  setEl('live-date', now.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'}));
+  if(isDuty && dutyStart) {
+    const diff = Math.floor((Date.now()-dutyStart)/1000);
+    const h=Math.floor(diff/3600).toString().padStart(2,'0');
+    const m=Math.floor((diff%3600)/60).toString().padStart(2,'0');
+    const s=(diff%60).toString().padStart(2,'0');
+    setEl('kpi-duty',`${h}:${m}:${s}`);
+  }
+}
 
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('live-time').innerText = now.toLocaleTimeString('de-DE');
-            document.getElementById('live-date').innerText = now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
-            
-            if(isDutyActive && dutyStartTimestamp) {
-                const diff = Math.floor((Date.now() - dutyStartTimestamp) / 1000);
-                const h = Math.floor(diff / 3600).toString().padStart(2, '0');
-                const m = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
-                document.getElementById('my-duty-timer').innerText = `${h}:${m}`;
-            }
-        }
+// ============================================================
+//  AUTH
+// ============================================================
+function openLogin() { openModal('login-modal'); }
 
-        function toggleDuty() {
-            const btn = document.getElementById('duty-btn');
-            const dot = document.getElementById('user-status-dot');
-            const chatLock = document.getElementById('chat-lock');
-            const chatActive = document.getElementById('chat-active');
+function handleLogin() {
+  const name = document.getElementById('log-name').value.trim();
+  const pw   = document.getElementById('log-pw').value.trim();
+  const user = users.find(u => u.name.toLowerCase()===name.toLowerCase() && u.pw===pw);
+  if(user) {
+    currentUser = user;
+    closeModal('login-modal');
+    document.getElementById('landing').style.display='none';
+    const app = document.getElementById('app');
+    app.style.display='flex';
+    initApp();
+    addLog(`${user.name} hat sich eingeloggt.`);
+    toast('success','Erfolgreich eingeloggt!');
+  } else {
+    Swal.fire({icon:'error',title:'Login Fehler',text:'Name oder Passwort falsch!',background:'#090d18',color:'#e2e8f0',confirmButtonColor:'#facc15'});
+  }
+}
 
-            if(!isDutyActive) {
-                isDutyActive = true;
-                dutyStartTimestamp = Date.now();
-                btn.innerText = "Dienst beenden";
-                btn.classList.replace('bg-green-500', 'bg-red-500');
-                dot.classList.replace('bg-gray-600', 'bg-green-500');
-                currentUser.status = 'frei';
-                chatLock.classList.add('hidden');
-                chatActive.classList.remove('hidden');
-                addLog(`${currentUser.name} hat den Dienst angetreten.`);
-            } else {
-                isDutyActive = false;
-                btn.innerText = "Dienst starten";
-                btn.classList.replace('bg-red-500', 'bg-green-500');
-                dot.classList.replace('bg-green-500', 'bg-gray-600');
-                currentUser.status = 'offline';
-                chatLock.classList.remove('hidden');
-                chatActive.classList.add('hidden');
-                
-                const finalDiff = Math.floor((Date.now() - dutyStartTimestamp) / 3600000);
-                currentUser.totalTime += finalDiff;
-                dutyStartTimestamp = null;
-                document.getElementById('my-duty-timer').innerText = "00:00";
-                addLog(`${currentUser.name} hat den Dienst beendet.`);
-            }
-            saveData();
-            updateSidebar();
-        }
+function logout() {
+  if(isDuty) toggleDuty();
+  currentUser.status='offline';
+  saveData();
+  location.reload();
+}
 
-        // --- DASHBOARD & FEED ---
-        function updateDashboard() {
-            // User Specific Stats
-            document.getElementById('my-rides-count').innerText = rides.filter(r => r.assignedTo === currentUser.id).length;
-            
-            const logContainer = document.getElementById('activity-log');
-            logContainer.innerHTML = globalLogs.slice().reverse().map(l => `
-                <div class="flex gap-6 items-start border-b border-white/5 pb-4">
-                    <span class="mono text-[10px] text-gray-600 mt-1">${l.time}</span>
-                    <p class="text-xs font-bold leading-relaxed tracking-wide">${l.text}</p>
-                </div>
-            `).join('');
+function initApp() {
+  setEl('user-name', currentUser.name);
+  setEl('user-rank', currentUser.rank);
+  setEl('user-initials', currentUser.name.charAt(0));
+  applySidebarPerms();
+  updateDashboard();
+  setSysDisplay();
+  setInterval(()=>{ updateDashboard(); }, 4000);
+  switchTab('dashboard');
+  lucide.createIcons();
+}
 
-            const miniFeed = document.getElementById('mini-feed');
-            miniFeed.innerHTML = globalLogs.slice(-3).reverse().map(l => `
-                <div class="flex items-center gap-2 text-[9px] font-bold text-gray-500 italic">
-                    <div class="w-1 h-1 bg-yellow-400 rounded-full"></div>
-                    <span>${l.text.substring(0, 25)}...</span>
-                </div>
-            `).join('');
+// ============================================================
+//  PERMISSIONS & SIDEBAR
+// ============================================================
+function hasPerm(key) {
+  if(!currentUser) return false;
+  return (currentUser.perms||[]).includes(key);
+}
 
-            // Announcements
-            const annBadge = document.getElementById('announcement-count');
-            if(announcements.length > 0) {
-                annBadge.innerText = announcements.length;
-                annBadge.classList.remove('hidden');
-            }
-        }
+function applySidebarPerms() {
+  // Always visible: dashboard, myrides
+  const perms = currentUser.perms || [];
+  document.getElementById('nav-dispatch').style.display    = perms.includes('dispatch')   ? 'flex':'none';
+  document.getElementById('nav-accounting').style.display  = perms.includes('accounting') ? 'flex':'none';
+  document.getElementById('nav-staff').style.display       = perms.includes('staff')      ? 'flex':'none';
+  document.getElementById('nav-reports').style.display     = perms.includes('reports')    ? 'flex':'none';
+  document.getElementById('nav-zeugnis').style.display     = perms.includes('zeugnis')    ? 'flex':'none';
+  if(perms.includes('admin')) {
+    document.getElementById('admin-section').style.display='block';
+  }
+  // Quick actions on dashboard
+  document.getElementById('qa-newride').style.display     = perms.includes('newride')    ? 'flex':'none';
+  document.getElementById('qa-staff').style.display       = perms.includes('staff')      ? 'flex':'none';
+  document.getElementById('qa-accounting').style.display  = perms.includes('accounting') ? 'flex':'none';
+  document.getElementById('qa-reports').style.display     = perms.includes('reports')    ? 'flex':'none';
+  // Dispatch btn
+  const nb = document.getElementById('btn-new-ride');
+  if(nb) nb.style.display = perms.includes('newride') ? 'inline-flex':'none';
+}
 
-        // --- DISPATCH LOGIC ---
-        function renderDispatch() {
-            const body = document.getElementById('ride-table-body');
-            body.innerHTML = rides.length === 0 ? `<tr><td colspan="5" class="p-10 text-center text-xs text-gray-600 italic">Keine aktiven Aufträge im System</td></tr>` : 
-            rides.map(r => `
-                <tr class="hover:bg-white/[0.02] transition">
-                    <td class="p-6">
-                        <span class="badge ${r.prio === 'vip' ? 'bg-yellow' : 'bg-pause'}">${r.prio}</span>
-                    </td>
-                    <td class="p-6">
-                        <div class="text-sm font-black italic uppercase tracking-tighter">${r.client}</div>
-                        <div class="text-[10px] text-gray-500 uppercase font-bold mt-1">${r.start} <i data-lucide="arrow-right" class="inline w-3"></i> ${r.end}</div>
-                    </td>
-                    <td class="p-6">
-                        <div class="text-xs font-bold text-gray-400">${r.assignedName || 'Ausstehend'}</div>
-                    </td>
-                    <td class="p-6">
-                        <span class="badge ${r.status === 'offen' ? 'bg-besetzt' : 'bg-frei'}">${r.status}</span>
-                    </td>
-                    <td class="p-6 text-right">
-                        <div class="flex justify-end gap-2">
-                            <button onclick="finishRide('${r.id}')" class="w-10 h-10 glass rounded-xl flex items-center justify-center text-green-500 hover:bg-green-500 hover:text-black transition"><i data-lucide="check"></i></button>
-                            <button onclick="deleteRide('${r.id}')" class="w-10 h-10 glass rounded-xl flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-black transition"><i data-lucide="trash-2"></i></button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+// ============================================================
+//  TAB SYSTEM
+// ============================================================
+const TAB_META = {
+  dashboard:  ['Zentrale / Übersicht', u=>`Willkommen, ${u.name.split(' ')[0]}`],
+  dispatch:   ['Zentrale / Leitstelle', ()=>'Dispatch'],
+  myrides:    ['Zentrale / Meine Fahrten', ()=>'Meine Fahrten'],
+  accounting: ['Zentrale / Abrechnung', ()=>'Abrechnung'],
+  reports:    ['Zentrale / Meldungen', ()=>'Meldungen'],
+  staff:      ['Zentrale / Personal', ()=>'Personal'],
+  zeugnis:    ['Zentrale / Zeugnisse', ()=>'Zeugnisse'],
+  admin:      ['Zentrale / Admin', ()=>'Admin Panel'],
+};
 
-            const units = document.getElementById('unit-list');
-            units.innerHTML = users.filter(u => u.status !== 'offline').map(u => `
-                <div class="flex items-center justify-between p-3 glass rounded-2xl">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center text-[10px] font-black text-black">${u.name.charAt(0)}</div>
-                        <span class="text-xs font-bold">${u.name}</span>
-                    </div>
-                    <span class="badge bg-frei">Frei</span>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        }
+function switchTab(tab) {
+  document.querySelectorAll('.tab-view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const view = document.getElementById(`view-${tab}`);
+  const nav  = document.getElementById(`nav-${tab}`);
+  if(view) view.classList.add('active');
+  if(nav)  nav.classList.add('active');
+  const m = TAB_META[tab];
+  if(m) { setEl('tab-path', m[0]); setEl('tab-title', m[1](currentUser)); }
+  if(tab==='dispatch')   renderDispatch();
+  if(tab==='myrides')    renderMyRides();
+  if(tab==='reports')    renderReports();
+  if(tab==='staff')      renderStaff();
+  if(tab==='accounting') updateInvoice();
+  if(tab==='admin')      { renderAdminTable(); }
+  lucide.createIcons();
+}
 
-        function openRideModal() {
-            const m = document.getElementById('modal-ride');
-            const sel = document.getElementById('r-driver');
-            sel.innerHTML = `<option value="">Kein Fahrer zugewiesen</option>` + users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
-            m.classList.remove('hidden');
-            setTimeout(() => m.classList.replace('opacity-0', 'opacity-100'), 10);
-        }
+// ============================================================
+//  DUTY
+// ============================================================
+function toggleDuty() {
+  const btn  = document.getElementById('duty-btn');
+  const dot  = document.getElementById('user-status-dot');
+  const lock = document.getElementById('chat-lock');
+  const chat = document.getElementById('chat-active');
+  if(!isDuty) {
+    isDuty=true; dutyStart=Date.now();
+    btn.textContent='Dienst beenden'; btn.style.background='#ef4444';
+    dot.style.background='#22c55e';
+    currentUser.status='frei';
+    lock.style.display='none';
+    chat.style.display='flex'; chat.style.flexDirection='column';
+    addLog(`${currentUser.name} hat den Dienst angetreten.`);
+    toast('success','Dienst gestartet');
+  } else {
+    isDuty=false;
+    btn.textContent='Dienst starten'; btn.style.background='#22c55e';
+    dot.style.background='#475569';
+    currentUser.status='offline';
+    lock.style.display='flex';
+    chat.style.display='none';
+    dutyStart=null;
+    setEl('kpi-duty','00:00:00');
+    addLog(`${currentUser.name} hat den Dienst beendet.`);
+    toast('info','Dienst beendet');
+  }
+  saveData();
+}
 
-        function closeRideModal() {
-            const m = document.getElementById('modal-ride');
-            m.classList.replace('opacity-100', 'opacity-0');
-            setTimeout(() => m.classList.add('hidden'), 300);
-        }
+// ============================================================
+//  DASHBOARD
+// ============================================================
+function updateDashboard() {
+  // KPIs (eigene Fahrten)
+  const myRides = rides.filter(r=>r.assignedTo===currentUser.name);
+  const today = new Date().toLocaleDateString('de-DE');
+  const todayRides = myRides.filter(r=>r.doneDate===today);
+  setEl('kpi-today', todayRides.length);
+  setEl('kpi-total', currentUser.rides||0);
 
-        function saveNewRide() {
-            const client = document.getElementById('r-client').value;
-            const start = document.getElementById('r-start').value;
-            const end = document.getElementById('r-end').value;
-            const driverId = document.getElementById('r-driver').value;
-            const driver = users.find(u => u.id === driverId);
+  // Last log entry for this user
+  const myLog = [...globalLogs].reverse().find(l=>l.text.includes(currentUser.name.split(' ')[0]));
+  if(myLog) { setEl('kpi-last', myLog.text.substring(0,30)+'…'); setEl('kpi-last-time', myLog.time); }
 
-            if(!client || !start || !end) return Swal.fire('Fehler', 'Pflichtfelder ausfüllen', 'error');
+  // Activity Feed
+  const logEl = document.getElementById('activity-log');
+  if(logEl) logEl.innerHTML = globalLogs.slice().reverse().map(l=>`
+    <div style="display:flex;gap:10px;align-items:flex-start;padding-bottom:9px;border-bottom:1px solid var(--border)">
+      <span class="mono" style="font-size:10px;color:var(--muted);flex-shrink:0;margin-top:1px">${l.time}</span>
+      <p style="font-size:12px;line-height:1.4;font-weight:500">${l.text}</p>
+    </div>
+  `).join('') || '<p style="font-size:11px;color:var(--muted);padding:6px">Keine Aktivitäten</p>';
 
-            const ride = {
-                id: 'R' + Date.now(),
-                client, start, end, 
-                prio: document.getElementById('r-prio').value,
-                assignedTo: driverId,
-                assignedName: driver ? driver.name : null,
-                status: 'offen'
-            };
+  // Ann badge
+  const unread = announcements.filter(a=>a.unread).length;
+  const ab = document.getElementById('ann-badge');
+  if(ab) { ab.textContent=unread; ab.style.display=unread>0?'flex':'none'; }
 
-            rides.push(ride);
-            if(driver) {
-                driver.history.push({ date: new Date().toLocaleDateString(), route: `${start} -> ${end}` });
-                driver.rides++;
-            }
-            
-            addLog(`Neue Fahrt erstellt: ${client} (${start} -> ${end})`);
-            saveData();
-            closeRideModal();
-            renderDispatch();
-        }
+  // My rides badge
+  const openMine = rides.filter(r=>r.assignedTo===currentUser.name && r.status==='offen').length;
+  const mrb = document.getElementById('badge-myrides');
+  if(mrb) { mrb.textContent=openMine; mrb.style.display=openMine>0?'flex':'none'; }
+  const mrbNav = document.getElementById('myrides-badge');
+  if(mrbNav) { mrbNav.textContent=openMine>0?`${openMine} offen`:''; mrbNav.style.display=openMine>0?'inline-flex':'none'; }
 
-        // --- ACCOUNTING ENGINE ---
-        function updateLiveInvoice() {
-            const type = document.getElementById('inv-car-type').value;
-            const service = document.getElementById('inv-service').value;
-            const qty = parseInt(document.getElementById('inv-qty').value) || 0;
-            const extras = parseInt(document.getElementById('inv-extras').value) || 0;
-            
-            const basePrices = { sedan: 85, van: 120, stretch: 350, patriot: 450 };
-            const unitPrice = basePrices[type] + (service === 'hourly' ? 50 : 0);
-            const total = (unitPrice * qty) + extras;
+  // Reports badge
+  const openRep = reports.filter(r=>r.status==='offen').length;
+  const repB = document.getElementById('badge-reports');
+  if(repB) repB.style.display=openRep>0?'block':'none';
 
-            document.getElementById('prev-inv-num').innerText = 'TK-2026-' + (Math.floor(Math.random() * 900) + 100);
-            document.getElementById('prev-inv-date').innerText = new Date().toLocaleDateString();
-            document.getElementById('prev-client').innerText = document.getElementById('inv-client-name').value || "Privatkunde";
-            document.getElementById('prev-route').innerText = document.getElementById('inv-route').value || "Keine Strecke angegeben";
-            document.getElementById('prev-desc').innerText = `${type.toUpperCase()} - ${service.toUpperCase()}`;
-            document.getElementById('prev-qty').innerText = qty;
-            document.getElementById('prev-unit').innerText = unitPrice.toFixed(2) + ' €';
-            document.getElementById('prev-total-item').innerText = (unitPrice * qty).toFixed(2) + ' €';
-            document.getElementById('prev-sub').innerText = total.toFixed(2) + ' €';
-            document.getElementById('prev-final').innerText = total.toFixed(2) + ' €';
-            document.getElementById('prev-issuer').innerText = currentUser.name;
-        }
+  renderChat();
+}
 
-        // --- CHAT SYSTEM ---
-        function sendChatMessage() {
-            const input = document.getElementById('chat-input');
-            if(!input.value.trim()) return;
+// ============================================================
+//  DISPATCH
+// ============================================================
+function openRideModal() {
+  if(!hasPerm('newride') && !hasPerm('dispatch')) return toast('error','Keine Berechtigung!');
+  const sel = document.getElementById('r-driver');
+  sel.innerHTML = `<option value="">– Kein Fahrer –</option>` + users.map(u=>`<option value="${u.name}">${u.name} (${u.rank})</option>`).join('');
+  openModal('modal-ride');
+}
 
-            const msg = {
-                id: Date.now(),
-                sender: currentUser.name,
-                num: currentUser.id,
-                text: input.value,
-                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                mine: true
-            };
+function saveRide() {
+  const client  = document.getElementById('r-client').value.trim();
+  const pickup  = document.getElementById('r-pickup').value.trim();
+  const driver  = document.getElementById('r-driver').value;
+  const note    = document.getElementById('r-note').value.trim();
+  if(!client||!pickup) return toast('error','Pflichtfelder ausfüllen!');
+  const ride = {
+    id: 'R'+Date.now(), client, pickup, driver: driver||null,
+    assignedTo: driver||null,
+    note, prio: document.getElementById('r-prio').value,
+    status:'offen', createdBy: currentUser.name,
+    createdAt: new Date().toLocaleString('de-DE'),
+    dest: null, km: null, doneDate: null, doneTime: null
+  };
+  rides.push(ride);
+  addLog(`Neue Fahrt: ${client} (Abholort: ${pickup})${driver?' → '+driver:''}`);
+  saveData();
+  closeModal('modal-ride');
+  renderDispatch();
+  ['r-client','r-pickup','r-note'].forEach(id=>{ document.getElementById(id).value=''; });
+  document.getElementById('r-driver').value='';
+}
 
-            chatMessages.push(msg);
-            input.value = '';
-            renderChat();
-            saveData();
-        }
+function renderDispatch() {
+  const body = document.getElementById('ride-table-body');
+  if(!body) return;
+  const prioMap = {vip:'b-yellow',express:'b-red',standard:'b-gray'};
+  const statMap = {offen:'b-red',fertig:'b-green'};
+  body.innerHTML = rides.length===0 ?
+    `<tr><td colspan="6" style="padding:28px;text-align:center;font-size:12px;color:var(--muted);font-style:italic">Keine aktiven Aufträge</td></tr>` :
+    rides.map(r=>`
+      <tr>
+        <td><span class="badge ${prioMap[r.prio]||'b-gray'}">${r.prio}</span></td>
+        <td>
+          <div style="font-size:13px;font-weight:700">${r.client}</div>
+          ${r.note?`<div style="font-size:10px;color:var(--muted);margin-top:2px">${r.note}</div>`:''}
+        </td>
+        <td style="font-size:12px;font-weight:600">${r.pickup}</td>
+        <td style="font-size:12px;font-weight:600;color:${r.assignedTo?'#e2e8f0':'var(--muted)'}">${r.assignedTo||'—'}</td>
+        <td><span class="badge ${statMap[r.status]||'b-gray'}">${r.status}</span></td>
+        <td style="text-align:right">
+          <div style="display:flex;justify-content:flex-end;gap:5px">
+            <button onclick="deleteRide('${r.id}')" style="width:30px;height:30px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:7px;color:#ef4444;cursor:pointer;display:flex;align-items:center;justify-content:center" title="Löschen">
+              <i data-lucide="trash-2" style="width:12px;height:12px"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  lucide.createIcons();
+}
 
-        function renderChat() {
-            const container = document.getElementById('chat-messages');
-            container.innerHTML = chatMessages.map(m => `
-                <div class="chat-msg ${m.sender === currentUser.name ? 'mine' : ''} animate-fade">
-                    <div class="flex justify-between items-center gap-4 mb-1">
-                        <span class="text-[8px] font-black uppercase tracking-widest">${m.sender} (${m.num})</span>
-                        <span class="text-[7px] font-bold opacity-50">${m.time}</span>
-                    </div>
-                    <p class="text-[11px] font-medium leading-relaxed">${m.text}</p>
-                </div>
-            `).join('');
-            container.scrollTop = container.scrollHeight;
-        }
+function deleteRide(id) {
+  rides = rides.filter(r=>r.id!==id);
+  saveData(); renderDispatch();
+}
 
-        // --- PROFILE SYSTEM ---
-        function showStaffProfile(userId) {
-            const user = users.find(u => u.id === userId);
-            if(!user) return;
+// ============================================================
+//  MY RIDES (Fahrer-Seite)
+// ============================================================
+function renderMyRides() {
+  const openEl = document.getElementById('my-open-rides');
+  const doneEl = document.getElementById('my-done-rides');
+  if(!openEl||!doneEl) return;
 
-            document.getElementById('prof-init').innerText = user.name.charAt(0);
-            document.getElementById('prof-name').innerText = user.name;
-            document.getElementById('prof-rank').innerText = user.rank;
-            document.getElementById('prof-total-rides').innerText = user.rides || 0;
-            document.getElementById('prof-total-time').innerText = (user.totalTime || 0) + 'h';
-            
-            const list = document.getElementById('prof-ride-list');
-            list.innerHTML = user.history.length === 0 ? `<p class="text-[10px] text-gray-600 italic ml-4">Noch keine Fahrten aufgezeichnet</p>` :
-            user.history.slice(-5).reverse().map(h => `
-                <div class="bg-white/5 p-3 rounded-2xl flex justify-between items-center">
-                    <span class="text-[10px] font-bold">${h.route}</span>
-                    <span class="text-[8px] font-black text-gray-500 uppercase">${h.date}</span>
-                </div>
-            `).join('');
+  const myOpen = rides.filter(r=>r.assignedTo===currentUser.name && r.status==='offen');
+  const myDone = rides.filter(r=>r.assignedTo===currentUser.name && r.status==='fertig');
 
-            const m = document.getElementById('modal-profile');
-            m.classList.remove('hidden');
-            setTimeout(() => m.classList.replace('opacity-0', 'opacity-100'), 10);
-        }
+  const prioMap={vip:'b-yellow',express:'b-red',standard:'b-gray'};
+  openEl.innerHTML = myOpen.length===0 ?
+    `<div class="glass" style="border-radius:14px;padding:20px;text-align:center;color:var(--muted)"><p style="font-size:12px">Keine offenen Aufträge</p></div>` :
+    myOpen.map(r=>`
+      <div class="glass" style="border-radius:14px;padding:18px;border-left:3px solid var(--y)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+          <div>
+            <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+              <span class="badge ${prioMap[r.prio]||'b-gray'}">${r.prio}</span>
+              <span class="badge b-red">offen</span>
+            </div>
+            <div style="font-size:14px;font-weight:700">${r.client}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:3px">Von Leitstelle: ${r.createdBy} · ${r.createdAt}</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;background:rgba(0,0,0,.3);border-radius:10px;padding:12px;margin-bottom:12px">
+          <span style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Abholort</span>
+          <span style="font-size:13px;font-weight:700;color:var(--y)">${r.pickup}</span>
+          ${r.note?`<span style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Anmerkung</span><span style="font-size:12px">${r.note}</span>`:''}
+        </div>
+        <button onclick="openCompleteModal('${r.id}')" class="btn-y" style="width:100%;padding:11px;justify-content:center;font-size:13px;border-radius:10px">
+          <i data-lucide="check-circle" style="width:14px;height:14px"></i> Fahrt abschließen
+        </button>
+      </div>
+    `).join('');
 
-        function closeProfileModal() {
-            const m = document.getElementById('modal-profile');
-            m.classList.replace('opacity-100', 'opacity-0');
-            setTimeout(() => m.classList.add('hidden'), 300);
-        }
+  doneEl.innerHTML = myDone.length===0 ?
+    `<tr><td colspan="4" style="padding:20px;text-align:center;font-size:12px;color:var(--muted);font-style:italic">Noch keine erledigten Fahrten</td></tr>` :
+    myDone.map(r=>`
+      <tr>
+        <td style="font-weight:600">${r.pickup}</td>
+        <td style="font-weight:600">${r.dest||'—'}</td>
+        <td class="mono">${r.km!=null?r.km+' km':'—'}</td>
+        <td class="mono" style="font-size:10px;color:var(--muted)">${r.doneDate||'—'} ${r.doneTime||''}</td>
+      </tr>
+    `).join('');
 
-        // --- ADMIN & MANAGEMENT ---
-        function adminPostAnnouncement() {
-            const text = document.getElementById('adm-ann-text').value;
-            if(!text) return;
-            announcements.unshift({ id: Date.now(), text, time: 'Gerade eben', new: true });
-            document.getElementById('adm-ann-text').value = '';
-            saveData();
-            Swal.fire('Erfolg', 'Ankündigung veröffentlicht', 'success');
-        }
+  lucide.createIcons();
+}
 
-        function toggleAnnouncements() {
-            const d = document.getElementById('announcement-dropdown');
-            d.classList.toggle('hidden');
-            if(!d.classList.contains('hidden')) {
-                const list = document.getElementById('announcement-list');
-                list.innerHTML = announcements.map(a => `
-                    <div class="p-3 bg-white/5 rounded-xl border-l-2 border-yellow-400">
-                        <p class="text-xs font-bold">${a.text}</p>
-                        <span class="text-[8px] text-gray-600 font-black uppercase mt-1 block">${a.time}</span>
-                    </div>
-                `).join('');
-            }
-        }
+function openCompleteModal(rideId) {
+  const r = rides.find(x=>x.id===rideId);
+  if(!r) return;
+  setEl('complete-pickup', r.pickup);
+  document.getElementById('comp-ride-id').value = rideId;
+  document.getElementById('comp-dest').value = '';
+  document.getElementById('comp-km').value = '';
+  openModal('modal-complete');
+}
 
-        function renderStaff() {
-            const grid = document.getElementById('staff-grid');
-            grid.innerHTML = users.map(u => `
-                <div onclick="showStaffProfile('${u.id}')" class="glass p-8 rounded-[2.5rem] flex flex-col items-center cursor-pointer glass-hover transition-all animate-fade">
-                    <div class="w-20 h-20 bg-yellow-400 rounded-3xl flex items-center justify-center text-2xl font-black text-black mb-4">${u.name.charAt(0)}</div>
-                    <h4 class="text-sm font-black uppercase italic">${u.name}</h4>
-                    <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">${u.rank}</p>
-                    <div class="mt-6 w-full flex justify-between items-center border-t border-white/5 pt-4">
-                        <span class="text-[9px] font-black text-gray-600 uppercase">Status</span>
-                        <span class="badge ${u.status === 'offline' ? 'bg-pause' : 'bg-frei'}">${u.status}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
+function completeRide() {
+  const rideId = document.getElementById('comp-ride-id').value;
+  const dest   = document.getElementById('comp-dest').value.trim();
+  const km     = parseFloat(document.getElementById('comp-km').value);
+  if(!dest) return toast('error','Zielort eingeben!');
+  if(isNaN(km)||km<0) return toast('error','Gültige KM eingeben!');
+  const r = rides.find(x=>x.id===rideId);
+  if(!r) return;
+  r.status  = 'fertig';
+  r.dest    = dest;
+  r.km      = km;
+  r.doneDate= new Date().toLocaleDateString('de-DE');
+  r.doneTime= new Date().toLocaleTimeString('de-DE');
+  // Save to driver history
+  const driver = users.find(u=>u.name===currentUser.name);
+  if(driver) {
+    driver.history.push({ date: r.doneDate, route:`${r.pickup} → ${dest}`, km });
+    driver.rides = (driver.rides||0)+1;
+    driver.totalKm = (driver.totalKm||0)+km;
+  }
+  addLog(`${currentUser.name} hat Fahrt für ${r.client} abgeschlossen. (${r.pickup} → ${dest}, ${km} km)`);
+  saveData();
+  closeModal('modal-complete');
+  renderMyRides();
+  toast('success','Fahrt erfolgreich abgeschlossen!');
+}
 
-        // --- UTILS ---
-        function addLog(text) {
-            globalLogs.push({ time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), text });
-            if(globalLogs.length > 50) globalLogs.shift();
-            saveData();
-            updateDashboard();
-        }
+// ============================================================
+//  ACCOUNTING
+// ============================================================
+const PRICES = {sedan:85,van:120,stretch:350,suv:450};
+const SVC_LABELS = {transfer:'Transfer',round:'Hin & Rückfahrt',hourly:'Stundenbuchung'};
 
-        function saveData() {
-            localStorage.setItem('tx_users', JSON.stringify(users));
-            localStorage.setItem('tx_rides', JSON.stringify(rides));
-            localStorage.setItem('tx_reports', JSON.stringify(reports));
-            localStorage.setItem('tx_anns', JSON.stringify(announcements));
-            localStorage.setItem('tx_logs', JSON.stringify(globalLogs));
-            localStorage.setItem('tx_chat', JSON.stringify(chatMessages));
-        }
+function updateInvoice() {
+  const type    = val('inv-car')||'sedan';
+  const service = val('inv-service')||'transfer';
+  const qty     = parseInt(val('inv-qty'))||1;
+  const extras  = parseFloat(val('inv-extras'))||0;
+  const unit    = PRICES[type]+(service==='hourly'?50:0)+(service==='round'?PRICES[type]:0);
+  const sub     = unit*qty;
+  const total   = sub+extras;
+  setEl('p-num', 'TK-2026-'+(Math.floor(Math.random()*900)+100));
+  setEl('p-date', new Date().toLocaleDateString('de-DE'));
+  setEl('p-client', val('inv-client')||'Privatkunde');
+  setEl('p-route',  val('inv-route')||'–');
+  setEl('p-desc',   type.toUpperCase()+' — '+SVC_LABELS[service]);
+  setEl('p-qty',    qty);
+  setEl('p-unit',   unit.toFixed(2)+' €');
+  setEl('p-item',   sub.toFixed(2)+' €');
+  setEl('p-sub',    sub.toFixed(2)+' €');
+  setEl('p-extras', extras.toFixed(2)+' €');
+  setEl('p-final',  total.toFixed(2)+' €');
+  setEl('p-issuer', currentUser?.name||'–');
+}
 
-        function updateSidebar() {
-            document.getElementById('user-name').innerText = currentUser.name;
-            document.getElementById('user-rank').innerText = `Rang: ${currentUser.rank}`;
-            document.getElementById('user-initials').innerText = currentUser.name.charAt(0);
-        }
+function printInvoice() {
+  const inv = document.getElementById('printable-invoice');
+  if(!inv) return;
+  const cl = inv.cloneNode(true);
+  cl.style.transform='none'; cl.style.width='auto';
+  const pa = document.getElementById('print-area');
+  pa.innerHTML=''; pa.appendChild(cl); pa.style.display='block';
+  window.print(); pa.style.display='none';
+}
 
-        document.getElementById('chat-input')?.addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') sendChatMessage();
-        });
+// ============================================================
+//  REPORTS
+// ============================================================
+function saveReport() {
+  const title = document.getElementById('rep-title').value.trim();
+  const desc  = document.getElementById('rep-desc').value.trim();
+  if(!title) return toast('error','Titel eingeben!');
+  reports.unshift({
+    id:'REP'+Date.now(), title, desc,
+    cat:   document.getElementById('rep-cat').value,
+    prio:  document.getElementById('rep-prio').value,
+    status:'offen', author: currentUser.name,
+    time:  new Date().toLocaleString('de-DE'), comments:[]
+  });
+  addLog(`Meldung erstellt: "${title}" — ${currentUser.name}`);
+  saveData(); closeModal('modal-report'); renderReports();
+  ['rep-title','rep-desc'].forEach(id=>{ document.getElementById(id).value=''; });
+}
 
-    </script>
+function renderReports() {
+  const g = document.getElementById('report-grid');
+  if(!g) return;
+  const catMap  = {bug:'🐛 Bug',improvement:'💡 Verbesserung',other:'📌 Sonstiges'};
+  const prioMap = {low:'b-gray',medium:'b-yellow',high:'b-red'};
+  const statMap = {offen:'b-red','in bearbeitung':'b-yellow',behoben:'b-green'};
+  g.innerHTML = reports.length===0 ?
+    `<div class="glass" style="border-radius:18px;padding:28px;text-align:center;color:var(--muted);grid-column:1/-1"><p>Keine Meldungen</p></div>` :
+    reports.map(r=>`
+      <div onclick="openRepDetail('${r.id}')" style="background:var(--card);border:1px solid var(--border);border-radius:15px;padding:18px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='rgba(255,255,255,.12)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px">
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <span class="badge b-blue">${catMap[r.cat]||r.cat}</span>
+            <span class="badge ${prioMap[r.prio]}">${r.prio}</span>
+          </div>
+          <span class="badge ${statMap[r.status]||'b-gray'}">${r.status}</span>
+        </div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:5px">${r.title}</div>
+        <p style="font-size:11px;color:var(--muted);line-height:1.5">${r.desc.substring(0,70)}${r.desc.length>70?'...':''}</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:9px;margin-top:10px">
+          <span style="font-size:10px;font-weight:600;color:var(--muted)">${r.author}</span>
+          <span class="mono" style="font-size:9px;color:var(--muted)">${r.time}</span>
+        </div>
+      </div>
+    `).join('');
+}
+
+function openRepDetail(id) {
+  const r = reports.find(x=>x.id===id);
+  if(!r) return;
+  const isAdmin = ADMIN_RANKS.includes(currentUser.rank)||hasPerm('admin');
+  const sm={offen:'b-red','in bearbeitung':'b-yellow',behoben:'b-green'};
+  document.getElementById('rep-detail-body').innerHTML = `
+    <div class="bebas" style="font-size:22px;letter-spacing:.04em;margin-bottom:7px">${r.title}</div>
+    <div style="display:flex;gap:5px;margin-bottom:14px">
+      <span class="badge b-blue">${r.cat}</span>
+      <span class="badge ${sm[r.status]||'b-gray'}">${r.status}</span>
+    </div>
+    <p style="font-size:12px;line-height:1.6;color:#cbd5e1;margin-bottom:12px">${r.desc}</p>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:14px">${r.author} · ${r.time}</div>
+    ${isAdmin?`<div style="display:flex;gap:7px;margin-bottom:14px">
+      <select id="rs-sel" class="inp" style="flex:1">
+        <option value="offen" ${r.status==='offen'?'selected':''}>Offen</option>
+        <option value="in bearbeitung" ${r.status==='in bearbeitung'?'selected':''}>In Bearbeitung</option>
+        <option value="behoben" ${r.status==='behoben'?'selected':''}>Behoben</option>
+      </select>
+      <button onclick="updateRepStatus('${r.id}')" class="btn-y" style="padding:10px 16px">Speichern</button>
+    </div>`:''}
+    <div style="border-top:1px solid var(--border);padding-top:12px;margin-bottom:12px">
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:9px">Kommentare (${r.comments.length})</div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:11px;max-height:150px;overflow-y:auto">
+        ${r.comments.length===0?`<p style="font-size:11px;color:var(--muted);font-style:italic">Keine Kommentare</p>`:
+          r.comments.map(c=>`
+            <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;padding:10px">
+              <div style="font-size:10px;font-weight:700;color:var(--y);margin-bottom:3px">${c.author}</div>
+              <p style="font-size:11px;line-height:1.4">${c.text}</p>
+              <div class="mono" style="font-size:9px;color:var(--muted);margin-top:3px">${c.time}</div>
+            </div>
+          `).join('')}
+      </div>
+      <div style="display:flex;gap:7px">
+        <input type="text" id="rep-comment" class="inp" placeholder="Kommentar..." style="flex:1;padding:9px 13px;font-size:12px">
+        <button onclick="addRepComment('${r.id}')" class="btn-ghost" style="padding:9px 14px;font-size:12px" onmouseover="this.style.background='var(--y)';this.style.color='#000'" onmouseout="this.style.background='transparent';this.style.color='var(--muted)'">Senden</button>
+      </div>
+    </div>
+  `;
+  openModal('modal-report-detail');
+  lucide.createIcons();
+}
+
+function updateRepStatus(id) {
+  const r=reports.find(x=>x.id===id);
+  const s=document.getElementById('rs-sel')?.value;
+  if(r&&s){r.status=s;saveData();toast('success','Status aktualisiert');openRepDetail(id);renderReports();}
+}
+function addRepComment(id) {
+  const r=reports.find(x=>x.id===id);
+  const inp=document.getElementById('rep-comment');
+  if(!r||!inp||!inp.value.trim()) return;
+  r.comments.push({author:currentUser.name,text:inp.value.trim(),time:new Date().toLocaleTimeString('de-DE')});
+  saveData(); openRepDetail(id);
+}
+
+// ============================================================
+//  STAFF
+// ============================================================
+function renderStaff() {
+  const g = document.getElementById('staff-grid');
+  if(!g) return;
+  const sm={offline:'b-gray',frei:'b-green',besetzt:'b-red'};
+  g.innerHTML = users.map(u=>`
+    <div class="staff-card" onclick="showProfile('${u.name}')">
+      <div class="avatar" style="background:var(--y);color:#000;width:60px;height:60px;font-size:26px">${u.name.charAt(0)}</div>
+      <div>
+        <div style="font-size:14px;font-weight:700">${u.name}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">${u.rank}</div>
+      </div>
+      <div style="width:100%;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:9px">
+        <span style="font-size:10px;font-weight:600;color:var(--muted)">${u.rides||0} Fahrten · ${u.totalKm||0} km</span>
+        <span class="badge ${sm[u.status]||'b-gray'}">${u.status}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showProfile(name) {
+  const u = users.find(x=>x.name===name);
+  if(!u) return;
+  setEl('prof-init', u.name.charAt(0));
+  setEl('prof-name', u.name);
+  setEl('prof-rank', u.rank);
+  setEl('prof-rides', u.rides||0);
+  setEl('prof-km', (u.totalKm||0)+' km');
+  const sm={offline:'b-gray',frei:'b-green',besetzt:'b-red'};
+  document.getElementById('prof-status').innerHTML=`<span class="badge ${sm[u.status]||'b-gray'}">${u.status}</span>`;
+  const list = document.getElementById('prof-history');
+  list.innerHTML = !u.history||u.history.length===0 ?
+    `<p style="font-size:11px;color:var(--muted);font-style:italic;padding:6px">Keine Fahrten</p>` :
+    u.history.slice(-6).reverse().map(h=>`
+      <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;padding:10px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;font-weight:600">${h.route}</span>
+        <div style="text-align:right">
+          <div class="mono" style="font-size:9px;color:var(--muted)">${h.date}</div>
+          ${h.km!=null?`<div class="mono" style="font-size:9px;color:var(--y)">${h.km} km</div>`:''}
+        </div>
+      </div>
+    `).join('');
+  openModal('modal-profile');
+}
+
+// ============================================================
+//  ADMIN
+// ============================================================
+function renderPermCheckboxes() {
+  const container = document.getElementById('perm-checkboxes');
+  if(!container) return;
+  container.innerHTML = ALL_PERMS.map(p=>`
+    <div class="cb-row">
+      <span>${p.label}</span>
+      <input type="checkbox" id="perm-${p.key}" value="${p.key}">
+    </div>
+  `).join('');
+  // Auto-fill when rank changes
+  document.getElementById('adm-rank')?.addEventListener('change', function() {
+    const auto = defaultPerms(this.value);
+    ALL_PERMS.forEach(p=>{
+      const cb = document.getElementById(`perm-${p.key}`);
+      if(cb) cb.checked = auto.includes(p.key);
+    });
+  });
+}
+
+function getSelectedPerms() {
+  return ALL_PERMS.filter(p=>document.getElementById(`perm-${p.key}`)?.checked).map(p=>p.key);
+}
+
+function adminAddUser() {
+  const name = document.getElementById('adm-name').value.trim();
+  const pw   = document.getElementById('adm-pw').value.trim();
+  const rank = document.getElementById('adm-rank').value;
+  if(!name||!pw) return toast('error','Name und Passwort eingeben!');
+  if(users.find(u=>u.name.toLowerCase()===name.toLowerCase())) return toast('error','Name bereits vergeben!');
+  users.push({ name, pw, rank, rides:0, status:'offline', totalKm:0, history:[], perms: getSelectedPerms() });
+  saveData();
+  addLog(`Neuer Account: ${name} (${rank})`);
+  renderAdminTable();
+  renderStaff();
+  toast('success',`Account für ${name} erstellt!`);
+  document.getElementById('adm-name').value='';
+  document.getElementById('adm-pw').value='';
+  ALL_PERMS.forEach(p=>{ const cb=document.getElementById(`perm-${p.key}`); if(cb) cb.checked=false; });
+}
+
+function adminPostAnn() {
+  const text = document.getElementById('adm-ann').value.trim();
+  if(!text) return;
+  announcements.unshift({ id:Date.now(), text, time:new Date().toLocaleString('de-DE'), author:currentUser.name, unread:true });
+  document.getElementById('adm-ann').value='';
+  saveData(); updateDashboard();
+  toast('success','Ankündigung veröffentlicht');
+}
+
+function setSys(s) {
+  sysStatus=s; localStorage.setItem('tx8_sys',s); setSysDisplay();
+  toast('success','Status aktualisiert');
+}
+function setSysDisplay() {
+  const el=document.getElementById('sys-badge');
+  const tx=document.getElementById('sys-text');
+  if(!el||!tx) return;
+  el.className='';
+  const map={online:['sys-online','Online'],warn:['sys-warn','Wartung'],error:['sys-error','Fehler']};
+  const [cls,label]=map[sysStatus]||map.online;
+  el.classList.add(cls);
+  el.style.cssText='display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px';
+  tx.textContent=label;
+}
+
+function renderAdminTable() {
+  const tbody = document.getElementById('admin-table');
+  if(!tbody) return;
+  tbody.innerHTML = users.map(u=>`
+    <tr>
+      <td style="font-weight:600">${u.name}</td>
+      <td><span class="badge b-blue">${u.rank}</span></td>
+      <td>${u.rides||0}</td>
+      <td><span class="badge ${u.status==='offline'?'b-gray':'b-green'}">${u.status}</span></td>
+      <td style="font-size:10px;color:var(--muted)">${(u.perms||[]).length} Rechte</td>
+      <td style="text-align:right">
+        <div style="display:flex;justify-content:flex-end;gap:5px">
+          <button onclick="editUserPerms('${u.name}')" style="padding:5px 10px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);border-radius:7px;color:#60a5fa;font-size:11px;font-weight:700;cursor:pointer">Rechte</button>
+          <button onclick="deleteUser('${u.name}')" style="width:28px;height:28px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:7px;color:#ef4444;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;${u.name===currentUser.name?'opacity:.3;pointer-events:none':''}">
+            <i data-lucide="trash-2" style="width:11px;height:11px"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+  lucide.createIcons();
+}
+
+function editUserPerms(name) {
+  const u = users.find(x=>x.name===name);
+  if(!u) return;
+  const checkboxes = ALL_PERMS.map(p=>`
+    <div class="cb-row">
+      <span>${p.label}</span>
+      <input type="checkbox" id="ep-${p.key}" value="${p.key}" ${(u.perms||[]).includes(p.key)?'checked':''}>
+    </div>
+  `).join('');
+  Swal.fire({
+    title:`Rechte: ${u.name}`,
+    html:`<div style="display:flex;flex-direction:column;gap:7px;text-align:left">${checkboxes}</div>`,
+    background:'#090d18', color:'#e2e8f0', confirmButtonColor:'#facc15', confirmButtonText:'Speichern',
+    showCancelButton:true, cancelButtonText:'Abbrechen',
+    preConfirm:()=>{ return ALL_PERMS.filter(p=>document.getElementById(`ep-${p.key}`)?.checked).map(p=>p.key); }
+  }).then(r=>{ if(r.isConfirmed){ u.perms=r.value; saveData(); renderAdminTable(); toast('success','Rechte gespeichert'); }});
+}
+
+function deleteUser(name) {
+  if(name===currentUser.name) return;
+  Swal.fire({title:'Mitarbeiter löschen?',text:'Nicht rückgängig machbar.',icon:'warning',showCancelButton:true,confirmButtonText:'Löschen',cancelButtonText:'Abbrechen',confirmButtonColor:'#ef4444',background:'#090d18',color:'#e2e8f0'})
+  .then(r=>{ if(r.isConfirmed){ users=users.filter(u=>u.name!==name); saveData(); renderAdminTable(); renderStaff(); toast('success','Gelöscht'); }});
+}
+
+// ============================================================
+//  ANNOUNCEMENTS
+// ============================================================
+function toggleAnnDrop() {
+  const d=document.getElementById('ann-drop');
+  const open=d.style.display==='none'||d.style.display==='';
+  d.style.display=open?'block':'none';
+  if(open) {
+    const list=document.getElementById('ann-list');
+    list.innerHTML=announcements.length===0?
+      `<p style="font-size:11px;color:var(--muted);text-align:center;padding:14px;font-style:italic">Keine Ankündigungen</p>`:
+      announcements.map(a=>`
+        <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-left:2px solid var(--y);border-radius:9px;padding:11px">
+          <p style="font-size:12px;font-weight:600;margin-bottom:4px">${a.text}</p>
+          <div style="display:flex;justify-content:space-between">
+            <span style="font-size:9px;color:var(--y);font-weight:700">${a.author}</span>
+            <span class="mono" style="font-size:9px;color:var(--muted)">${a.time}</span>
+          </div>
+          ${a.unread?`<span class="badge b-yellow" style="margin-top:5px;font-size:8px">NEU</span>`:''}
+        </div>
+      `).join('');
+    announcements.forEach(a=>a.unread=false); saveData();
+    const ab=document.getElementById('ann-badge'); if(ab) ab.style.display='none';
+  }
+}
+document.addEventListener('click', e=>{
+  const drop=document.getElementById('ann-drop');
+  if(drop&&!drop.contains(e.target)&&!e.target.closest('[onclick*="toggleAnnDrop"]')) drop.style.display='none';
+});
+
+// ============================================================
+//  CHAT
+// ============================================================
+function sendChat() {
+  const inp=document.getElementById('chat-input');
+  if(!inp||!inp.value.trim()) return;
+  chatMessages.push({ sender:currentUser.name, text:inp.value.trim(), time:new Date().toLocaleTimeString('de-DE') });
+  inp.value='';
+  if(chatMessages.length>300) chatMessages=chatMessages.slice(-300);
+  saveData(); renderChat();
+}
+function renderChat() {
+  const c=document.getElementById('chat-messages');
+  if(!c||!isDuty) return;
+  c.innerHTML=chatMessages.map(m=>`
+    <div class="chat-msg ${m.sender===currentUser.name?'mine':''}">
+      <div class="chat-name">${m.sender} · ${m.time}</div>
+      ${m.text}
+    </div>
+  `).join('');
+  c.scrollTop=c.scrollHeight;
+}
+
+// ============================================================
+//  UTILS
+// ============================================================
+function addLog(text) {
+  globalLogs.push({ time:new Date().toLocaleTimeString('de-DE'), text });
+  if(globalLogs.length>100) globalLogs=globalLogs.slice(-100);
+  saveData(); updateDashboard();
+}
+function saveData() {
+  localStorage.setItem('tx8_users',   JSON.stringify(users));
+  localStorage.setItem('tx8_rides',   JSON.stringify(rides));
+  localStorage.setItem('tx8_reports', JSON.stringify(reports));
+  localStorage.setItem('tx8_anns',    JSON.stringify(announcements));
+  localStorage.setItem('tx8_logs',    JSON.stringify(globalLogs));
+  localStorage.setItem('tx8_chat',    JSON.stringify(chatMessages));
+  localStorage.setItem('tx8_sys',     sysStatus);
+}
+function setEl(id,v) { const e=document.getElementById(id); if(e) e.textContent=v; }
+function val(id) { return document.getElementById(id)?.value||''; }
+function openModal(id) { document.getElementById(id)?.classList.add('open'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+function toast(icon,title) {
+  Swal.fire({toast:true,position:'top-end',icon,title,showConfirmButton:false,timer:2500,timerProgressBar:true,background:'#090d18',color:'#e2e8f0'});
+}
+</script>
 </body>
 </html>
