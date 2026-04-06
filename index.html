@@ -1,21 +1,20 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taxi Köln | Dashboard</title>
+<title>Taxi Köln | Dashboard Alpha</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--y:#facc15;--bg:#05070d;--card:rgba(13,18,30,0.9);--border:rgba(255,255,255,0.07);--muted:#64748b;--green:#22c55e;--red:#ef4444;--blue:#3b82f6}
+:root{--y:#facc15;--bg:#05070d;--card:rgba(13,18,30,0.92);--border:rgba(255,255,255,0.07);--muted:#64748b;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;--orange:#f97316}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
 body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:#e2e8f0;overflow:hidden}
 .bebas{font-family:'Bebas Neue',sans-serif}
 .mono{font-family:'JetBrains Mono',monospace}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#1e293b;border-radius:10px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#1e293b;border-radius:10px}::-webkit-scrollbar-thumb:hover{background:var(--y)}
 .glass{background:var(--card);backdrop-filter:blur(24px);border:1px solid var(--border)}
 .badge{padding:3px 9px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;display:inline-flex;align-items:center;gap:4px}
 .b-green{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.25)}
@@ -25,16 +24,19 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:#e2e8f0;o
 .b-purple{background:rgba(168,85,247,.12);color:#a855f7;border:1px solid rgba(168,85,247,.25)}
 .b-gray{background:rgba(100,116,139,.1);color:#94a3b8;border:1px solid rgba(100,116,139,.2)}
 .b-orange{background:rgba(249,115,22,.12);color:#fb923c;border:1px solid rgba(249,115,22,.25)}
-.nav-item{display:flex;align-items:center;padding:10px 14px;margin:2px 10px;border-radius:10px;color:var(--muted);font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;gap:12px}
+.b-panic{background:rgba(239,68,68,.25);color:#fff;border:1px solid #ef4444;animation:pulseBadge 1s infinite}
+@keyframes pulseBadge{0%,100%{opacity:1}50%{opacity:.5}}
+.nav-item{display:flex;align-items:center;padding:10px 14px;margin:2px 10px;border-radius:10px;color:var(--muted);font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;gap:12px;position:relative}
 .nav-item:hover{color:#e2e8f0;background:rgba(255,255,255,.03)}
 .nav-item.active{background:var(--y);color:#000}
 .nav-item i{width:15px;height:15px;flex-shrink:0}
 @keyframes pulse{0%{transform:scale(.95);box-shadow:0 0 0 0 rgba(34,197,94,.7)}70%{transform:scale(1);box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{transform:scale(.95);box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+@keyframes panicPulse{0%{box-shadow:0 0 0 0 rgba(239,68,68,.8),0 0 30px rgba(239,68,68,.4)}70%{box-shadow:0 0 0 20px rgba(239,68,68,0),0 0 60px rgba(239,68,68,.2)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0),0 0 30px rgba(239,68,68,.4)}}
 .pulse{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 .fade-up{animation:fadeUp .35s ease-out forwards}
 .tab-view{display:none}.tab-view.active{display:block}
-.modal-bg{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;pointer-events:none}
+.modal-bg{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.78);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;pointer-events:none}
 .modal-bg.open{opacity:1;pointer-events:all}
 .modal-box{background:#090d18;border:1px solid rgba(255,255,255,.09);border-radius:22px;width:100%;padding:32px;transform:scale(.96);transition:transform .2s;max-height:92vh;overflow-y:auto}
 .modal-bg.open .modal-box{transform:scale(1)}
@@ -47,14 +49,15 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
 .btn-y{background:var(--y);color:#000;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
 .btn-y:hover{transform:scale(1.03)}
 .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:10px;font-weight:600;font-size:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif}
+.btn-red{background:#ef4444;color:#fff;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
 .data-table{width:100%;border-collapse:collapse}
 .data-table th{padding:11px 15px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);border-bottom:1px solid var(--border)}
 .data-table td{padding:13px 15px;border-bottom:1px solid rgba(255,255,255,.03);font-size:12px}
 .data-table tr:hover td{background:rgba(255,255,255,.015)}
 .chat-wrap{overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
 .chat-msg{padding:9px 13px;border-radius:13px;max-width:84%;background:rgba(255,255,255,.05);font-size:11px;line-height:1.5}
-.chat-msg.mine{background:var(--y);color:#000;margin-left:auto;border-radius:13px 13px 4px 13px}
-.chat-msg:not(.mine){border-radius:13px 13px 13px 4px}
+.chat-msg.mine{background:var(--y);color:#000;margin-left:auto;border-radius:13px 13px 4px 14px}
+.chat-msg:not(.mine){border-radius:14px 14px 14px 4px}
 .chat-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;opacity:.65}
 .sys-online{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
 .sys-warn{background:rgba(250,204,21,.1);color:var(--y);border:1px solid rgba(250,204,21,.2)}
@@ -62,13 +65,56 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
 .staff-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;cursor:pointer;transition:all .3s;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
 .staff-card:hover{border-color:rgba(250,204,21,.3);transform:translateY(-3px)}
 .avatar{display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;flex-shrink:0;border-radius:12px}
-.ride-row-mine{background:rgba(250,204,21,.04);border-left:2px solid var(--y)}
 .cb-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;font-size:12px;font-weight:600}
 .cb-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--y);cursor:pointer}
+
+/* STATUS BUTTONS */
+.status-btn{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;border:2px solid transparent;cursor:pointer;transition:all .2s;font-weight:700;font-size:13px;font-family:'Space Grotesk',sans-serif}
+.status-btn:hover{transform:translateY(-2px)}
+.status-btn.active-status{box-shadow:0 0 20px rgba(255,255,255,.15);transform:translateY(-2px)}
+.s0{background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)}
+.s0.active-status{background:rgba(239,68,68,.3);border-color:#ef4444;box-shadow:0 0 20px rgba(239,68,68,.3)}
+.s1{background:rgba(34,197,94,.1);color:#22c55e;border-color:rgba(34,197,94,.25)}
+.s1.active-status{background:rgba(34,197,94,.25);border-color:#22c55e;box-shadow:0 0 20px rgba(34,197,94,.3)}
+.s2{background:rgba(34,197,94,.07);color:#4ade80;border-color:rgba(34,197,94,.15)}
+.s2.active-status{background:rgba(34,197,94,.2);border-color:#4ade80}
+.s3{background:rgba(250,204,21,.1);color:var(--y);border-color:rgba(250,204,21,.25)}
+.s3.active-status{background:rgba(250,204,21,.25);border-color:var(--y);box-shadow:0 0 20px rgba(250,204,21,.25)}
+.s4{background:rgba(168,85,247,.1);color:#a855f7;border-color:rgba(168,85,247,.25)}
+.s4.active-status{background:rgba(168,85,247,.25);border-color:#a855f7}
+.s5{background:rgba(59,130,246,.1);color:#60a5fa;border-color:rgba(59,130,246,.25)}
+.s5.active-status{background:rgba(59,130,246,.25);border-color:#60a5fa}
+.s6{background:rgba(100,116,139,.1);color:#94a3b8;border-color:rgba(100,116,139,.2)}
+.s6.active-status{background:rgba(100,116,139,.25);border-color:#94a3b8}
+
+/* PANIC */
+.panic-btn{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;border:2px solid #ef4444;border-radius:16px;padding:16px 24px;font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.08em;cursor:pointer;transition:all .2s;width:100%;display:flex;align-items:center;justify-content:center;gap:12px}
+.panic-btn:hover{transform:scale(1.02);box-shadow:0 0 40px rgba(239,68,68,.5)}
+.panic-btn.panic-active{animation:panicPulse 1s infinite;background:linear-gradient(135deg,#ef4444,#b91c1c)}
+.panic-overlay{position:fixed;inset:0;z-index:99998;background:rgba(239,68,68,.08);pointer-events:none;animation:panicFlash 1s infinite}
+@keyframes panicFlash{0%,100%{opacity:0}50%{opacity:1}}
+
+/* STATUS DOT COLORS */
+.sdot-0{background:#ef4444}
+.sdot-1{background:#22c55e}
+.sdot-2{background:#4ade80}
+.sdot-3{background:var(--y)}
+.sdot-4{background:#a855f7}
+.sdot-5{background:#60a5fa}
+.sdot-6{background:#94a3b8}
+.sdot-offline{background:#334155}
+.sdot-panic{background:#ef4444;animation:pulse 0.5s infinite}
+
+/* ZEUGNIS / CERT */
+.cert-paper{background:#fff;color:#1e293b;font-family:'Space Grotesk',sans-serif;padding:60px;min-height:900px}
+
 @media print{body>*:not(#print-area){display:none!important}#print-area{display:block!important}}
 </style>
 </head>
 <body>
+
+<!-- PANIC OVERLAY (hidden by default) -->
+<div id="panic-overlay" class="panic-overlay" style="display:none"></div>
 
 <!-- ===== LANDING ===== -->
 <div id="landing" style="position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column">
@@ -77,7 +123,10 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
       <div style="width:34px;height:34px;background:var(--y);border-radius:10px;display:flex;align-items:center;justify-content:center">
         <i data-lucide="zap" style="width:16px;height:16px;color:#000"></i>
       </div>
-      <span class="bebas" style="font-size:22px;letter-spacing:.05em">Taxi <span style="color:var(--y)">Köln</span></span>
+      <div>
+        <span class="bebas" style="font-size:22px;letter-spacing:.05em">Taxi <span style="color:var(--y)">Köln</span></span>
+        <span class="badge b-yellow" style="margin-left:10px;font-size:8px;padding:3px 8px">Dashboard Alpha</span>
+      </div>
     </div>
     <div style="display:flex;align-items:center;gap:14px">
       <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px" class="sys-online">
@@ -88,20 +137,20 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
     </div>
   </nav>
   <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:40px;position:relative;overflow:hidden">
-    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(250,204,21,.06),transparent 70%);border-radius:50%;pointer-events:none"></div>
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:520px;height:520px;background:radial-gradient(circle,rgba(250,204,21,.06),transparent 70%);border-radius:50%;pointer-events:none"></div>
     <div style="text-align:center;position:relative;z-index:1;max-width:640px">
-      <div class="badge b-yellow" style="margin-bottom:18px;padding:6px 14px;font-size:10px">Enterprise Dispatch v8.0</div>
-      <h1 class="bebas" style="font-size:clamp(64px,11vw,128px);line-height:.88;letter-spacing:.02em;margin-bottom:18px">Leitstellen<br><span style="color:var(--y)">Management</span></h1>
-      <p style="color:var(--muted);font-size:15px;max-width:440px;margin:0 auto 32px;line-height:1.6">Professionelle Taxi-Verwaltung — Echtzeit-Dispatch, Abrechnung & Personal.</p>
+      <div class="badge b-yellow" style="margin-bottom:16px;padding:5px 14px;font-size:10px">Dashboard Alpha — Version 1.0</div>
+      <h1 class="bebas" style="font-size:clamp(60px,10vw,120px);line-height:.88;letter-spacing:.02em;margin-bottom:18px">Leitstellen<br><span style="color:var(--y)">Management</span></h1>
+      <p style="color:var(--muted);font-size:15px;max-width:440px;margin:0 auto 32px;line-height:1.6">Echtzeit-Dispatch, Status-System, Abrechnung & Personal — alles in einem.</p>
       <button onclick="openLogin()" class="btn-y" style="padding:13px 40px;font-size:15px;border-radius:12px">SYSTEM STARTEN</button>
     </div>
   </div>
   <footer style="padding:16px 40px;border-top:1px solid var(--border);text-align:center">
-    <p style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.1em">© 2026 Taxi Köln Enterprise — All Rights Reserved</p>
+    <p style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.1em">© 2026 Taxi Köln — Dashboard Alpha — All Rights Reserved</p>
   </footer>
 </div>
 
-<!-- ===== LOGIN MODAL ===== -->
+<!-- ===== LOGIN ===== -->
 <div id="login-modal" class="modal-bg">
   <div class="modal-box" style="max-width:420px">
     <div style="text-align:center;margin-bottom:24px">
@@ -109,16 +158,16 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
         <i data-lucide="shield-check" style="width:26px;height:26px;color:#000"></i>
       </div>
       <h2 class="bebas" style="font-size:28px;letter-spacing:.04em">Mitarbeiter <span style="color:var(--y)">Login</span></h2>
-      <p style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.15em;margin-top:4px">Secure Access Point</p>
+      <p style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.15em;margin-top:4px">Dashboard Alpha — Secure Access</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:11px">
       <div><label class="lbl">Name</label><input type="text" id="log-name" placeholder="Vor- und Nachname" class="inp"></div>
       <div><label class="lbl">Passwort</label><input type="password" id="log-pw" placeholder="••••••••" class="inp" onkeydown="if(event.key==='Enter')handleLogin()"></div>
-      <button onclick="handleLogin()" class="btn-y" style="width:100%;padding:13px;justify-content:center;font-size:14px;border-radius:11px;margin-top:6px">TERMINAL ÖFFNEN</button>
+      <button onclick="handleLogin()" class="btn-y" style="width:100%;padding:13px;justify-content:center;font-size:14px;border-radius:11px;margin-top:6px">EINLOGGEN</button>
       <button onclick="closeModal('login-modal')" class="btn-ghost" style="width:100%;padding:10px">Abbrechen</button>
     </div>
-    <div style="margin-top:18px;padding:13px;background:rgba(250,204,21,.05);border:1px solid rgba(250,204,21,.15);border-radius:11px">
-      <p style="font-size:10px;color:var(--y);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px">Demo Zugänge</p>
+    <div style="margin-top:16px;padding:12px;background:rgba(250,204,21,.05);border:1px solid rgba(250,204,21,.15);border-radius:11px">
+      <p style="font-size:10px;color:var(--y);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Demo Zugänge</p>
       <p style="font-size:11px;color:var(--muted)" class="mono">Chris Schreiner / Bka26a</p>
       <p style="font-size:11px;color:var(--muted)" class="mono">Marco Krause / Bka26b</p>
       <p style="font-size:11px;color:var(--muted)" class="mono">Maverick Stone / Bka26r</p>
@@ -130,36 +179,37 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
 <div id="app" style="display:none;height:100vh;flex-direction:row">
 
   <!-- SIDEBAR -->
-  <aside style="width:252px;flex-shrink:0;background:#060810;border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:50">
-    <div style="padding:18px 14px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+  <aside style="width:256px;flex-shrink:0;background:#060810;border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:50">
+    <div style="padding:16px 14px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
       <div style="width:32px;height:32px;background:var(--y);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <i data-lucide="radio" style="width:15px;height:15px;color:#000"></i>
       </div>
       <div>
-        <div class="bebas" style="font-size:19px;letter-spacing:.05em;line-height:1">Taxi <span style="color:var(--y)">Dashboard</span></div>
-        <div class="mono" style="font-size:8px;color:var(--muted);font-weight:700;letter-spacing:.08em">Beta Version</div>
+        <div class="bebas" style="font-size:18px;letter-spacing:.05em;line-height:1">Taxi <span style="color:var(--y)">Köln</span></div>
+        <div class="mono" style="font-size:8px;color:var(--y);font-weight:700;letter-spacing:.08em;opacity:.7">Dashboard Alpha</div>
       </div>
     </div>
-    <nav id="sidebar-nav" style="flex:1;padding:10px 0;overflow-y:auto">
+    <nav style="flex:1;padding:10px 0;overflow-y:auto">
       <div style="padding:0 10px 5px 14px;margin-top:8px"><span style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em">Main Console</span></div>
       <div class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')"><i data-lucide="layout-dashboard"></i>Dashboard</div>
+      <div class="nav-item" id="nav-status" onclick="switchTab('status')"><i data-lucide="activity"></i>Status Board</div>
       <div class="nav-item" id="nav-dispatch" onclick="switchTab('dispatch')"><i data-lucide="radio-tower"></i>Leitstelle</div>
-      <div class="nav-item" id="nav-myrides" onclick="switchTab('myrides')"><i data-lucide="navigation-2"></i>Meine Fahrten <span id="badge-myrides" style="display:none;background:#ef4444;color:#fff;border-radius:50%;width:16px;height:16px;font-size:8px;font-weight:700;display:none;align-items:center;justify-content:center;margin-left:auto" id="myrides-badge-el">0</span></div>
+      <div class="nav-item" id="nav-myrides" onclick="switchTab('myrides')" style="position:relative"><i data-lucide="navigation-2"></i>Meine Fahrten<span id="badge-myrides" style="display:none;background:#ef4444;color:#fff;border-radius:50%;width:16px;height:16px;font-size:8px;font-weight:700;align-items:center;justify-content:center;margin-left:auto;flex-shrink:0">0</span></div>
       <div class="nav-item" id="nav-accounting" onclick="switchTab('accounting')"><i data-lucide="receipt"></i>Abrechnung</div>
       <div style="padding:0 10px 5px 14px;margin-top:14px"><span style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em">Organisation</span></div>
       <div class="nav-item" id="nav-staff" onclick="switchTab('staff')"><i data-lucide="users"></i>Personal</div>
       <div class="nav-item" id="nav-reports" onclick="switchTab('reports')" style="position:relative"><i data-lucide="alert-triangle"></i>Meldungen<span id="badge-reports" style="display:none;width:7px;height:7px;background:#ef4444;border-radius:50%;position:absolute;top:10px;right:12px;border:1.5px solid #060810"></span></div>
-      <div class="nav-item" id="nav-zeugnis" onclick="switchTab('zeugnis')"><i data-lucide="file-badge"></i>Zeugnisse</div>
+      <div class="nav-item" id="nav-zeugnis" onclick="switchTab('zeugnis')"><i data-lucide="award"></i>Führungszeugnisse</div>
       <div id="admin-section" style="display:none">
         <div style="padding:0 10px 5px 14px;margin-top:14px"><span style="font-size:9px;font-weight:700;color:rgba(239,68,68,.6);text-transform:uppercase;letter-spacing:.12em">Administration</span></div>
         <div class="nav-item" id="nav-admin" onclick="switchTab('admin')" style="color:#ef4444"><i data-lucide="shield-alert"></i>Admin Panel</div>
       </div>
     </nav>
-    <div style="padding:10px 10px 12px;border-top:1px solid var(--border)">
+    <div style="padding:10px;border-top:1px solid var(--border)">
       <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:11px;padding:11px;display:flex;align-items:center;gap:9px">
         <div style="position:relative">
           <div class="avatar" style="background:var(--y);color:#000;width:34px;height:34px;font-size:17px" id="user-initials">?</div>
-          <div id="user-status-dot" style="position:absolute;bottom:-2px;right:-2px;width:9px;height:9px;background:#475569;border-radius:50%;border:2px solid #060810"></div>
+          <div id="user-status-dot" style="position:absolute;bottom:-2px;right:-2px;width:10px;height:10px;background:#334155;border-radius:50%;border:2px solid #060810"></div>
         </div>
         <div style="flex:1;min-width:0;overflow:hidden">
           <p style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="user-name">–</p>
@@ -176,17 +226,18 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
   <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
 
     <!-- TOPBAR -->
-    <header style="height:60px;background:#060810;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0">
+    <header style="height:60px;background:#060810;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;z-index:40">
       <div>
-        <div style="font-size:9px;font-weight:700;color:var(--y);text-transform:uppercase;letter-spacing:.15em;margin-bottom:1px" id="tab-path">Zentrale / Übersicht</div>
+        <div style="font-size:9px;font-weight:700;color:var(--y);text-transform:uppercase;letter-spacing:.15em;margin-bottom:1px" id="tab-path">Dashboard Alpha</div>
         <div class="bebas" style="font-size:20px;letter-spacing:.04em;line-height:1" id="tab-title">Dashboard</div>
       </div>
-      <div style="display:flex;align-items:center;gap:14px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <!-- Current Status badge -->
+        <div id="topbar-status-badge" style="padding:5px 12px;border-radius:8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:rgba(100,116,139,.1);color:#94a3b8;border:1px solid rgba(100,116,139,.2)">Offline</div>
         <div id="sys-badge" class="sys-online" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px">
           <div class="pulse" style="width:6px;height:6px"></div>
           <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em" id="sys-text">Online</span>
         </div>
-        <!-- Announce bell -->
         <div style="position:relative">
           <button onclick="toggleAnnDrop()" style="width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative">
             <i data-lucide="bell" style="width:14px;height:14px"></i>
@@ -199,7 +250,6 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
             </div>
           </div>
         </div>
-        <!-- Clock -->
         <div style="text-align:right">
           <div class="mono" style="font-size:16px;font-weight:700;line-height:1" id="live-time">00:00:00</div>
           <div style="font-size:9px;color:var(--muted);font-weight:600;margin-top:2px;text-transform:uppercase;letter-spacing:.05em" id="live-date">–</div>
@@ -207,19 +257,16 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
       </div>
     </header>
 
-    <!-- CONTENT -->
     <div id="content-area" style="flex:1;overflow-y:auto;padding:24px">
 
       <!-- DASHBOARD -->
       <div id="view-dashboard" class="tab-view active fade-up">
-        <!-- Quick Actions -->
         <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
           <button id="qa-newride" class="btn-ghost" style="padding:9px 16px;display:flex;align-items:center;gap:7px;font-size:12px" onclick="switchTab('dispatch');setTimeout(openRideModal,80)"><i data-lucide="plus-circle" style="width:14px;height:14px;color:var(--y)"></i>Neue Fahrt</button>
           <button id="qa-staff" class="btn-ghost" style="padding:9px 16px;display:flex;align-items:center;gap:7px;font-size:12px" onclick="switchTab('staff')"><i data-lucide="users" style="width:14px;height:14px;color:#60a5fa"></i>Personal</button>
           <button id="qa-accounting" class="btn-ghost" style="padding:9px 16px;display:flex;align-items:center;gap:7px;font-size:12px" onclick="switchTab('accounting')"><i data-lucide="file-text" style="width:14px;height:14px;color:#34d399"></i>Rechnung</button>
-          <button id="qa-reports" class="btn-ghost" style="padding:9px 16px;display:flex;align-items:center;gap:7px;font-size:12px" onclick="switchTab('reports')"><i data-lucide="alert-triangle" style="width:14px;height:14px;color:#f97316"></i>Meldung</button>
+          <button id="qa-status" class="btn-ghost" style="padding:9px 16px;display:flex;align-items:center;gap:7px;font-size:12px" onclick="switchTab('status')"><i data-lucide="activity" style="width:14px;height:14px;color:#fb923c"></i>Status ändern</button>
         </div>
-        <!-- KPIs -->
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
           <div class="kpi" style="border-left:3px solid var(--y)">
             <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Fahrten heute</div>
@@ -231,16 +278,15 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
           </div>
           <div class="kpi">
             <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Dienstzeit</div>
-            <div class="mono bebas" style="font-size:36px;line-height:1" id="kpi-duty">00:00:00</div>
+            <div class="mono bebas" style="font-size:34px;line-height:1" id="kpi-duty">00:00:00</div>
             <button onclick="toggleDuty()" id="duty-btn" style="margin-top:10px;width:100%;background:var(--green);color:#fff;border:none;border-radius:8px;padding:7px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;transition:all .2s">Dienst starten</button>
           </div>
           <div class="kpi">
-            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Letzte Aktivität</div>
-            <div style="font-size:13px;font-weight:700;margin-top:6px" id="kpi-last">Keine Daten</div>
-            <div style="font-size:10px;color:var(--muted);margin-top:3px" id="kpi-last-time">–</div>
+            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Mein Status</div>
+            <div id="my-status-kpi" style="margin-top:8px"></div>
+            <button onclick="switchTab('status')" style="margin-top:10px;width:100%;background:rgba(255,255,255,.05);color:#e2e8f0;border:1px solid var(--border);border-radius:8px;padding:7px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;transition:all .2s">Status ändern</button>
           </div>
         </div>
-        <!-- Feed + Chat -->
         <div style="display:grid;grid-template-columns:1fr 340px;gap:14px">
           <div class="glass" style="border-radius:18px;padding:22px">
             <div style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;margin-bottom:14px">
@@ -269,37 +315,74 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
         </div>
       </div>
 
-      <!-- DISPATCH (Leitstelle) -->
+      <!-- STATUS BOARD -->
+      <div id="view-status" class="tab-view fade-up">
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:20px">
+          <!-- Left: My Status + Panic -->
+          <div>
+            <div class="glass" style="border-radius:18px;padding:26px;margin-bottom:16px">
+              <div class="bebas" style="font-size:22px;letter-spacing:.04em;margin-bottom:4px">Mein <span style="color:var(--y)">Status</span></div>
+              <p style="font-size:11px;color:var(--muted);margin-bottom:20px">Wähle deinen aktuellen Einsatzstatus. Nur im aktiven Dienst änderbar.</p>
+              <div id="status-buttons" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+                <!-- rendered by JS -->
+              </div>
+              <!-- PANIC BUTTON -->
+              <button id="panic-btn" onclick="togglePanic()" class="panic-btn">
+                <i data-lucide="alert-octagon" style="width:28px;height:28px"></i>
+                PANIC — NOTRUF
+              </button>
+              <div id="panic-status-info" style="display:none;margin-top:12px;padding:12px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;text-align:center">
+                <p style="font-size:12px;font-weight:700;color:#ef4444">⚠ PANIC AKTIV — Hilfe angefordert!</p>
+                <p style="font-size:10px;color:#fca5a5;margin-top:4px">Drücke erneut um Panic aufzuheben</p>
+              </div>
+            </div>
+            <!-- Status Legend -->
+            <div class="glass" style="border-radius:18px;padding:22px">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px">Status Legende</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:center;gap:10px"><div class="sdot-0" style="width:10px;height:10px;border-radius:50%;flex-shrink:0"></div><div><span style="font-size:12px;font-weight:700">Status 0</span> <span style="font-size:11px;color:var(--muted)">— Priorisierter Sprechwunsch</span></div></div>
+                <div style="display:flex;align-items:center;gap:10px"><div class="sdot-1" style="width:10px;height:10px;border-radius:50%;flex-shrink:0"></div><div><span style="font-size:12px;font-weight:700">Status 1</span> <span style="font-size:11px;color:var(--muted)">— Frei auf Fahrt</span></div></div>
+                <div style="display:flex;align-items:center;gap:10px"><div class="sdot-2" style="width:10px;height:10px;border-radius:50%;flex-shrink:0"></div><div><span style="font-size:12px;font-weight:700">Status 2</span> <span style="font-size:11px;color:var(--muted)">— Frei auf Position</span></div></div>
+                <div style="display:flex;align-items:center;gap:10px"><div class="sdot-3" style="width:10px;height:10px;border-radius:50%;flex-shrink:0"></div><div><span style="font-size:12px;font-weight:700">Status 3</span> <span style="font-size:11px;color:var(--muted)">— Auftrag übernommen</span></div></div>
+                <div style="display:flex;align-items:center;gap:10px"><div class="sdot-4" style="width:10px;height:10px;border-radius:50%;flex-shrink:0"></div><div><span style="font-size:12px;font-weight:700">Status 4</span> <span style="font-size:11px;color:var(--muted)">— Ortsfest gebunden</span></div></div>
+                <div style="display:flex;align-items:center;gap:10px"><div class="sdot-5" style="width:10px;height:10px;border-radius:50%;flex-shrink:0"></div><div><span style="font-size:12px;font-weight:700">Status 5</span> <span style="font-size:11px;color:var(--muted)">— Normaler Sprechwunsch</span></div></div>
+                <div style="display:flex;align-items:center;gap:10px"><div class="sdot-6" style="width:10px;height:10px;border-radius:50%;flex-shrink:0"></div><div><span style="font-size:12px;font-weight:700">Status 6</span> <span style="font-size:11px;color:var(--muted)">— Nicht verfügbar</span></div></div>
+                <div style="display:flex;align-items:center;gap:10px"><div style="width:10px;height:10px;border-radius:50%;background:#ef4444;flex-shrink:0;animation:pulse .5s infinite"></div><div><span style="font-size:12px;font-weight:700;color:#ef4444">PANIC</span> <span style="font-size:11px;color:var(--muted)">— Notruf aktiv</span></div></div>
+              </div>
+            </div>
+          </div>
+          <!-- Right: All users status board -->
+          <div class="glass" style="border-radius:18px;padding:20px">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px">Live Statusübersicht</div>
+            <div id="status-board-list" style="display:flex;flex-direction:column;gap:8px;max-height:70vh;overflow-y:auto"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DISPATCH -->
       <div id="view-dispatch" class="tab-view fade-up">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
           <h3 class="bebas" style="font-size:26px;letter-spacing:.04em">Radio <span style="color:var(--y)">Dispatch</span></h3>
-          <button id="btn-new-ride" onclick="openRideModal()" class="btn-y" style="padding:10px 20px">
-            <i data-lucide="plus" style="width:14px;height:14px"></i> Neue Fahrt
-          </button>
+          <button id="btn-new-ride" onclick="openRideModal()" class="btn-y" style="padding:10px 20px"><i data-lucide="plus" style="width:14px;height:14px"></i>Neue Fahrt</button>
         </div>
         <div class="glass" style="border-radius:18px;overflow:hidden">
-          <table class="data-table" id="dispatch-table">
-            <thead><tr>
-              <th>Priorität</th><th>Kunde</th><th>Abholort</th><th>Fahrer</th><th>Status</th>
-              <th style="text-align:right">Aktionen</th>
-            </tr></thead>
+          <table class="data-table">
+            <thead><tr><th>Priorität</th><th>Kunde</th><th>Abholort</th><th>Fahrer</th><th>Status</th><th style="text-align:right">Aktionen</th></tr></thead>
             <tbody id="ride-table-body"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- MY RIDES (Fahrer-Ansicht) -->
+      <!-- MY RIDES -->
       <div id="view-myrides" class="tab-view fade-up">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
           <h3 class="bebas" style="font-size:26px;letter-spacing:.04em">Meine <span style="color:var(--y)">Fahrten</span></h3>
-          <div id="myrides-badge" class="badge b-red" style="font-size:10px;padding:5px 12px"></div>
+          <div id="myrides-badge" class="badge b-red" style="font-size:10px;padding:5px 12px;display:none"></div>
         </div>
-        <!-- Offene Fahrten -->
         <div style="margin-bottom:20px">
           <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Offene Aufträge</div>
           <div id="my-open-rides" style="display:flex;flex-direction:column;gap:10px"></div>
         </div>
-        <!-- Erledigte Fahrten -->
         <div>
           <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Erledigte Fahrten</div>
           <div class="glass" style="border-radius:18px;overflow:hidden">
@@ -322,13 +405,11 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
                   <select id="inv-car" class="inp" onchange="updateInvoice()">
                     <option value="sedan">Mercedes S-Klasse</option><option value="van">Business Van</option>
                     <option value="stretch">Stretch Limousine</option><option value="suv">SUV Patriot</option>
-                  </select>
-                </div>
+                  </select></div>
                 <div><label class="lbl">Leistungstyp</label>
                   <select id="inv-service" class="inp" onchange="updateInvoice()">
                     <option value="transfer">Transfer</option><option value="round">Hin & Rückfahrt</option><option value="hourly">Stundenbuchung</option>
-                  </select>
-                </div>
+                  </select></div>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
                 <div><label class="lbl">Anzahl / Stunden</label><input type="number" id="inv-qty" value="1" min="1" class="inp" oninput="updateInvoice()"></div>
@@ -399,7 +480,7 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
       <div id="view-reports" class="tab-view fade-up">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
           <h3 class="bebas" style="font-size:26px;letter-spacing:.04em">Meldungs <span style="color:var(--y)">Zentrale</span></h3>
-          <button onclick="openModal('modal-report')" class="btn-y" style="padding:10px 20px"><i data-lucide="plus" style="width:14px;height:14px"></i> Neue Meldung</button>
+          <button onclick="openModal('modal-report')" class="btn-y" style="padding:10px 20px"><i data-lucide="plus" style="width:14px;height:14px"></i>Neue Meldung</button>
         </div>
         <div id="report-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px"></div>
       </div>
@@ -410,43 +491,38 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
         <div id="staff-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
       </div>
 
-      <!-- ZEUGNIS -->
+      <!-- FÜHRUNGSZEUGNISSE -->
       <div id="view-zeugnis" class="tab-view fade-up">
-        <h3 class="bebas" style="font-size:26px;letter-spacing:.04em;margin-bottom:18px">Zeugnisse <span style="color:var(--y)">& Dokumente</span></h3>
-        <div class="glass" style="border-radius:18px;padding:40px;text-align:center;color:var(--muted)">
-          <i data-lucide="file-badge" style="width:42px;height:42px;margin:0 auto 12px;opacity:.3"></i>
-          <p style="font-size:13px;font-weight:600">Bereich in Entwicklung</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h3 class="bebas" style="font-size:26px;letter-spacing:.04em">Führungs<span style="color:var(--y)">zeugnisse</span></h3>
+          <button onclick="openCertModal()" class="btn-y" style="padding:10px 20px"><i data-lucide="plus" style="width:14px;height:14px"></i>Neues Zeugnis</button>
         </div>
+        <div id="cert-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px"></div>
       </div>
 
       <!-- ADMIN -->
       <div id="view-admin" class="tab-view fade-up">
         <h3 class="bebas" style="font-size:26px;letter-spacing:.04em;margin-bottom:18px;color:#ef4444">Admin <span style="color:var(--y)">Panel</span></h3>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-          <!-- Add user -->
           <div class="glass" style="border-radius:18px;padding:26px">
             <div style="font-size:14px;font-weight:700;color:#ef4444;margin-bottom:18px;display:flex;align-items:center;gap:7px"><i data-lucide="user-plus" style="width:14px;height:14px"></i>Neuen Account erstellen</div>
             <div style="display:flex;flex-direction:column;gap:10px">
               <div><label class="lbl">Name</label><input type="text" id="adm-name" placeholder="Vor- und Nachname" class="inp"></div>
               <div><label class="lbl">Passwort</label><input type="text" id="adm-pw" placeholder="Passwort" class="inp"></div>
               <div><label class="lbl">Rang</label>
-                <select id="adm-rank" class="inp">
+                <select id="adm-rank" class="inp" onchange="autoFillPerms()">
                   <option>Geschäftsführung</option><option>Stlv Geschäftsführung</option>
                   <option>Sr. Fahrer</option><option>Fahrer</option>
                   <option>Jr. Fahrer</option><option>Azubi</option><option>Praktikant</option>
                 </select>
               </div>
-              <!-- Permissions -->
               <div style="background:rgba(0,0,0,.3);border-radius:11px;padding:14px">
                 <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Berechtigungen</div>
-                <div style="display:flex;flex-direction:column;gap:7px" id="perm-checkboxes">
-                  <!-- generated by JS -->
-                </div>
+                <div style="display:flex;flex-direction:column;gap:7px" id="perm-checkboxes"></div>
               </div>
               <button onclick="adminAddUser()" style="background:#ef4444;color:#fff;padding:12px;border-radius:10px;font-weight:700;font-size:13px;border:none;cursor:pointer;margin-top:4px">Account erstellen</button>
             </div>
           </div>
-          <!-- Announce + System -->
           <div style="display:flex;flex-direction:column;gap:14px">
             <div class="glass" style="border-radius:18px;padding:24px">
               <div style="font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:7px"><i data-lucide="megaphone" style="width:14px;height:14px;color:var(--y)"></i>Ankündigung</div>
@@ -463,54 +539,51 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
             </div>
           </div>
         </div>
-        <!-- User Table -->
         <div class="glass" style="border-radius:18px;overflow:hidden">
           <table class="data-table">
-            <thead><tr><th>Name</th><th>Rang</th><th>Fahrten</th><th>Status</th><th>Berechtigungen</th><th style="text-align:right">Aktionen</th></tr></thead>
+            <thead><tr><th>Name</th><th>Rang</th><th>Status</th><th>Fahrten</th><th>Berechtigungen</th><th style="text-align:right">Aktionen</th></tr></thead>
             <tbody id="admin-table"></tbody>
           </table>
         </div>
       </div>
 
-    </div><!-- /content -->
-  </div><!-- /main -->
-</div><!-- /app -->
+    </div>
+  </div>
+</div>
 
 <!-- ===== MODALS ===== -->
 
-<!-- RIDE MODAL (Leitstelle) -->
+<!-- RIDE MODAL -->
 <div id="modal-ride" class="modal-bg">
   <div class="modal-box" style="max-width:480px">
     <h3 class="bebas" style="font-size:24px;letter-spacing:.04em;margin-bottom:18px">Fahrtauftrag <span style="color:var(--y)">erstellen</span></h3>
     <div style="display:flex;flex-direction:column;gap:11px">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div><label class="lbl">Kunde / Firma</label><input type="text" id="r-client" class="inp" placeholder="z.B. Herr Müller"></div>
-        <div><label class="lbl">Priorität</label>
-          <select id="r-prio" class="inp"><option value="standard">Standard</option><option value="express">Express</option><option value="vip">VIP</option></select>
-        </div>
+        <div><label class="lbl">Priorität</label><select id="r-prio" class="inp"><option value="standard">Standard</option><option value="express">Express</option><option value="vip">VIP</option></select></div>
       </div>
       <div><label class="lbl">Abholort</label><input type="text" id="r-pickup" class="inp" placeholder="Straße, Hausnr., Ort"></div>
       <div><label class="lbl">Fahrer zuweisen</label><select id="r-driver" class="inp"><option value="">– Kein Fahrer –</option></select></div>
-      <div><label class="lbl">Anmerkung (optional)</label><input type="text" id="r-note" class="inp" placeholder="z.B. Rollatortransport"></div>
+      <div><label class="lbl">Anmerkung (optional)</label><input type="text" id="r-note" class="inp" placeholder="z.B. Rollator vorhanden"></div>
       <button onclick="saveRide()" class="btn-y" style="width:100%;padding:12px;justify-content:center;font-size:14px;border-radius:11px;margin-top:4px">AUFTRAG SENDEN</button>
       <button onclick="closeModal('modal-ride')" class="btn-ghost" style="width:100%;padding:10px">Abbrechen</button>
     </div>
   </div>
 </div>
 
-<!-- COMPLETE RIDE MODAL (Fahrer) -->
+<!-- COMPLETE RIDE MODAL -->
 <div id="modal-complete" class="modal-bg">
   <div class="modal-box" style="max-width:460px">
     <h3 class="bebas" style="font-size:24px;letter-spacing:.04em;margin-bottom:18px">Fahrt <span style="color:var(--y)">abschließen</span></h3>
-    <div style="background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.2);border-radius:12px;padding:14px;margin-bottom:16px">
+    <div style="background:rgba(250,204,21,.07);border:1px solid rgba(250,204,21,.2);border-radius:12px;padding:14px;margin-bottom:16px">
       <div style="font-size:10px;font-weight:700;color:var(--y);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">Abholort</div>
       <div style="font-size:14px;font-weight:700" id="complete-pickup">–</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:11px">
-      <div><label class="lbl">Zielort (wo wurde der Kunde abgesetzt?)</label><input type="text" id="comp-dest" class="inp" placeholder="Straße, Hausnr., Ort"></div>
-      <div><label class="lbl">Gefahrene KM (Anfahrt des Fahrers)</label><input type="number" id="comp-km" class="inp" placeholder="z.B. 12.5" step="0.1" min="0"></div>
+      <div><label class="lbl">Zielort</label><input type="text" id="comp-dest" class="inp" placeholder="Straße, Hausnr., Ort"></div>
+      <div><label class="lbl">Gefahrene KM</label><input type="number" id="comp-km" class="inp" placeholder="z.B. 12.5" step="0.1" min="0"></div>
       <input type="hidden" id="comp-ride-id">
-      <button onclick="completeRide()" class="btn-y" style="width:100%;padding:12px;justify-content:center;font-size:14px;border-radius:11px;margin-top:4px">FAHRT ABSCHLIESSEN ✓</button>
+      <button onclick="completeRide()" class="btn-y" style="width:100%;padding:12px;justify-content:center;font-size:14px;border-radius:11px;margin-top:4px"><i data-lucide="check-circle" style="width:14px;height:14px"></i>FAHRT ABSCHLIESSEN</button>
       <button onclick="closeModal('modal-complete')" class="btn-ghost" style="width:100%;padding:10px">Abbrechen</button>
     </div>
   </div>
@@ -523,12 +596,8 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
     <div style="display:flex;flex-direction:column;gap:11px">
       <div><label class="lbl">Titel</label><input type="text" id="rep-title" class="inp" placeholder="Kurze Beschreibung"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div><label class="lbl">Kategorie</label>
-          <select id="rep-cat" class="inp"><option value="bug">🐛 Bug</option><option value="improvement">💡 Verbesserung</option><option value="other">📌 Sonstiges</option></select>
-        </div>
-        <div><label class="lbl">Priorität</label>
-          <select id="rep-prio" class="inp"><option value="low">Niedrig</option><option value="medium">Mittel</option><option value="high">Hoch</option></select>
-        </div>
+        <div><label class="lbl">Kategorie</label><select id="rep-cat" class="inp"><option value="bug">🐛 Bug</option><option value="improvement">💡 Verbesserung</option><option value="other">📌 Sonstiges</option></select></div>
+        <div><label class="lbl">Priorität</label><select id="rep-prio" class="inp"><option value="low">Niedrig</option><option value="medium">Mittel</option><option value="high">Hoch</option></select></div>
       </div>
       <div><label class="lbl">Beschreibung</label><textarea id="rep-desc" class="inp" style="height:90px;resize:none;padding:11px" placeholder="Detaillierte Beschreibung..."></textarea></div>
       <button onclick="saveReport()" class="btn-y" style="width:100%;padding:12px;justify-content:center;font-size:14px;border-radius:11px">MELDUNG ABSENDEN</button>
@@ -539,8 +608,7 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
 
 <!-- REPORT DETAIL MODAL -->
 <div id="modal-report-detail" class="modal-bg">
-  <div class="modal-box" style="max-width:520px">
-    <div id="rep-detail-body"></div>
+  <div class="modal-box" style="max-width:520px"><div id="rep-detail-body"></div>
     <button onclick="closeModal('modal-report-detail')" class="btn-ghost" style="width:100%;padding:10px;margin-top:12px">Schließen</button>
   </div>
 </div>
@@ -552,6 +620,7 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
       <div class="avatar" style="background:var(--y);color:#000;width:64px;height:64px;font-size:28px;margin-bottom:12px" id="prof-init">?</div>
       <h2 class="bebas" style="font-size:26px;letter-spacing:.04em" id="prof-name">–</h2>
       <span class="badge b-yellow" style="margin-top:5px" id="prof-rank">–</span>
+      <div id="prof-status-row" style="margin-top:8px"></div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:18px">
       <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center">
@@ -575,24 +644,80 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
   </div>
 </div>
 
-<!-- PRINT AREA -->
+<!-- CERT MODAL (Führungszeugnis erstellen) -->
+<div id="modal-cert" class="modal-bg">
+  <div class="modal-box" style="max-width:500px">
+    <h3 class="bebas" style="font-size:24px;letter-spacing:.04em;margin-bottom:18px">Führungszeugnis <span style="color:var(--y)">ausstellen</span></h3>
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div><label class="lbl">Mitarbeiter</label><select id="cert-person" class="inp"></select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="lbl">Zeugnistyp</label>
+          <select id="cert-type" class="inp">
+            <option value="arbeitszeugnis">Arbeitszeugnis</option>
+            <option value="praktikum">Praktikumszeugnis</option>
+            <option value="ausbildung">Ausbildungszeugnis</option>
+            <option value="zwischenzeugnis">Zwischenzeugnis</option>
+          </select>
+        </div>
+        <div><label class="lbl">Bewertung</label>
+          <select id="cert-grade" class="inp">
+            <option value="sehr gut">Sehr gut</option>
+            <option value="gut">Gut</option>
+            <option value="befriedigend">Befriedigend</option>
+            <option value="ausreichend">Ausreichend</option>
+          </select>
+        </div>
+      </div>
+      <div><label class="lbl">Tätigkeitsbeschreibung</label><textarea id="cert-desc" class="inp" style="height:80px;resize:none;padding:11px" placeholder="z.B. Tätigkeit als Fahrer im Stadtgebiet Köln..."></textarea></div>
+      <div><label class="lbl">Beschäftigt von – bis</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <input type="text" id="cert-from" class="inp" placeholder="01.01.2025">
+          <input type="text" id="cert-to" class="inp" placeholder="31.12.2025">
+        </div>
+      </div>
+      <button onclick="saveCert()" class="btn-y" style="width:100%;padding:12px;justify-content:center;font-size:14px;border-radius:11px">ZEUGNIS ERSTELLEN</button>
+      <button onclick="closeModal('modal-cert')" class="btn-ghost" style="width:100%;padding:10px">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<!-- CERT VIEW MODAL -->
+<div id="modal-cert-view" class="modal-bg">
+  <div class="modal-box" style="max-width:700px;padding:0;overflow:hidden">
+    <div id="cert-view-content" style="padding:0"></div>
+    <div style="display:flex;gap:10px;padding:16px 24px;border-top:1px solid var(--border)">
+      <button onclick="printCert()" class="btn-y" style="padding:10px 20px"><i data-lucide="printer" style="width:14px;height:14px"></i>Drucken</button>
+      <button onclick="closeModal('modal-cert-view')" class="btn-ghost" style="padding:10px 20px">Schließen</button>
+    </div>
+  </div>
+</div>
+
 <div id="print-area" style="display:none"></div>
 
 <script>
-// ============================================================
-//  DATA
-// ============================================================
+// ================================================================
+//  CONSTANTS
+// ================================================================
 const RANKS = ['Geschäftsführung','Stlv Geschäftsführung','Sr. Fahrer','Fahrer','Jr. Fahrer','Azubi','Praktikant'];
 const ADMIN_RANKS = ['Geschäftsführung','Stlv Geschäftsführung'];
-
 const ALL_PERMS = [
-  { key:'dispatch',    label:'Leitstelle / Dispatch' },
-  { key:'newride',     label:'Neue Fahrt erstellen' },
-  { key:'accounting',  label:'Abrechnung' },
-  { key:'staff',       label:'Personal ansehen' },
-  { key:'reports',     label:'Meldungen' },
-  { key:'zeugnis',     label:'Zeugnisse' },
-  { key:'admin',       label:'Admin Panel' },
+  {key:'dispatch',   label:'Leitstelle / Dispatch'},
+  {key:'newride',    label:'Neue Fahrt erstellen'},
+  {key:'accounting', label:'Abrechnung'},
+  {key:'staff',      label:'Personal ansehen'},
+  {key:'reports',    label:'Meldungen'},
+  {key:'zeugnis',    label:'Führungszeugnisse'},
+  {key:'admin',      label:'Admin Panel'},
+];
+
+const STATUS_DEFS = [
+  {n:0, label:'Status 0', desc:'Priorisierter Sprechwunsch', cls:'s0', dot:'sdot-0'},
+  {n:1, label:'Status 1', desc:'Frei auf Fahrt',              cls:'s1', dot:'sdot-1'},
+  {n:2, label:'Status 2', desc:'Frei auf Position',           cls:'s2', dot:'sdot-2'},
+  {n:3, label:'Status 3', desc:'Auftrag übernommen',          cls:'s3', dot:'sdot-3'},
+  {n:4, label:'Status 4', desc:'Ortsfest gebunden',           cls:'s4', dot:'sdot-4'},
+  {n:5, label:'Status 5', desc:'Normaler Sprechwunsch',       cls:'s5', dot:'sdot-5'},
+  {n:6, label:'Status 6', desc:'Nicht verfügbar',             cls:'s6', dot:'sdot-6'},
 ];
 
 function defaultPerms(rank) {
@@ -602,30 +727,32 @@ function defaultPerms(rank) {
   if(rank==='Fahrer')     return ['reports','zeugnis'];
   if(rank==='Jr. Fahrer') return ['reports','zeugnis'];
   if(rank==='Azubi')      return ['reports'];
-  if(rank==='Praktikant') return [];
   return [];
 }
 
-let users = JSON.parse(localStorage.getItem('tx8_users')) || [
-  { name:'Chris Schreiner',  pw:'Bka26a',  rank:'Geschäftsführung',       rides:124, status:'offline', totalKm:4820, history:[], perms: ALL_PERMS.map(p=>p.key) },
-  { name:'Marco Krause',     pw:'Bka26b',  rank:'Stlv Geschäftsführung',  rides:89,  status:'offline', totalKm:3200, history:[], perms: ALL_PERMS.map(p=>p.key) },
-  { name:'Maverick Stone',   pw:'Bka26r',  rank:'Azubi',                  rides:12,  status:'offline', totalKm:340,  history:[], perms: defaultPerms('Azubi') },
+// ================================================================
+//  DATA
+// ================================================================
+let users = JSON.parse(localStorage.getItem('tka_users')) || [
+  {name:'Chris Schreiner', pw:'Bka26a', rank:'Geschäftsführung',      rides:124, status:'offline', eStatus:null, panic:false, totalKm:4820, history:[], perms:ALL_PERMS.map(p=>p.key)},
+  {name:'Marco Krause',    pw:'Bka26b', rank:'Stlv Geschäftsführung', rides:89,  status:'offline', eStatus:null, panic:false, totalKm:3200, history:[], perms:ALL_PERMS.map(p=>p.key)},
+  {name:'Maverick Stone',  pw:'Bka26r', rank:'Azubi',                 rides:12,  status:'offline', eStatus:null, panic:false, totalKm:340,  history:[], perms:defaultPerms('Azubi')},
 ];
+let rides         = JSON.parse(localStorage.getItem('tka_rides'))   || [];
+let reports       = JSON.parse(localStorage.getItem('tka_reports')) || [];
+let announcements = JSON.parse(localStorage.getItem('tka_anns'))    || [];
+let globalLogs    = JSON.parse(localStorage.getItem('tka_logs'))    || [];
+let chatMessages  = JSON.parse(localStorage.getItem('tka_chat'))    || [];
+let certs         = JSON.parse(localStorage.getItem('tka_certs'))   || [];
+let sysStatus     = localStorage.getItem('tka_sys') || 'online';
 
-let rides         = JSON.parse(localStorage.getItem('tx8_rides'))   || [];
-let reports       = JSON.parse(localStorage.getItem('tx8_reports')) || [];
-let announcements = JSON.parse(localStorage.getItem('tx8_anns'))    || [];
-let globalLogs    = JSON.parse(localStorage.getItem('tx8_logs'))    || [];
-let chatMessages  = JSON.parse(localStorage.getItem('tx8_chat'))    || [];
-let sysStatus     = localStorage.getItem('tx8_sys') || 'online';
+let currentUser = null;
+let isDuty      = false;
+let dutyStart   = null;
 
-let currentUser  = null;
-let isDuty       = false;
-let dutyStart    = null;
-
-// ============================================================
+// ================================================================
 //  BOOT
-// ============================================================
+// ================================================================
 window.onload = () => {
   lucide.createIcons();
   setInterval(tick, 1000);
@@ -638,40 +765,44 @@ function tick() {
   setEl('live-time', now.toLocaleTimeString('de-DE'));
   setEl('live-date', now.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'}));
   if(isDuty && dutyStart) {
-    const diff = Math.floor((Date.now()-dutyStart)/1000);
-    const h=Math.floor(diff/3600).toString().padStart(2,'0');
-    const m=Math.floor((diff%3600)/60).toString().padStart(2,'0');
-    const s=(diff%60).toString().padStart(2,'0');
+    const d = Math.floor((Date.now()-dutyStart)/1000);
+    const h=Math.floor(d/3600).toString().padStart(2,'0');
+    const m=Math.floor((d%3600)/60).toString().padStart(2,'0');
+    const s=(d%60).toString().padStart(2,'0');
     setEl('kpi-duty',`${h}:${m}:${s}`);
   }
 }
 
-// ============================================================
+// ================================================================
 //  AUTH
-// ============================================================
+// ================================================================
 function openLogin() { openModal('login-modal'); }
 
 function handleLogin() {
   const name = document.getElementById('log-name').value.trim();
   const pw   = document.getElementById('log-pw').value.trim();
   const user = users.find(u => u.name.toLowerCase()===name.toLowerCase() && u.pw===pw);
-  if(user) {
-    currentUser = user;
-    closeModal('login-modal');
-    document.getElementById('landing').style.display='none';
-    const app = document.getElementById('app');
-    app.style.display='flex';
-    initApp();
-    addLog(`${user.name} hat sich eingeloggt.`);
-    toast('success','Erfolgreich eingeloggt!');
-  } else {
+  if(!user) {
     Swal.fire({icon:'error',title:'Login Fehler',text:'Name oder Passwort falsch!',background:'#090d18',color:'#e2e8f0',confirmButtonColor:'#facc15'});
+    return;
   }
+  currentUser = user;
+  closeModal('login-modal');
+  document.getElementById('landing').style.display='none';
+  const app = document.getElementById('app');
+  app.style.display='flex';
+  // On login → set status to "bereit" (Status 1)
+  setUserEStatus(1);
+  initApp();
+  addLog(`${user.name} hat sich eingestempelt. Status: 1 (Frei auf Fahrt)`);
+  toast('success',`Willkommen, ${user.name.split(' ')[0]}! Status: 1 – Frei auf Fahrt`);
 }
 
 function logout() {
-  if(isDuty) toggleDuty();
-  currentUser.status='offline';
+  currentUser.status  = 'offline';
+  currentUser.eStatus = null;
+  currentUser.panic   = false;
+  document.getElementById('panic-overlay').style.display='none';
   saveData();
   location.reload();
 }
@@ -683,75 +814,14 @@ function initApp() {
   applySidebarPerms();
   updateDashboard();
   setSysDisplay();
-  setInterval(()=>{ updateDashboard(); }, 4000);
+  setInterval(()=>{ updateDashboard(); renderStatusBoard(); }, 3500);
   switchTab('dashboard');
   lucide.createIcons();
 }
 
-// ============================================================
-//  PERMISSIONS & SIDEBAR
-// ============================================================
-function hasPerm(key) {
-  if(!currentUser) return false;
-  return (currentUser.perms||[]).includes(key);
-}
-
-function applySidebarPerms() {
-  // Always visible: dashboard, myrides
-  const perms = currentUser.perms || [];
-  document.getElementById('nav-dispatch').style.display    = perms.includes('dispatch')   ? 'flex':'none';
-  document.getElementById('nav-accounting').style.display  = perms.includes('accounting') ? 'flex':'none';
-  document.getElementById('nav-staff').style.display       = perms.includes('staff')      ? 'flex':'none';
-  document.getElementById('nav-reports').style.display     = perms.includes('reports')    ? 'flex':'none';
-  document.getElementById('nav-zeugnis').style.display     = perms.includes('zeugnis')    ? 'flex':'none';
-  if(perms.includes('admin')) {
-    document.getElementById('admin-section').style.display='block';
-  }
-  // Quick actions on dashboard
-  document.getElementById('qa-newride').style.display     = perms.includes('newride')    ? 'flex':'none';
-  document.getElementById('qa-staff').style.display       = perms.includes('staff')      ? 'flex':'none';
-  document.getElementById('qa-accounting').style.display  = perms.includes('accounting') ? 'flex':'none';
-  document.getElementById('qa-reports').style.display     = perms.includes('reports')    ? 'flex':'none';
-  // Dispatch btn
-  const nb = document.getElementById('btn-new-ride');
-  if(nb) nb.style.display = perms.includes('newride') ? 'inline-flex':'none';
-}
-
-// ============================================================
-//  TAB SYSTEM
-// ============================================================
-const TAB_META = {
-  dashboard:  ['Zentrale / Übersicht', u=>`Willkommen, ${u.name.split(' ')[0]}`],
-  dispatch:   ['Zentrale / Leitstelle', ()=>'Dispatch'],
-  myrides:    ['Zentrale / Meine Fahrten', ()=>'Meine Fahrten'],
-  accounting: ['Zentrale / Abrechnung', ()=>'Abrechnung'],
-  reports:    ['Zentrale / Meldungen', ()=>'Meldungen'],
-  staff:      ['Zentrale / Personal', ()=>'Personal'],
-  zeugnis:    ['Zentrale / Zeugnisse', ()=>'Zeugnisse'],
-  admin:      ['Zentrale / Admin', ()=>'Admin Panel'],
-};
-
-function switchTab(tab) {
-  document.querySelectorAll('.tab-view').forEach(v=>v.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const view = document.getElementById(`view-${tab}`);
-  const nav  = document.getElementById(`nav-${tab}`);
-  if(view) view.classList.add('active');
-  if(nav)  nav.classList.add('active');
-  const m = TAB_META[tab];
-  if(m) { setEl('tab-path', m[0]); setEl('tab-title', m[1](currentUser)); }
-  if(tab==='dispatch')   renderDispatch();
-  if(tab==='myrides')    renderMyRides();
-  if(tab==='reports')    renderReports();
-  if(tab==='staff')      renderStaff();
-  if(tab==='accounting') updateInvoice();
-  if(tab==='admin')      { renderAdminTable(); }
-  lucide.createIcons();
-}
-
-// ============================================================
+// ================================================================
 //  DUTY
-// ============================================================
+// ================================================================
 function toggleDuty() {
   const btn  = document.getElementById('duty-btn');
   const dot  = document.getElementById('user-status-dot');
@@ -769,168 +839,328 @@ function toggleDuty() {
   } else {
     isDuty=false;
     btn.textContent='Dienst starten'; btn.style.background='#22c55e';
-    dot.style.background='#475569';
+    dot.style.background='#334155';
     currentUser.status='offline';
-    lock.style.display='flex';
-    chat.style.display='none';
-    dutyStart=null;
-    setEl('kpi-duty','00:00:00');
+    lock.style.display='flex'; chat.style.display='none';
+    dutyStart=null; setEl('kpi-duty','00:00:00');
     addLog(`${currentUser.name} hat den Dienst beendet.`);
     toast('info','Dienst beendet');
   }
   saveData();
 }
 
-// ============================================================
+// ================================================================
+//  STATUS SYSTEM
+// ================================================================
+function setUserEStatus(n) {
+  currentUser.eStatus = n;
+  currentUser.panic   = false;
+  saveData();
+  updateStatusUI();
+  updateTopbarStatus();
+}
+
+function updateStatusUI() {
+  // Buttons
+  const container = document.getElementById('status-buttons');
+  if(!container) return;
+  STATUS_DEFS.forEach(s => {
+    const btn = document.getElementById(`sbtn-${s.n}`);
+    if(!btn) return;
+    btn.classList.remove('active-status');
+    if(currentUser.eStatus===s.n) btn.classList.add('active-status');
+  });
+  // KPI
+  const kpi = document.getElementById('my-status-kpi');
+  if(kpi) {
+    if(currentUser.panic) {
+      kpi.innerHTML=`<span class="badge b-panic" style="font-size:11px;padding:5px 10px">⚠ PANIC AKTIV</span>`;
+    } else if(currentUser.eStatus!==null) {
+      const s = STATUS_DEFS.find(x=>x.n===currentUser.eStatus);
+      kpi.innerHTML = s ? `<div style="font-size:14px;font-weight:700">${s.label}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${s.desc}</div>` : '';
+    } else {
+      kpi.innerHTML=`<div style="font-size:12px;color:var(--muted)">Kein Status</div>`;
+    }
+  }
+  // Sidebar dot
+  const dot = document.getElementById('user-status-dot');
+  if(dot) {
+    dot.className='';
+    dot.style.cssText='position:absolute;bottom:-2px;right:-2px;width:10px;height:10px;border-radius:50%;border:2px solid #060810';
+    if(currentUser.panic) { dot.classList.add('sdot-panic'); }
+    else if(currentUser.eStatus!==null) { dot.classList.add(`sdot-${currentUser.eStatus}`); }
+    else { dot.classList.add('sdot-offline'); }
+  }
+  // Panic info
+  const pi = document.getElementById('panic-status-info');
+  const pb = document.getElementById('panic-btn');
+  if(pi) pi.style.display = currentUser.panic ? 'block':'none';
+  if(pb) {
+    pb.classList.toggle('panic-active', currentUser.panic);
+    pb.innerHTML = currentUser.panic
+      ? '<i data-lucide="alert-octagon" style="width:24px;height:24px"></i> PANIC AUFHEBEN'
+      : '<i data-lucide="alert-octagon" style="width:24px;height:24px"></i> PANIC — NOTRUF';
+    lucide.createIcons();
+  }
+  const ov = document.getElementById('panic-overlay');
+  if(ov) ov.style.display = currentUser.panic ? 'block':'none';
+  renderStatusBoard();
+}
+
+function updateTopbarStatus() {
+  const el = document.getElementById('topbar-status-badge');
+  if(!el) return;
+  if(currentUser.panic) {
+    el.style.background='rgba(239,68,68,.25)'; el.style.color='#fff';
+    el.style.border='1px solid #ef4444'; el.textContent='⚠ PANIC';
+    el.style.animation='pulseBadge 1s infinite';
+  } else if(currentUser.eStatus!==null) {
+    const s = STATUS_DEFS.find(x=>x.n===currentUser.eStatus);
+    const colors = [
+      ['rgba(239,68,68,.15)','#ef4444','rgba(239,68,68,.3)'],
+      ['rgba(34,197,94,.1)','#22c55e','rgba(34,197,94,.25)'],
+      ['rgba(34,197,94,.07)','#4ade80','rgba(34,197,94,.15)'],
+      ['rgba(250,204,21,.1)','#facc15','rgba(250,204,21,.25)'],
+      ['rgba(168,85,247,.1)','#a855f7','rgba(168,85,247,.25)'],
+      ['rgba(59,130,246,.1)','#60a5fa','rgba(59,130,246,.25)'],
+      ['rgba(100,116,139,.1)','#94a3b8','rgba(100,116,139,.2)'],
+    ];
+    const c = colors[currentUser.eStatus]||colors[6];
+    el.style.background=c[0]; el.style.color=c[1]; el.style.border=`1px solid ${c[2]}`;
+    el.style.animation='none';
+    el.textContent = s ? s.label : 'Unbekannt';
+  } else {
+    el.style.background='rgba(100,116,139,.1)'; el.style.color='#94a3b8';
+    el.style.border='1px solid rgba(100,116,139,.2)'; el.textContent='Offline';
+    el.style.animation='none';
+  }
+}
+
+function renderStatusButtons() {
+  const c = document.getElementById('status-buttons');
+  if(!c) return;
+  c.innerHTML = STATUS_DEFS.map(s=>`
+    <button id="sbtn-${s.n}" class="status-btn ${s.cls} ${currentUser.eStatus===s.n?'active-status':''}"
+      onclick="setUserEStatus(${s.n})"
+      ${!isDuty?'title="Dienst starten um Status zu ändern"':''}>
+      <div class="${s.dot}" style="width:10px;height:10px;border-radius:50%;flex-shrink:0"></div>
+      <div style="text-align:left">
+        <div style="font-size:13px;font-weight:700">${s.label}</div>
+        <div style="font-size:10px;opacity:.7;font-weight:500">${s.desc}</div>
+      </div>
+    </button>
+  `).join('');
+}
+
+function togglePanic() {
+  if(!isDuty) { toast('error','Zuerst Dienst starten!'); return; }
+  currentUser.panic = !currentUser.panic;
+  if(currentUser.panic) {
+    addLog(`⚠ PANIC ALARM: ${currentUser.name} hat Notruf ausgelöst!`);
+    Swal.fire({
+      icon:'error', title:'PANIC AUSGELÖST!',
+      text:`${currentUser.name} hat einen Notruf abgesetzt. Leitstelle wird informiert.`,
+      confirmButtonColor:'#ef4444', background:'#0a0e1a', color:'#e2e8f0',
+      confirmButtonText:'Verstanden'
+    });
+  } else {
+    addLog(`${currentUser.name} hat den PANIC-Alarm aufgehoben.`);
+    toast('info','PANIC aufgehoben');
+  }
+  saveData();
+  updateStatusUI();
+  updateTopbarStatus();
+}
+
+function renderStatusBoard() {
+  const el = document.getElementById('status-board-list');
+  if(!el) return;
+  el.innerHTML = users.map(u => {
+    const s = STATUS_DEFS.find(x=>x.n===u.eStatus);
+    const dotClass = u.panic ? 'sdot-panic' : (u.eStatus!==null ? `sdot-${u.eStatus}` : 'sdot-offline');
+    const label = u.panic ? '⚠ PANIC' : (s ? s.label : 'Offline');
+    return `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px;background:${u.panic?'rgba(239,68,68,.08)':'rgba(255,255,255,.03)'};border:1px solid ${u.panic?'rgba(239,68,68,.3)':'var(--border)'};border-radius:11px">
+        <div class="${dotClass}" style="width:10px;height:10px;border-radius:50%;flex-shrink:0"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.name}</div>
+          <div style="font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em">${u.rank}</div>
+        </div>
+        <span class="badge ${u.panic?'b-panic':u.eStatus!==null?`b-${['red','green','green','yellow','purple','blue','gray'][u.eStatus]||'gray'}`:'b-gray'}">${label}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ================================================================
+//  PERMS / SIDEBAR
+// ================================================================
+function hasPerm(key) { return (currentUser?.perms||[]).includes(key); }
+function applySidebarPerms() {
+  const p = currentUser.perms||[];
+  document.getElementById('nav-dispatch').style.display    = p.includes('dispatch')   ? 'flex':'none';
+  document.getElementById('nav-accounting').style.display  = p.includes('accounting') ? 'flex':'none';
+  document.getElementById('nav-staff').style.display       = p.includes('staff')      ? 'flex':'none';
+  document.getElementById('nav-reports').style.display     = p.includes('reports')    ? 'flex':'none';
+  document.getElementById('nav-zeugnis').style.display     = p.includes('zeugnis')    ? 'flex':'none';
+  if(p.includes('admin')) document.getElementById('admin-section').style.display='block';
+  document.getElementById('qa-newride').style.display    = p.includes('newride')    ? 'flex':'none';
+  document.getElementById('qa-staff').style.display      = p.includes('staff')      ? 'flex':'none';
+  document.getElementById('qa-accounting').style.display = p.includes('accounting') ? 'flex':'none';
+  const nb = document.getElementById('btn-new-ride');
+  if(nb) nb.style.display = p.includes('newride') ? 'inline-flex':'none';
+}
+
+// ================================================================
+//  TABS
+// ================================================================
+const TAB_META = {
+  dashboard:  ['Dashboard Alpha / Übersicht',         u=>`Willkommen, ${u.name.split(' ')[0]}`],
+  status:     ['Dashboard Alpha / Status Board',      ()=>'Status Board'],
+  dispatch:   ['Dashboard Alpha / Leitstelle',        ()=>'Dispatch'],
+  myrides:    ['Dashboard Alpha / Meine Fahrten',     ()=>'Meine Fahrten'],
+  accounting: ['Dashboard Alpha / Abrechnung',        ()=>'Abrechnung'],
+  reports:    ['Dashboard Alpha / Meldungen',         ()=>'Meldungen'],
+  staff:      ['Dashboard Alpha / Personal',          ()=>'Personal'],
+  zeugnis:    ['Dashboard Alpha / Führungszeugnisse', ()=>'Führungszeugnisse'],
+  admin:      ['Dashboard Alpha / Admin',             ()=>'Admin Panel'],
+};
+function switchTab(tab) {
+  document.querySelectorAll('.tab-view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const view=document.getElementById(`view-${tab}`);
+  const nav=document.getElementById(`nav-${tab}`);
+  if(view) view.classList.add('active');
+  if(nav)  nav.classList.add('active');
+  const m=TAB_META[tab];
+  if(m){setEl('tab-path',m[0]);setEl('tab-title',m[1](currentUser));}
+  if(tab==='dispatch')   renderDispatch();
+  if(tab==='myrides')    renderMyRides();
+  if(tab==='reports')    renderReports();
+  if(tab==='staff')      renderStaff();
+  if(tab==='accounting') updateInvoice();
+  if(tab==='admin')      renderAdminTable();
+  if(tab==='status')     { renderStatusButtons(); renderStatusBoard(); updateStatusUI(); }
+  if(tab==='zeugnis')    renderCerts();
+  lucide.createIcons();
+}
+
+// ================================================================
 //  DASHBOARD
-// ============================================================
+// ================================================================
 function updateDashboard() {
-  // KPIs (eigene Fahrten)
-  const myRides = rides.filter(r=>r.assignedTo===currentUser.name);
   const today = new Date().toLocaleDateString('de-DE');
-  const todayRides = myRides.filter(r=>r.doneDate===today);
-  setEl('kpi-today', todayRides.length);
+  const myDoneToday = rides.filter(r=>r.assignedTo===currentUser.name && r.status==='fertig' && r.doneDate===today).length;
+  setEl('kpi-today', myDoneToday);
   setEl('kpi-total', currentUser.rides||0);
-
-  // Last log entry for this user
-  const myLog = [...globalLogs].reverse().find(l=>l.text.includes(currentUser.name.split(' ')[0]));
-  if(myLog) { setEl('kpi-last', myLog.text.substring(0,30)+'…'); setEl('kpi-last-time', myLog.time); }
-
-  // Activity Feed
-  const logEl = document.getElementById('activity-log');
-  if(logEl) logEl.innerHTML = globalLogs.slice().reverse().map(l=>`
+  const myStatusKpi = document.getElementById('my-status-kpi');
+  if(myStatusKpi) {
+    if(currentUser.panic) {
+      myStatusKpi.innerHTML=`<span class="badge b-panic" style="font-size:11px;padding:5px 10px">⚠ PANIC AKTIV</span>`;
+    } else if(currentUser.eStatus!==null) {
+      const s=STATUS_DEFS.find(x=>x.n===currentUser.eStatus);
+      myStatusKpi.innerHTML=s?`<div style="font-size:14px;font-weight:700">${s.label}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${s.desc}</div>`:'';
+    } else {
+      myStatusKpi.innerHTML=`<div style="font-size:12px;color:var(--muted)">Kein Status</div>`;
+    }
+  }
+  const logEl=document.getElementById('activity-log');
+  if(logEl) logEl.innerHTML=globalLogs.slice().reverse().map(l=>`
     <div style="display:flex;gap:10px;align-items:flex-start;padding-bottom:9px;border-bottom:1px solid var(--border)">
       <span class="mono" style="font-size:10px;color:var(--muted);flex-shrink:0;margin-top:1px">${l.time}</span>
       <p style="font-size:12px;line-height:1.4;font-weight:500">${l.text}</p>
     </div>
-  `).join('') || '<p style="font-size:11px;color:var(--muted);padding:6px">Keine Aktivitäten</p>';
-
-  // Ann badge
-  const unread = announcements.filter(a=>a.unread).length;
-  const ab = document.getElementById('ann-badge');
-  if(ab) { ab.textContent=unread; ab.style.display=unread>0?'flex':'none'; }
-
-  // My rides badge
-  const openMine = rides.filter(r=>r.assignedTo===currentUser.name && r.status==='offen').length;
-  const mrb = document.getElementById('badge-myrides');
-  if(mrb) { mrb.textContent=openMine; mrb.style.display=openMine>0?'flex':'none'; }
-  const mrbNav = document.getElementById('myrides-badge');
-  if(mrbNav) { mrbNav.textContent=openMine>0?`${openMine} offen`:''; mrbNav.style.display=openMine>0?'inline-flex':'none'; }
-
-  // Reports badge
-  const openRep = reports.filter(r=>r.status==='offen').length;
-  const repB = document.getElementById('badge-reports');
+  `).join('') || '<p style="font-size:12px;color:var(--muted);padding:6px">Keine Aktivitäten</p>';
+  const unread=announcements.filter(a=>a.unread).length;
+  const ab=document.getElementById('ann-badge');
+  if(ab){ab.textContent=unread;ab.style.display=unread>0?'flex':'none';}
+  const openMine=rides.filter(r=>r.assignedTo===currentUser.name && r.status==='offen').length;
+  const mrb=document.getElementById('badge-myrides');
+  if(mrb){mrb.textContent=openMine;mrb.style.display=openMine>0?'flex':'none';}
+  const mrbLabel=document.getElementById('myrides-badge');
+  if(mrbLabel){mrbLabel.textContent=openMine>0?`${openMine} offen`:'';mrbLabel.style.display=openMine>0?'inline-flex':'none';}
+  const openRep=reports.filter(r=>r.status==='offen').length;
+  const repB=document.getElementById('badge-reports');
   if(repB) repB.style.display=openRep>0?'block':'none';
-
   renderChat();
+  updateTopbarStatus();
 }
 
-// ============================================================
+// ================================================================
 //  DISPATCH
-// ============================================================
+// ================================================================
 function openRideModal() {
-  if(!hasPerm('newride') && !hasPerm('dispatch')) return toast('error','Keine Berechtigung!');
-  const sel = document.getElementById('r-driver');
-  sel.innerHTML = `<option value="">– Kein Fahrer –</option>` + users.map(u=>`<option value="${u.name}">${u.name} (${u.rank})</option>`).join('');
+  const sel=document.getElementById('r-driver');
+  sel.innerHTML=`<option value="">– Kein Fahrer –</option>`+users.map(u=>`<option value="${u.name}">${u.name} (${u.rank})</option>`).join('');
   openModal('modal-ride');
 }
-
 function saveRide() {
-  const client  = document.getElementById('r-client').value.trim();
-  const pickup  = document.getElementById('r-pickup').value.trim();
-  const driver  = document.getElementById('r-driver').value;
-  const note    = document.getElementById('r-note').value.trim();
-  if(!client||!pickup) return toast('error','Pflichtfelder ausfüllen!');
-  const ride = {
-    id: 'R'+Date.now(), client, pickup, driver: driver||null,
-    assignedTo: driver||null,
-    note, prio: document.getElementById('r-prio').value,
-    status:'offen', createdBy: currentUser.name,
-    createdAt: new Date().toLocaleString('de-DE'),
-    dest: null, km: null, doneDate: null, doneTime: null
-  };
-  rides.push(ride);
-  addLog(`Neue Fahrt: ${client} (Abholort: ${pickup})${driver?' → '+driver:''}`);
-  saveData();
-  closeModal('modal-ride');
-  renderDispatch();
-  ['r-client','r-pickup','r-note'].forEach(id=>{ document.getElementById(id).value=''; });
+  const client=document.getElementById('r-client').value.trim();
+  const pickup=document.getElementById('r-pickup').value.trim();
+  const driver=document.getElementById('r-driver').value;
+  if(!client||!pickup){toast('error','Pflichtfelder ausfüllen!');return;}
+  rides.push({id:'R'+Date.now(),client,pickup,driver:driver||null,assignedTo:driver||null,note:document.getElementById('r-note').value.trim(),prio:document.getElementById('r-prio').value,status:'offen',createdBy:currentUser.name,createdAt:new Date().toLocaleString('de-DE'),dest:null,km:null,doneDate:null,doneTime:null});
+  addLog(`Fahrt erstellt: ${client} (${pickup})${driver?' → '+driver:''}`);
+  saveData(); closeModal('modal-ride'); renderDispatch();
+  ['r-client','r-pickup','r-note'].forEach(id=>{document.getElementById(id).value='';});
   document.getElementById('r-driver').value='';
 }
-
 function renderDispatch() {
-  const body = document.getElementById('ride-table-body');
+  const body=document.getElementById('ride-table-body');
   if(!body) return;
-  const prioMap = {vip:'b-yellow',express:'b-red',standard:'b-gray'};
-  const statMap = {offen:'b-red',fertig:'b-green'};
-  body.innerHTML = rides.length===0 ?
-    `<tr><td colspan="6" style="padding:28px;text-align:center;font-size:12px;color:var(--muted);font-style:italic">Keine aktiven Aufträge</td></tr>` :
-    rides.map(r=>`
-      <tr>
-        <td><span class="badge ${prioMap[r.prio]||'b-gray'}">${r.prio}</span></td>
-        <td>
-          <div style="font-size:13px;font-weight:700">${r.client}</div>
-          ${r.note?`<div style="font-size:10px;color:var(--muted);margin-top:2px">${r.note}</div>`:''}
-        </td>
-        <td style="font-size:12px;font-weight:600">${r.pickup}</td>
-        <td style="font-size:12px;font-weight:600;color:${r.assignedTo?'#e2e8f0':'var(--muted)'}">${r.assignedTo||'—'}</td>
-        <td><span class="badge ${statMap[r.status]||'b-gray'}">${r.status}</span></td>
-        <td style="text-align:right">
-          <div style="display:flex;justify-content:flex-end;gap:5px">
-            <button onclick="deleteRide('${r.id}')" style="width:30px;height:30px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:7px;color:#ef4444;cursor:pointer;display:flex;align-items:center;justify-content:center" title="Löschen">
-              <i data-lucide="trash-2" style="width:12px;height:12px"></i>
-            </button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
+  const pm={vip:'b-yellow',express:'b-red',standard:'b-gray'};
+  const sm={offen:'b-red',fertig:'b-green'};
+  body.innerHTML=rides.length===0?`<tr><td colspan="6" style="padding:28px;text-align:center;font-size:12px;color:var(--muted);font-style:italic">Keine Aufträge</td></tr>`:
+  rides.map(r=>`
+    <tr>
+      <td><span class="badge ${pm[r.prio]||'b-gray'}">${r.prio}</span></td>
+      <td><div style="font-size:13px;font-weight:700">${r.client}</div>${r.note?`<div style="font-size:10px;color:var(--muted);margin-top:2px">${r.note}</div>`:''}</td>
+      <td style="font-size:12px;font-weight:600">${r.pickup}</td>
+      <td style="font-size:12px;font-weight:600;color:${r.assignedTo?'#e2e8f0':'var(--muted)'}">${r.assignedTo||'—'}</td>
+      <td><span class="badge ${sm[r.status]||'b-gray'}">${r.status}</span></td>
+      <td style="text-align:right"><button onclick="deleteRide('${r.id}')" style="width:30px;height:30px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:7px;color:#ef4444;cursor:pointer;display:inline-flex;align-items:center;justify-content:center"><i data-lucide="trash-2" style="width:12px;height:12px"></i></button></td>
+    </tr>
+  `).join('');
   lucide.createIcons();
 }
+function deleteRide(id){rides=rides.filter(r=>r.id!==id);saveData();renderDispatch();}
 
-function deleteRide(id) {
-  rides = rides.filter(r=>r.id!==id);
-  saveData(); renderDispatch();
-}
-
-// ============================================================
-//  MY RIDES (Fahrer-Seite)
-// ============================================================
+// ================================================================
+//  MY RIDES
+// ================================================================
 function renderMyRides() {
-  const openEl = document.getElementById('my-open-rides');
-  const doneEl = document.getElementById('my-done-rides');
+  const openEl=document.getElementById('my-open-rides');
+  const doneEl=document.getElementById('my-done-rides');
   if(!openEl||!doneEl) return;
-
-  const myOpen = rides.filter(r=>r.assignedTo===currentUser.name && r.status==='offen');
-  const myDone = rides.filter(r=>r.assignedTo===currentUser.name && r.status==='fertig');
-
-  const prioMap={vip:'b-yellow',express:'b-red',standard:'b-gray'};
-  openEl.innerHTML = myOpen.length===0 ?
-    `<div class="glass" style="border-radius:14px;padding:20px;text-align:center;color:var(--muted)"><p style="font-size:12px">Keine offenen Aufträge</p></div>` :
+  const myOpen=rides.filter(r=>r.assignedTo===currentUser.name&&r.status==='offen');
+  const myDone=rides.filter(r=>r.assignedTo===currentUser.name&&r.status==='fertig');
+  const pm={vip:'b-yellow',express:'b-red',standard:'b-gray'};
+  openEl.innerHTML=myOpen.length===0?
+    `<div class="glass" style="border-radius:14px;padding:20px;text-align:center;color:var(--muted)"><p style="font-size:12px">Keine offenen Aufträge</p></div>`:
     myOpen.map(r=>`
       <div class="glass" style="border-radius:14px;padding:18px;border-left:3px solid var(--y)">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
           <div>
             <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
-              <span class="badge ${prioMap[r.prio]||'b-gray'}">${r.prio}</span>
+              <span class="badge ${pm[r.prio]||'b-gray'}">${r.prio}</span>
               <span class="badge b-red">offen</span>
             </div>
             <div style="font-size:14px;font-weight:700">${r.client}</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:3px">Von Leitstelle: ${r.createdBy} · ${r.createdAt}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:3px">Leitstelle: ${r.createdBy} · ${r.createdAt}</div>
           </div>
         </div>
-        <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;background:rgba(0,0,0,.3);border-radius:10px;padding:12px;margin-bottom:12px">
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:12px;margin-bottom:12px">
           <span style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Abholort</span>
-          <span style="font-size:13px;font-weight:700;color:var(--y)">${r.pickup}</span>
-          ${r.note?`<span style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Anmerkung</span><span style="font-size:12px">${r.note}</span>`:''}
+          <div style="font-size:14px;font-weight:700;color:var(--y);margin-top:3px">${r.pickup}</div>
+          ${r.note?`<div style="font-size:11px;color:var(--muted);margin-top:5px">Hinweis: ${r.note}</div>`:''}
         </div>
         <button onclick="openCompleteModal('${r.id}')" class="btn-y" style="width:100%;padding:11px;justify-content:center;font-size:13px;border-radius:10px">
-          <i data-lucide="check-circle" style="width:14px;height:14px"></i> Fahrt abschließen
+          <i data-lucide="check-circle" style="width:14px;height:14px"></i> Fahrt abschließen ✓
         </button>
       </div>
     `).join('');
-
-  doneEl.innerHTML = myDone.length===0 ?
-    `<tr><td colspan="4" style="padding:20px;text-align:center;font-size:12px;color:var(--muted);font-style:italic">Noch keine erledigten Fahrten</td></tr>` :
+  doneEl.innerHTML=myDone.length===0?
+    `<tr><td colspan="4" style="padding:20px;text-align:center;font-size:12px;color:var(--muted);font-style:italic">Noch keine erledigten Fahrten</td></tr>`:
     myDone.map(r=>`
       <tr>
         <td style="font-weight:600">${r.pickup}</td>
@@ -939,142 +1169,102 @@ function renderMyRides() {
         <td class="mono" style="font-size:10px;color:var(--muted)">${r.doneDate||'—'} ${r.doneTime||''}</td>
       </tr>
     `).join('');
-
   lucide.createIcons();
 }
-
-function openCompleteModal(rideId) {
-  const r = rides.find(x=>x.id===rideId);
-  if(!r) return;
-  setEl('complete-pickup', r.pickup);
-  document.getElementById('comp-ride-id').value = rideId;
-  document.getElementById('comp-dest').value = '';
-  document.getElementById('comp-km').value = '';
+function openCompleteModal(rid) {
+  const r=rides.find(x=>x.id===rid); if(!r) return;
+  setEl('complete-pickup',r.pickup);
+  document.getElementById('comp-ride-id').value=rid;
+  document.getElementById('comp-dest').value='';
+  document.getElementById('comp-km').value='';
   openModal('modal-complete');
 }
-
 function completeRide() {
-  const rideId = document.getElementById('comp-ride-id').value;
-  const dest   = document.getElementById('comp-dest').value.trim();
-  const km     = parseFloat(document.getElementById('comp-km').value);
-  if(!dest) return toast('error','Zielort eingeben!');
-  if(isNaN(km)||km<0) return toast('error','Gültige KM eingeben!');
-  const r = rides.find(x=>x.id===rideId);
-  if(!r) return;
-  r.status  = 'fertig';
-  r.dest    = dest;
-  r.km      = km;
-  r.doneDate= new Date().toLocaleDateString('de-DE');
-  r.doneTime= new Date().toLocaleTimeString('de-DE');
-  // Save to driver history
-  const driver = users.find(u=>u.name===currentUser.name);
-  if(driver) {
-    driver.history.push({ date: r.doneDate, route:`${r.pickup} → ${dest}`, km });
-    driver.rides = (driver.rides||0)+1;
-    driver.totalKm = (driver.totalKm||0)+km;
-  }
-  addLog(`${currentUser.name} hat Fahrt für ${r.client} abgeschlossen. (${r.pickup} → ${dest}, ${km} km)`);
-  saveData();
-  closeModal('modal-complete');
-  renderMyRides();
-  toast('success','Fahrt erfolgreich abgeschlossen!');
+  const rid=document.getElementById('comp-ride-id').value;
+  const dest=document.getElementById('comp-dest').value.trim();
+  const km=parseFloat(document.getElementById('comp-km').value);
+  if(!dest){toast('error','Zielort eingeben!');return;}
+  if(isNaN(km)||km<0){toast('error','Gültige KM eingeben!');return;}
+  const r=rides.find(x=>x.id===rid); if(!r) return;
+  r.status='fertig'; r.dest=dest; r.km=km;
+  r.doneDate=new Date().toLocaleDateString('de-DE');
+  r.doneTime=new Date().toLocaleTimeString('de-DE');
+  const drv=users.find(u=>u.name===currentUser.name);
+  if(drv){drv.history.push({date:r.doneDate,route:`${r.pickup} → ${dest}`,km});drv.rides=(drv.rides||0)+1;drv.totalKm=(drv.totalKm||0)+km;}
+  addLog(`${currentUser.name} abgeschlossen: ${r.client} (${r.pickup} → ${dest}, ${km} km)`);
+  saveData(); closeModal('modal-complete'); renderMyRides(); toast('success','Fahrt abgeschlossen!');
 }
 
-// ============================================================
+// ================================================================
 //  ACCOUNTING
-// ============================================================
-const PRICES = {sedan:85,van:120,stretch:350,suv:450};
-const SVC_LABELS = {transfer:'Transfer',round:'Hin & Rückfahrt',hourly:'Stundenbuchung'};
-
-function updateInvoice() {
-  const type    = val('inv-car')||'sedan';
-  const service = val('inv-service')||'transfer';
-  const qty     = parseInt(val('inv-qty'))||1;
-  const extras  = parseFloat(val('inv-extras'))||0;
-  const unit    = PRICES[type]+(service==='hourly'?50:0)+(service==='round'?PRICES[type]:0);
-  const sub     = unit*qty;
-  const total   = sub+extras;
-  setEl('p-num', 'TK-2026-'+(Math.floor(Math.random()*900)+100));
-  setEl('p-date', new Date().toLocaleDateString('de-DE'));
-  setEl('p-client', val('inv-client')||'Privatkunde');
-  setEl('p-route',  val('inv-route')||'–');
-  setEl('p-desc',   type.toUpperCase()+' — '+SVC_LABELS[service]);
-  setEl('p-qty',    qty);
-  setEl('p-unit',   unit.toFixed(2)+' €');
-  setEl('p-item',   sub.toFixed(2)+' €');
-  setEl('p-sub',    sub.toFixed(2)+' €');
-  setEl('p-extras', extras.toFixed(2)+' €');
-  setEl('p-final',  total.toFixed(2)+' €');
-  setEl('p-issuer', currentUser?.name||'–');
+// ================================================================
+const PRICES={sedan:85,van:120,stretch:350,suv:450};
+const SVC={transfer:'Transfer',round:'Hin & Rückfahrt',hourly:'Stundenbuchung'};
+function updateInvoice(){
+  const type=val('inv-car')||'sedan',service=val('inv-service')||'transfer';
+  const qty=parseInt(val('inv-qty'))||1,extras=parseFloat(val('inv-extras'))||0;
+  const unit=PRICES[type]+(service==='hourly'?50:0)+(service==='round'?PRICES[type]:0);
+  const sub=unit*qty,total=sub+extras;
+  setEl('p-num','TK-2026-'+(Math.floor(Math.random()*900)+100));
+  setEl('p-date',new Date().toLocaleDateString('de-DE'));
+  setEl('p-client',val('inv-client')||'Privatkunde');
+  setEl('p-route',val('inv-route')||'–');
+  setEl('p-desc',type.toUpperCase()+' — '+SVC[service]);
+  setEl('p-qty',qty);setEl('p-unit',unit.toFixed(2)+' €');
+  setEl('p-item',sub.toFixed(2)+' €');setEl('p-sub',sub.toFixed(2)+' €');
+  setEl('p-extras',extras.toFixed(2)+' €');setEl('p-final',total.toFixed(2)+' €');
+  setEl('p-issuer',currentUser?.name||'–');
+}
+function printInvoice(){
+  const inv=document.getElementById('printable-invoice');if(!inv)return;
+  const cl=inv.cloneNode(true);cl.style.transform='none';cl.style.width='auto';
+  const pa=document.getElementById('print-area');pa.innerHTML='';pa.appendChild(cl);pa.style.display='block';
+  window.print();pa.style.display='none';
 }
 
-function printInvoice() {
-  const inv = document.getElementById('printable-invoice');
-  if(!inv) return;
-  const cl = inv.cloneNode(true);
-  cl.style.transform='none'; cl.style.width='auto';
-  const pa = document.getElementById('print-area');
-  pa.innerHTML=''; pa.appendChild(cl); pa.style.display='block';
-  window.print(); pa.style.display='none';
-}
-
-// ============================================================
+// ================================================================
 //  REPORTS
-// ============================================================
-function saveReport() {
-  const title = document.getElementById('rep-title').value.trim();
-  const desc  = document.getElementById('rep-desc').value.trim();
-  if(!title) return toast('error','Titel eingeben!');
-  reports.unshift({
-    id:'REP'+Date.now(), title, desc,
-    cat:   document.getElementById('rep-cat').value,
-    prio:  document.getElementById('rep-prio').value,
-    status:'offen', author: currentUser.name,
-    time:  new Date().toLocaleString('de-DE'), comments:[]
-  });
-  addLog(`Meldung erstellt: "${title}" — ${currentUser.name}`);
-  saveData(); closeModal('modal-report'); renderReports();
-  ['rep-title','rep-desc'].forEach(id=>{ document.getElementById(id).value=''; });
+// ================================================================
+function saveReport(){
+  const title=document.getElementById('rep-title').value.trim();
+  const desc=document.getElementById('rep-desc').value.trim();
+  if(!title){toast('error','Titel eingeben!');return;}
+  reports.unshift({id:'REP'+Date.now(),title,desc,cat:document.getElementById('rep-cat').value,prio:document.getElementById('rep-prio').value,status:'offen',author:currentUser.name,time:new Date().toLocaleString('de-DE'),comments:[]});
+  addLog(`Meldung: "${title}" — ${currentUser.name}`);
+  saveData();closeModal('modal-report');renderReports();
+  ['rep-title','rep-desc'].forEach(id=>{document.getElementById(id).value='';});
 }
-
-function renderReports() {
-  const g = document.getElementById('report-grid');
-  if(!g) return;
-  const catMap  = {bug:'🐛 Bug',improvement:'💡 Verbesserung',other:'📌 Sonstiges'};
-  const prioMap = {low:'b-gray',medium:'b-yellow',high:'b-red'};
-  const statMap = {offen:'b-red','in bearbeitung':'b-yellow',behoben:'b-green'};
-  g.innerHTML = reports.length===0 ?
-    `<div class="glass" style="border-radius:18px;padding:28px;text-align:center;color:var(--muted);grid-column:1/-1"><p>Keine Meldungen</p></div>` :
-    reports.map(r=>`
-      <div onclick="openRepDetail('${r.id}')" style="background:var(--card);border:1px solid var(--border);border-radius:15px;padding:18px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='rgba(255,255,255,.12)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px">
-          <div style="display:flex;gap:5px;flex-wrap:wrap">
-            <span class="badge b-blue">${catMap[r.cat]||r.cat}</span>
-            <span class="badge ${prioMap[r.prio]}">${r.prio}</span>
-          </div>
-          <span class="badge ${statMap[r.status]||'b-gray'}">${r.status}</span>
-        </div>
-        <div style="font-size:13px;font-weight:700;margin-bottom:5px">${r.title}</div>
-        <p style="font-size:11px;color:var(--muted);line-height:1.5">${r.desc.substring(0,70)}${r.desc.length>70?'...':''}</p>
-        <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:9px;margin-top:10px">
-          <span style="font-size:10px;font-weight:600;color:var(--muted)">${r.author}</span>
-          <span class="mono" style="font-size:9px;color:var(--muted)">${r.time}</span>
-        </div>
-      </div>
-    `).join('');
-}
-
-function openRepDetail(id) {
-  const r = reports.find(x=>x.id===id);
-  if(!r) return;
-  const isAdmin = ADMIN_RANKS.includes(currentUser.rank)||hasPerm('admin');
+function renderReports(){
+  const g=document.getElementById('report-grid');if(!g)return;
+  const cm={bug:'🐛 Bug',improvement:'💡 Verbesserung',other:'📌 Sonstiges'};
+  const pm={low:'b-gray',medium:'b-yellow',high:'b-red'};
   const sm={offen:'b-red','in bearbeitung':'b-yellow',behoben:'b-green'};
-  document.getElementById('rep-detail-body').innerHTML = `
-    <div class="bebas" style="font-size:22px;letter-spacing:.04em;margin-bottom:7px">${r.title}</div>
-    <div style="display:flex;gap:5px;margin-bottom:14px">
-      <span class="badge b-blue">${r.cat}</span>
-      <span class="badge ${sm[r.status]||'b-gray'}">${r.status}</span>
+  g.innerHTML=reports.length===0?`<div class="glass" style="border-radius:18px;padding:28px;text-align:center;color:var(--muted);grid-column:1/-1"><p>Keine Meldungen</p></div>`:
+  reports.map(r=>`
+    <div onclick="openRepDetail('${r.id}')" style="background:var(--card);border:1px solid var(--border);border-radius:15px;padding:18px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='rgba(255,255,255,.12)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px">
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span class="badge b-blue">${cm[r.cat]||r.cat}</span>
+          <span class="badge ${pm[r.prio]}">${r.prio}</span>
+        </div>
+        <span class="badge ${sm[r.status]||'b-gray'}">${r.status}</span>
+      </div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:5px">${r.title}</div>
+      <p style="font-size:11px;color:var(--muted);line-height:1.5">${r.desc.substring(0,70)}${r.desc.length>70?'...':''}</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:9px;margin-top:10px">
+        <span style="font-size:10px;font-weight:600;color:var(--muted)">${r.author}</span>
+        <span class="mono" style="font-size:9px;color:var(--muted)">${r.time}</span>
+      </div>
     </div>
+  `).join('');
+}
+function openRepDetail(id){
+  const r=reports.find(x=>x.id===id);if(!r)return;
+  const isAdmin=ADMIN_RANKS.includes(currentUser.rank)||hasPerm('admin');
+  const sm={offen:'b-red','in bearbeitung':'b-yellow',behoben:'b-green'};
+  document.getElementById('rep-detail-body').innerHTML=`
+    <div class="bebas" style="font-size:22px;letter-spacing:.04em;margin-bottom:7px">${r.title}</div>
+    <div style="display:flex;gap:5px;margin-bottom:14px"><span class="badge b-blue">${r.cat}</span><span class="badge ${sm[r.status]||'b-gray'}">${r.status}</span></div>
     <p style="font-size:12px;line-height:1.6;color:#cbd5e1;margin-bottom:12px">${r.desc}</p>
     <div style="font-size:10px;color:var(--muted);margin-bottom:14px">${r.author} · ${r.time}</div>
     ${isAdmin?`<div style="display:flex;gap:7px;margin-bottom:14px">
@@ -1089,13 +1279,7 @@ function openRepDetail(id) {
       <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:9px">Kommentare (${r.comments.length})</div>
       <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:11px;max-height:150px;overflow-y:auto">
         ${r.comments.length===0?`<p style="font-size:11px;color:var(--muted);font-style:italic">Keine Kommentare</p>`:
-          r.comments.map(c=>`
-            <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;padding:10px">
-              <div style="font-size:10px;font-weight:700;color:var(--y);margin-bottom:3px">${c.author}</div>
-              <p style="font-size:11px;line-height:1.4">${c.text}</p>
-              <div class="mono" style="font-size:9px;color:var(--muted);margin-top:3px">${c.time}</div>
-            </div>
-          `).join('')}
+          r.comments.map(c=>`<div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;padding:10px"><div style="font-size:10px;font-weight:700;color:var(--y);margin-bottom:3px">${c.author}</div><p style="font-size:11px;line-height:1.4">${c.text}</p><div class="mono" style="font-size:9px;color:var(--muted);margin-top:3px">${c.time}</div></div>`).join('')}
       </div>
       <div style="display:flex;gap:7px">
         <input type="text" id="rep-comment" class="inp" placeholder="Kommentar..." style="flex:1;padding:9px 13px;font-size:12px">
@@ -1103,152 +1287,196 @@ function openRepDetail(id) {
       </div>
     </div>
   `;
-  openModal('modal-report-detail');
-  lucide.createIcons();
+  openModal('modal-report-detail');lucide.createIcons();
 }
+function updateRepStatus(id){const r=reports.find(x=>x.id===id);const s=document.getElementById('rs-sel')?.value;if(r&&s){r.status=s;saveData();toast('success','Status aktualisiert');openRepDetail(id);renderReports();}}
+function addRepComment(id){const r=reports.find(x=>x.id===id);const inp=document.getElementById('rep-comment');if(!r||!inp||!inp.value.trim())return;r.comments.push({author:currentUser.name,text:inp.value.trim(),time:new Date().toLocaleTimeString('de-DE')});saveData();openRepDetail(id);}
 
-function updateRepStatus(id) {
-  const r=reports.find(x=>x.id===id);
-  const s=document.getElementById('rs-sel')?.value;
-  if(r&&s){r.status=s;saveData();toast('success','Status aktualisiert');openRepDetail(id);renderReports();}
-}
-function addRepComment(id) {
-  const r=reports.find(x=>x.id===id);
-  const inp=document.getElementById('rep-comment');
-  if(!r||!inp||!inp.value.trim()) return;
-  r.comments.push({author:currentUser.name,text:inp.value.trim(),time:new Date().toLocaleTimeString('de-DE')});
-  saveData(); openRepDetail(id);
-}
-
-// ============================================================
+// ================================================================
 //  STAFF
-// ============================================================
-function renderStaff() {
-  const g = document.getElementById('staff-grid');
-  if(!g) return;
-  const sm={offline:'b-gray',frei:'b-green',besetzt:'b-red'};
-  g.innerHTML = users.map(u=>`
+// ================================================================
+function renderStaff(){
+  const g=document.getElementById('staff-grid');if(!g)return;
+  g.innerHTML=users.map(u=>`
     <div class="staff-card" onclick="showProfile('${u.name}')">
       <div class="avatar" style="background:var(--y);color:#000;width:60px;height:60px;font-size:26px">${u.name.charAt(0)}</div>
-      <div>
-        <div style="font-size:14px;font-weight:700">${u.name}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">${u.rank}</div>
-      </div>
+      <div><div style="font-size:14px;font-weight:700">${u.name}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${u.rank}</div></div>
       <div style="width:100%;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:9px">
-        <span style="font-size:10px;font-weight:600;color:var(--muted)">${u.rides||0} Fahrten · ${u.totalKm||0} km</span>
-        <span class="badge ${sm[u.status]||'b-gray'}">${u.status}</span>
+        <span style="font-size:10px;font-weight:600;color:var(--muted)">${u.rides||0} Fahr. · ${u.totalKm||0} km</span>
+        <div style="display:flex;align-items:center;gap:5px">
+          ${u.panic?`<span class="badge b-panic">PANIC</span>`:
+            u.eStatus!==null?`<div class="sdot-${u.eStatus}" style="width:8px;height:8px;border-radius:50%"></div><span style="font-size:10px;font-weight:600">S${u.eStatus}</span>`
+            :`<span class="badge b-gray">Offline</span>`}
+        </div>
       </div>
     </div>
   `).join('');
 }
-
-function showProfile(name) {
-  const u = users.find(x=>x.name===name);
-  if(!u) return;
-  setEl('prof-init', u.name.charAt(0));
-  setEl('prof-name', u.name);
-  setEl('prof-rank', u.rank);
-  setEl('prof-rides', u.rides||0);
-  setEl('prof-km', (u.totalKm||0)+' km');
-  const sm={offline:'b-gray',frei:'b-green',besetzt:'b-red'};
-  document.getElementById('prof-status').innerHTML=`<span class="badge ${sm[u.status]||'b-gray'}">${u.status}</span>`;
-  const list = document.getElementById('prof-history');
-  list.innerHTML = !u.history||u.history.length===0 ?
-    `<p style="font-size:11px;color:var(--muted);font-style:italic;padding:6px">Keine Fahrten</p>` :
-    u.history.slice(-6).reverse().map(h=>`
-      <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;padding:10px;display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:11px;font-weight:600">${h.route}</span>
-        <div style="text-align:right">
-          <div class="mono" style="font-size:9px;color:var(--muted)">${h.date}</div>
-          ${h.km!=null?`<div class="mono" style="font-size:9px;color:var(--y)">${h.km} km</div>`:''}
-        </div>
-      </div>
-    `).join('');
+function showProfile(name){
+  const u=users.find(x=>x.name===name);if(!u)return;
+  setEl('prof-init',u.name.charAt(0));setEl('prof-name',u.name);setEl('prof-rank',u.rank);
+  setEl('prof-rides',u.rides||0);setEl('prof-km',(u.totalKm||0)+' km');
+  const s=STATUS_DEFS.find(x=>x.n===u.eStatus);
+  document.getElementById('prof-status').innerHTML=u.panic?`<span class="badge b-panic">PANIC</span>`:
+    s?`<span class="badge b-yellow">${s.label}</span>`:`<span class="badge b-gray">Offline</span>`;
+  const list=document.getElementById('prof-history');
+  list.innerHTML=!u.history||u.history.length===0?`<p style="font-size:11px;color:var(--muted);font-style:italic;padding:6px">Keine Fahrten</p>`:
+    u.history.slice(-6).reverse().map(h=>`<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;padding:10px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:11px;font-weight:600">${h.route}</span>
+      <div style="text-align:right"><div class="mono" style="font-size:9px;color:var(--muted)">${h.date}</div>${h.km!=null?`<div class="mono" style="font-size:9px;color:var(--y)">${h.km} km</div>`:''}</div>
+    </div>`).join('');
   openModal('modal-profile');
 }
 
-// ============================================================
-//  ADMIN
-// ============================================================
-function renderPermCheckboxes() {
-  const container = document.getElementById('perm-checkboxes');
-  if(!container) return;
-  container.innerHTML = ALL_PERMS.map(p=>`
-    <div class="cb-row">
-      <span>${p.label}</span>
-      <input type="checkbox" id="perm-${p.key}" value="${p.key}">
+// ================================================================
+//  FÜHRUNGSZEUGNISSE
+// ================================================================
+function openCertModal(){
+  const sel=document.getElementById('cert-person');
+  sel.innerHTML=users.map(u=>`<option value="${u.name}">${u.name} (${u.rank})</option>`).join('');
+  openModal('modal-cert');
+}
+function saveCert(){
+  const person=document.getElementById('cert-person').value;
+  const type=document.getElementById('cert-type').value;
+  const grade=document.getElementById('cert-grade').value;
+  const desc=document.getElementById('cert-desc').value.trim();
+  const from=document.getElementById('cert-from').value.trim();
+  const to=document.getElementById('cert-to').value.trim();
+  if(!person||!desc){toast('error','Alle Felder ausfüllen!');return;}
+  const u=users.find(x=>x.name===person);
+  const cert={id:'C'+Date.now(),person,rank:u?.rank||'',type,grade,desc,from,to,issuedBy:currentUser.name,issuedDate:new Date().toLocaleDateString('de-DE')};
+  certs.unshift(cert);
+  addLog(`Führungszeugnis ausgestellt: ${person} (${type})`);
+  saveData();closeModal('modal-cert');renderCerts();toast('success','Zeugnis erstellt!');
+}
+function renderCerts(){
+  const g=document.getElementById('cert-grid');if(!g)return;
+  const typeMap={arbeitszeugnis:'📄 Arbeitszeugnis',praktikum:'🎓 Praktikumszeugnis',ausbildung:'🏆 Ausbildungszeugnis',zwischenzeugnis:'📋 Zwischenzeugnis'};
+  const gradeColor={sehr_gut:'b-green',gut:'b-blue',befriedigend:'b-yellow',ausreichend:'b-orange'};
+  g.innerHTML=certs.length===0?
+    `<div class="glass" style="border-radius:18px;padding:32px;text-align:center;color:var(--muted);grid-column:1/-1"><i data-lucide="award" style="width:40px;height:40px;margin:0 auto 12px;opacity:.3"></i><p style="font-size:13px;font-weight:600">Noch keine Führungszeugnisse</p></div>`:
+    certs.map(c=>`
+      <div class="glass" style="border-radius:16px;padding:20px;transition:all .3s" onmouseover="this.style.borderColor='rgba(250,204,21,.3)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <span class="badge b-blue" style="font-size:9px">${typeMap[c.type]||c.type}</span>
+          <span class="mono" style="font-size:9px;color:var(--muted)">${c.issuedDate}</span>
+        </div>
+        <div style="font-size:15px;font-weight:700;margin-bottom:3px">${c.person}</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:10px">${c.rank}</div>
+        <div style="font-size:11px;color:#cbd5e1;line-height:1.5;margin-bottom:12px">${c.desc.substring(0,80)}${c.desc.length>80?'...':''}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:10px">
+          <span class="badge b-green">${c.grade}</span>
+          <div style="display:flex;gap:6px">
+            <button onclick="viewCert('${c.id}')" style="padding:5px 12px;background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.2);border-radius:7px;color:var(--y);font-size:11px;font-weight:700;cursor:pointer">Anzeigen</button>
+            ${ADMIN_RANKS.includes(currentUser.rank)||hasPerm('admin')?`<button onclick="deleteCert('${c.id}')" style="width:28px;height:28px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:7px;color:#ef4444;cursor:pointer;display:inline-flex;align-items:center;justify-content:center"><i data-lucide="trash-2" style="width:11px;height:11px"></i></button>`:''}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  lucide.createIcons();
+}
+function viewCert(id){
+  const c=certs.find(x=>x.id===id);if(!c)return;
+  const typeLabels={arbeitszeugnis:'Arbeitszeugnis',praktikum:'Praktikumszeugnis',ausbildung:'Ausbildungszeugnis',zwischenzeugnis:'Zwischenzeugnis'};
+  document.getElementById('cert-view-content').innerHTML=`
+    <div class="cert-paper">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;padding-bottom:20px;border-bottom:2px solid #e2e8f0">
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.05em;color:#0f172a">TAXI KÖLN</div>
+          <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.12em">Chauffeur Service NRW — Köln</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:#0f172a;text-transform:uppercase">${typeLabels[c.type]||c.type}</div>
+          <div style="font-size:11px;color:#64748b;font-weight:600">Nr: FZ-${c.id.slice(-6)}</div>
+          <div style="font-size:11px;color:#64748b;font-weight:600">Ausgestellt: ${c.issuedDate}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:30px">
+        <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Mitarbeiter</div>
+        <div style="font-size:22px;font-weight:700;color:#0f172a">${c.person}</div>
+        <div style="font-size:12px;color:#64748b;margin-top:2px">${c.rank} | Taxi Köln Enterprise</div>
+      </div>
+      <div style="margin-bottom:28px">
+        <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Beschäftigungszeitraum</div>
+        <div style="font-size:14px;font-weight:600;color:#1e293b">${c.from||'–'} bis ${c.to||'–'}</div>
+      </div>
+      <div style="margin-bottom:32px">
+        <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Beurteilung</div>
+        <p style="font-size:13px;line-height:1.8;color:#1e293b">${c.desc}</p>
+      </div>
+      <div style="margin-bottom:36px;padding:16px;background:#f8fafc;border-radius:8px;border-left:4px solid #0f172a">
+        <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Gesamtbewertung</div>
+        <div style="font-size:20px;font-weight:700;color:#0f172a;text-transform:capitalize">${c.grade}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;padding-top:24px;border-top:1px solid #e2e8f0">
+        <div><div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">Ausgestellt von</div><div style="font-size:14px;font-weight:700;color:#0f172a">${c.issuedBy}</div></div>
+        <div><div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">Unterschrift</div><div style="height:40px;border-bottom:1px solid #0f172a"></div></div>
+      </div>
     </div>
-  `).join('');
-  // Auto-fill when rank changes
-  document.getElementById('adm-rank')?.addEventListener('change', function() {
-    const auto = defaultPerms(this.value);
-    ALL_PERMS.forEach(p=>{
-      const cb = document.getElementById(`perm-${p.key}`);
-      if(cb) cb.checked = auto.includes(p.key);
-    });
-  });
+  `;
+  openModal('modal-cert-view');
 }
-
-function getSelectedPerms() {
-  return ALL_PERMS.filter(p=>document.getElementById(`perm-${p.key}`)?.checked).map(p=>p.key);
+function printCert(){
+  const content=document.getElementById('cert-view-content');if(!content)return;
+  const pa=document.getElementById('print-area');pa.innerHTML=content.innerHTML;pa.style.display='block';
+  window.print();pa.style.display='none';
 }
+function deleteCert(id){certs=certs.filter(c=>c.id!==id);saveData();renderCerts();}
 
-function adminAddUser() {
-  const name = document.getElementById('adm-name').value.trim();
-  const pw   = document.getElementById('adm-pw').value.trim();
-  const rank = document.getElementById('adm-rank').value;
-  if(!name||!pw) return toast('error','Name und Passwort eingeben!');
-  if(users.find(u=>u.name.toLowerCase()===name.toLowerCase())) return toast('error','Name bereits vergeben!');
-  users.push({ name, pw, rank, rides:0, status:'offline', totalKm:0, history:[], perms: getSelectedPerms() });
-  saveData();
-  addLog(`Neuer Account: ${name} (${rank})`);
-  renderAdminTable();
-  renderStaff();
+// ================================================================
+//  ADMIN
+// ================================================================
+function renderPermCheckboxes(){
+  const c=document.getElementById('perm-checkboxes');if(!c)return;
+  c.innerHTML=ALL_PERMS.map(p=>`<div class="cb-row"><span>${p.label}</span><input type="checkbox" id="perm-${p.key}" value="${p.key}"></div>`).join('');
+  document.getElementById('adm-rank')?.addEventListener('change',autoFillPerms);
+}
+function autoFillPerms(){
+  const rank=document.getElementById('adm-rank')?.value;
+  const auto=defaultPerms(rank||'');
+  ALL_PERMS.forEach(p=>{const cb=document.getElementById(`perm-${p.key}`);if(cb)cb.checked=auto.includes(p.key);});
+}
+function getSelectedPerms(){return ALL_PERMS.filter(p=>document.getElementById(`perm-${p.key}`)?.checked).map(p=>p.key);}
+function adminAddUser(){
+  const name=document.getElementById('adm-name').value.trim();
+  const pw=document.getElementById('adm-pw').value.trim();
+  const rank=document.getElementById('adm-rank').value;
+  if(!name||!pw){toast('error','Name und Passwort eingeben!');return;}
+  if(users.find(u=>u.name.toLowerCase()===name.toLowerCase())){toast('error','Name bereits vergeben!');return;}
+  users.push({name,pw,rank,rides:0,status:'offline',eStatus:null,panic:false,totalKm:0,history:[],perms:getSelectedPerms()});
+  saveData();addLog(`Neuer Account: ${name} (${rank})`);renderAdminTable();renderStaff();
   toast('success',`Account für ${name} erstellt!`);
-  document.getElementById('adm-name').value='';
-  document.getElementById('adm-pw').value='';
-  ALL_PERMS.forEach(p=>{ const cb=document.getElementById(`perm-${p.key}`); if(cb) cb.checked=false; });
+  document.getElementById('adm-name').value='';document.getElementById('adm-pw').value='';
+  ALL_PERMS.forEach(p=>{const cb=document.getElementById(`perm-${p.key}`);if(cb)cb.checked=false;});
 }
-
-function adminPostAnn() {
-  const text = document.getElementById('adm-ann').value.trim();
-  if(!text) return;
-  announcements.unshift({ id:Date.now(), text, time:new Date().toLocaleString('de-DE'), author:currentUser.name, unread:true });
-  document.getElementById('adm-ann').value='';
-  saveData(); updateDashboard();
-  toast('success','Ankündigung veröffentlicht');
+function adminPostAnn(){
+  const text=document.getElementById('adm-ann').value.trim();if(!text)return;
+  announcements.unshift({id:Date.now(),text,time:new Date().toLocaleString('de-DE'),author:currentUser.name,unread:true});
+  document.getElementById('adm-ann').value='';saveData();updateDashboard();toast('success','Ankündigung veröffentlicht');
 }
-
-function setSys(s) {
-  sysStatus=s; localStorage.setItem('tx8_sys',s); setSysDisplay();
-  toast('success','Status aktualisiert');
-}
-function setSysDisplay() {
-  const el=document.getElementById('sys-badge');
-  const tx=document.getElementById('sys-text');
-  if(!el||!tx) return;
-  el.className='';
+function setSys(s){sysStatus=s;localStorage.setItem('tka_sys',s);setSysDisplay();toast('success','Status aktualisiert');}
+function setSysDisplay(){
+  const el=document.getElementById('sys-badge'),tx=document.getElementById('sys-text');if(!el||!tx)return;
   const map={online:['sys-online','Online'],warn:['sys-warn','Wartung'],error:['sys-error','Fehler']};
-  const [cls,label]=map[sysStatus]||map.online;
-  el.classList.add(cls);
+  const[cls,label]=map[sysStatus]||map.online;
+  el.className=cls;
   el.style.cssText='display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px';
   tx.textContent=label;
 }
-
-function renderAdminTable() {
-  const tbody = document.getElementById('admin-table');
-  if(!tbody) return;
-  tbody.innerHTML = users.map(u=>`
+function renderAdminTable(){
+  const t=document.getElementById('admin-table');if(!t)return;
+  t.innerHTML=users.map(u=>`
     <tr>
       <td style="font-weight:600">${u.name}</td>
       <td><span class="badge b-blue">${u.rank}</span></td>
+      <td>${u.eStatus!==null?`S${u.eStatus}`:'Offline'}</td>
       <td>${u.rides||0}</td>
-      <td><span class="badge ${u.status==='offline'?'b-gray':'b-green'}">${u.status}</span></td>
       <td style="font-size:10px;color:var(--muted)">${(u.perms||[]).length} Rechte</td>
       <td style="text-align:right">
         <div style="display:flex;justify-content:flex-end;gap:5px">
-          <button onclick="editUserPerms('${u.name}')" style="padding:5px 10px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);border-radius:7px;color:#60a5fa;font-size:11px;font-weight:700;cursor:pointer">Rechte</button>
-          <button onclick="deleteUser('${u.name}')" style="width:28px;height:28px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:7px;color:#ef4444;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;${u.name===currentUser.name?'opacity:.3;pointer-events:none':''}">
+          <button onclick="editPerms('${u.name}')" style="padding:5px 10px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);border-radius:7px;color:#60a5fa;font-size:11px;font-weight:700;cursor:pointer">Rechte</button>
+          <button onclick="delUser('${u.name}')" style="width:28px;height:28px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:7px;color:#ef4444;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;${u.name===currentUser.name?'opacity:.3;pointer-events:none':''}">
             <i data-lucide="trash-2" style="width:11px;height:11px"></i>
           </button>
         </div>
@@ -1257,108 +1485,68 @@ function renderAdminTable() {
   `).join('');
   lucide.createIcons();
 }
-
-function editUserPerms(name) {
-  const u = users.find(x=>x.name===name);
-  if(!u) return;
-  const checkboxes = ALL_PERMS.map(p=>`
-    <div class="cb-row">
-      <span>${p.label}</span>
-      <input type="checkbox" id="ep-${p.key}" value="${p.key}" ${(u.perms||[]).includes(p.key)?'checked':''}>
-    </div>
-  `).join('');
-  Swal.fire({
-    title:`Rechte: ${u.name}`,
-    html:`<div style="display:flex;flex-direction:column;gap:7px;text-align:left">${checkboxes}</div>`,
-    background:'#090d18', color:'#e2e8f0', confirmButtonColor:'#facc15', confirmButtonText:'Speichern',
-    showCancelButton:true, cancelButtonText:'Abbrechen',
-    preConfirm:()=>{ return ALL_PERMS.filter(p=>document.getElementById(`ep-${p.key}`)?.checked).map(p=>p.key); }
-  }).then(r=>{ if(r.isConfirmed){ u.perms=r.value; saveData(); renderAdminTable(); toast('success','Rechte gespeichert'); }});
+function editPerms(name){
+  const u=users.find(x=>x.name===name);if(!u)return;
+  const boxes=ALL_PERMS.map(p=>`<div class="cb-row"><span>${p.label}</span><input type="checkbox" id="ep-${p.key}" ${(u.perms||[]).includes(p.key)?'checked':''}></div>`).join('');
+  Swal.fire({title:`Rechte: ${u.name}`,html:`<div style="display:flex;flex-direction:column;gap:7px;text-align:left">${boxes}</div>`,background:'#090d18',color:'#e2e8f0',confirmButtonColor:'#facc15',confirmButtonText:'Speichern',showCancelButton:true,cancelButtonText:'Abbrechen',
+    preConfirm:()=>ALL_PERMS.filter(p=>document.getElementById(`ep-${p.key}`)?.checked).map(p=>p.key)
+  }).then(r=>{if(r.isConfirmed){u.perms=r.value;saveData();renderAdminTable();toast('success','Rechte gespeichert');}});
+}
+function delUser(name){
+  if(name===currentUser.name)return;
+  Swal.fire({title:'Löschen?',text:'Nicht rückgängig.',icon:'warning',showCancelButton:true,confirmButtonText:'Löschen',cancelButtonText:'Abbrechen',confirmButtonColor:'#ef4444',background:'#090d18',color:'#e2e8f0'})
+  .then(r=>{if(r.isConfirmed){users=users.filter(u=>u.name!==name);saveData();renderAdminTable();renderStaff();toast('success','Gelöscht');}});
 }
 
-function deleteUser(name) {
-  if(name===currentUser.name) return;
-  Swal.fire({title:'Mitarbeiter löschen?',text:'Nicht rückgängig machbar.',icon:'warning',showCancelButton:true,confirmButtonText:'Löschen',cancelButtonText:'Abbrechen',confirmButtonColor:'#ef4444',background:'#090d18',color:'#e2e8f0'})
-  .then(r=>{ if(r.isConfirmed){ users=users.filter(u=>u.name!==name); saveData(); renderAdminTable(); renderStaff(); toast('success','Gelöscht'); }});
-}
-
-// ============================================================
-//  ANNOUNCEMENTS
-// ============================================================
-function toggleAnnDrop() {
+// ================================================================
+//  ANNOUNCEMENTS + CHAT
+// ================================================================
+function toggleAnnDrop(){
   const d=document.getElementById('ann-drop');
-  const open=d.style.display==='none'||d.style.display==='';
-  d.style.display=open?'block':'none';
-  if(open) {
+  const open=d.style.display!=='block';d.style.display=open?'block':'none';
+  if(open){
     const list=document.getElementById('ann-list');
-    list.innerHTML=announcements.length===0?
-      `<p style="font-size:11px;color:var(--muted);text-align:center;padding:14px;font-style:italic">Keine Ankündigungen</p>`:
-      announcements.map(a=>`
-        <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-left:2px solid var(--y);border-radius:9px;padding:11px">
-          <p style="font-size:12px;font-weight:600;margin-bottom:4px">${a.text}</p>
-          <div style="display:flex;justify-content:space-between">
-            <span style="font-size:9px;color:var(--y);font-weight:700">${a.author}</span>
-            <span class="mono" style="font-size:9px;color:var(--muted)">${a.time}</span>
-          </div>
-          ${a.unread?`<span class="badge b-yellow" style="margin-top:5px;font-size:8px">NEU</span>`:''}
-        </div>
-      `).join('');
-    announcements.forEach(a=>a.unread=false); saveData();
-    const ab=document.getElementById('ann-badge'); if(ab) ab.style.display='none';
+    list.innerHTML=announcements.length===0?`<p style="font-size:11px;color:var(--muted);text-align:center;padding:14px;font-style:italic">Keine Ankündigungen</p>`:
+      announcements.map(a=>`<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-left:2px solid var(--y);border-radius:9px;padding:11px"><p style="font-size:12px;font-weight:600;margin-bottom:4px">${a.text}</p><div style="display:flex;justify-content:space-between"><span style="font-size:9px;color:var(--y);font-weight:700">${a.author}</span><span class="mono" style="font-size:9px;color:var(--muted)">${a.time}</span></div>${a.unread?`<span class="badge b-yellow" style="margin-top:5px;font-size:8px">NEU</span>`:''}</div>`).join('');
+    announcements.forEach(a=>a.unread=false);saveData();
+    const ab=document.getElementById('ann-badge');if(ab)ab.style.display='none';
   }
 }
-document.addEventListener('click', e=>{
-  const drop=document.getElementById('ann-drop');
-  if(drop&&!drop.contains(e.target)&&!e.target.closest('[onclick*="toggleAnnDrop"]')) drop.style.display='none';
+document.addEventListener('click',e=>{
+  const d=document.getElementById('ann-drop');
+  if(d&&!d.contains(e.target)&&!e.target.closest('[onclick*="toggleAnnDrop"]'))d.style.display='none';
 });
-
-// ============================================================
-//  CHAT
-// ============================================================
-function sendChat() {
-  const inp=document.getElementById('chat-input');
-  if(!inp||!inp.value.trim()) return;
-  chatMessages.push({ sender:currentUser.name, text:inp.value.trim(), time:new Date().toLocaleTimeString('de-DE') });
-  inp.value='';
-  if(chatMessages.length>300) chatMessages=chatMessages.slice(-300);
-  saveData(); renderChat();
+function sendChat(){
+  const inp=document.getElementById('chat-input');if(!inp||!inp.value.trim())return;
+  chatMessages.push({sender:currentUser.name,text:inp.value.trim(),time:new Date().toLocaleTimeString('de-DE')});
+  inp.value='';if(chatMessages.length>300)chatMessages=chatMessages.slice(-300);
+  saveData();renderChat();
 }
-function renderChat() {
-  const c=document.getElementById('chat-messages');
-  if(!c||!isDuty) return;
-  c.innerHTML=chatMessages.map(m=>`
-    <div class="chat-msg ${m.sender===currentUser.name?'mine':''}">
-      <div class="chat-name">${m.sender} · ${m.time}</div>
-      ${m.text}
-    </div>
-  `).join('');
+function renderChat(){
+  const c=document.getElementById('chat-messages');if(!c||!isDuty)return;
+  c.innerHTML=chatMessages.map(m=>`<div class="chat-msg ${m.sender===currentUser.name?'mine':''}"><div class="chat-name">${m.sender} · ${m.time}</div>${m.text}</div>`).join('');
   c.scrollTop=c.scrollHeight;
 }
 
-// ============================================================
+// ================================================================
 //  UTILS
-// ============================================================
-function addLog(text) {
-  globalLogs.push({ time:new Date().toLocaleTimeString('de-DE'), text });
-  if(globalLogs.length>100) globalLogs=globalLogs.slice(-100);
-  saveData(); updateDashboard();
+// ================================================================
+function addLog(text){globalLogs.push({time:new Date().toLocaleTimeString('de-DE'),text});if(globalLogs.length>120)globalLogs=globalLogs.slice(-120);saveData();updateDashboard();}
+function saveData(){
+  localStorage.setItem('tka_users',JSON.stringify(users));
+  localStorage.setItem('tka_rides',JSON.stringify(rides));
+  localStorage.setItem('tka_reports',JSON.stringify(reports));
+  localStorage.setItem('tka_anns',JSON.stringify(announcements));
+  localStorage.setItem('tka_logs',JSON.stringify(globalLogs));
+  localStorage.setItem('tka_chat',JSON.stringify(chatMessages));
+  localStorage.setItem('tka_certs',JSON.stringify(certs));
+  localStorage.setItem('tka_sys',sysStatus);
 }
-function saveData() {
-  localStorage.setItem('tx8_users',   JSON.stringify(users));
-  localStorage.setItem('tx8_rides',   JSON.stringify(rides));
-  localStorage.setItem('tx8_reports', JSON.stringify(reports));
-  localStorage.setItem('tx8_anns',    JSON.stringify(announcements));
-  localStorage.setItem('tx8_logs',    JSON.stringify(globalLogs));
-  localStorage.setItem('tx8_chat',    JSON.stringify(chatMessages));
-  localStorage.setItem('tx8_sys',     sysStatus);
-}
-function setEl(id,v) { const e=document.getElementById(id); if(e) e.textContent=v; }
-function val(id) { return document.getElementById(id)?.value||''; }
-function openModal(id) { document.getElementById(id)?.classList.add('open'); }
-function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
-function toast(icon,title) {
-  Swal.fire({toast:true,position:'top-end',icon,title,showConfirmButton:false,timer:2500,timerProgressBar:true,background:'#090d18',color:'#e2e8f0'});
-}
+function setEl(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function val(id){return document.getElementById(id)?.value||'';}
+function openModal(id){document.getElementById(id)?.classList.add('open');}
+function closeModal(id){document.getElementById(id)?.classList.remove('open');}
+function toast(icon,title){Swal.fire({toast:true,position:'top-end',icon,title,showConfirmButton:false,timer:2800,timerProgressBar:true,background:'#090d18',color:'#e2e8f0'});}
 </script>
 </body>
 </html>
