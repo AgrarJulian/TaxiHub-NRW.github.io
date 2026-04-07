@@ -1966,7 +1966,16 @@ function renderChat(){
 // =================================================================
 //  UTILS
 // =================================================================
-function addLog(text){globalLogs.push({time:new Date().toLocaleTimeString('de-DE'),text});if(globalLogs.length>120)globalLogs=globalLogs.slice(-120);saveData();updateDashboard();}
+function addLog(text){
+  globalLogs.push({
+    time:new Date().toLocaleTimeString('de-DE'),
+    text
+  });
+  if(globalLogs.length>120)globalLogs=globalLogs.slice(-120);
+  saveData();
+  updateDashboard();
+}
+
 function saveData(){
   localStorage.setItem('tka2_users',JSON.stringify(users));
   localStorage.setItem('tka2_rides',JSON.stringify(rides));
@@ -1978,15 +1987,41 @@ function saveData(){
   localStorage.setItem('tka2_sys',sysStatus);
   localStorage.setItem('tka2_eotw',JSON.stringify(eotwData));
 }
-function setEl(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-function val(id){return document.getElementById(id)?.value||'';}
-function openModal(id){document.getElementById(id)?.classList.add('open');}
-function closeModal(id){document.getElementById(id)?.classList.remove('open');}
-function toast(icon,title){Swal.fire({toast:true,position:'top-end',icon,title,showConfirmButton:false,timer:2800,timerProgressBar:true,background:'#090d18',color:'#e2e8f0'});}
-</script>
+
+function setEl(id,v){
+  const e=document.getElementById(id);
+  if(e)e.textContent=v;
+}
+
+function val(id){
+  return document.getElementById(id)?.value||'';
+}
+
+function openModal(id){
+  document.getElementById(id)?.classList.add('open');
+}
+
+function closeModal(id){
+  document.getElementById(id)?.classList.remove('open');
+}
+
+function toast(icon,title){
+  Swal.fire({
+    toast:true,
+    position:'top-end',
+    icon,
+    title,
+    showConfirmButton:false,
+    timer:2800,
+    timerProgressBar:true,
+    background:'#090d18',
+    color:'#e2e8f0'
+  });
+}
 
 /* ================= ADMIN HISTORY ================= */
 let adminHistory = [];
+
 function logAdminAction(action, admin){
   const entry = {
     action,
@@ -2000,20 +2035,26 @@ function logAdminAction(action, admin){
 /* ================= VERDÄCHTIGES SYSTEM ================= */
 function checkSuspicious(user){
   if(user.fahrten > 20){
-    alert("⚠️ Verdächtig viele Fahrten!");
+    toast('warning','Verdächtig viele Fahrten!');
     logAdminAction("Verdacht: Fahrten Spam", "SYSTEM");
   }
   if(user.km > 1000){
-    alert("⚠️ Unrealistische KM!");
+    toast('warning','Unrealistische KM!');
     logAdminAction("Verdacht: KM unrealistisch", "SYSTEM");
   }
 }
 
 /* ================= VOTING SYSTEM ================= */
 let votings = [];
+
 function createVoting(title){
-  votings.push({title, votesYes:0, votesNo:0});
+  votings.push({
+    title,
+    votesYes:0,
+    votesNo:0
+  });
 }
+
 function vote(index, type){
   if(type === 'yes') votings[index].votesYes++;
   else votings[index].votesNo++;
@@ -2021,6 +2062,7 @@ function vote(index, type){
 
 /* ================= SANKTIONSSYSTEM ================= */
 let sanctions = [];
+
 function addSanction(name, reason, points){
   const entry = {
     name,
@@ -2030,6 +2072,7 @@ function addSanction(name, reason, points){
     status: "Aktiv"
   };
   sanctions.push(entry);
+
   logAdminAction("Sanktion vergeben: "+reason, "Admin");
 }
 
@@ -2041,12 +2084,16 @@ function calculatePunishment(points){
   return "Kündigung";
 }
 
-/* ================= DASHBOARD STATS ================= */
-function updateDashboard(){
-  document.getElementById("live-driver-count").innerText = Math.floor(Math.random()*10);
-  document.getElementById("live-wait").innerText = Math.floor(Math.random()*10);
+/* ================= LIVE DASHBOARD (FIXED) ================= */
+function updateLiveStats(){
+  const driver = document.getElementById("live-driver-count");
+  const wait = document.getElementById("live-wait");
+
+  if(driver) driver.innerText = Math.floor(Math.random()*10);
+  if(wait) wait.innerText = Math.floor(Math.random()*10);
 }
-setInterval(updateDashboard, 5000);
+
+setInterval(updateLiveStats, 5000);
 
 /* ================= INTRO UPGRADE ================= */
 window.addEventListener("load", ()=>{
@@ -2054,32 +2101,42 @@ window.addEventListener("load", ()=>{
   const logo = document.getElementById("intro-logo");
   const bar = document.getElementById("intro-bar");
 
-  setTimeout(()=>logo.classList.add("show"), 500);
-  setTimeout(()=>bar.style.width = "100%", 1000);
+  if(!intro) return;
+
+  setTimeout(()=>logo?.classList.add("show"), 500);
+  setTimeout(()=>{ if(bar) bar.style.width = "100%"; }, 1000);
 
   setTimeout(()=>{
     intro.style.opacity = "0";
+
     setTimeout(()=>{
       intro.style.display = "none";
-      document.getElementById("landing-page").style.display = "block";
+      const landing = document.getElementById("landing-page");
+      if(landing) landing.style.display = "block";
     },800);
+
   },4000);
 });
 
 /* ================= LIVE COUNTER ================= */
 function animateCounter(id, target){
   let i=0;
+
+  const el = document.getElementById(id);
+  if(!el) return;
+
   const interval = setInterval(()=>{
     i+=Math.ceil(target/50);
+
     if(i>=target){
       i=target;
       clearInterval(interval);
     }
-    document.getElementById(id).innerText = i;
+
+    el.innerText = i;
   },30);
 }
 
 </script>
-
 </body>
 </html>
