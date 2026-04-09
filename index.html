@@ -87,28 +87,11 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
 .panic-overlay{position:fixed;inset:0;z-index:99990;background:rgba(239,68,68,.07);pointer-events:none;animation:panicFlash 1s infinite;display:none}
 .sdot-0{background:#ef4444}.sdot-1{background:#22c55e}.sdot-2{background:#4ade80}.sdot-3{background:#facc15}.sdot-4{background:#a855f7}.sdot-5{background:#60a5fa}.sdot-6{background:#94a3b8}.sdot-offline{background:#334155}.sdot-panic{background:#ef4444;animation:pulse .5s infinite}
 /* LANDING PAGE */
-#intro-screen{position:fixed;inset:0;z-index:99999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s}
-.intro-logo{opacity:0;transform:scale(.8);transition:all .8s cubic-bezier(.4,0,.2,1)}
-.intro-logo.show{opacity:1;transform:scale(1)}
-.intro-bar-wrap{width:260px;height:2px;background:rgba(255,255,255,.1);margin-top:32px;border-radius:2px;overflow:hidden}
-.intro-bar-fill{height:100%;background:var(--y);width:0;box-shadow:0 0 12px var(--y);transition:width 2.2s linear}
-#landing-page{display:none;min-height:100vh;overflow-y:auto;overflow-x:hidden}
-.hero-section{min-height:100vh;background:linear-gradient(160deg,#05070d 0%,#0d1520 50%,#05070d 100%);display:flex;flex-direction:column;position:relative;overflow:hidden}
-.hero-bg-glow{position:absolute;border-radius:50%;pointer-events:none}
-.city-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(250,204,21,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(250,204,21,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
-@keyframes counterUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.scroll-section{padding:80px 40px;max-width:1100px;margin:0 auto}
-.scroll-text{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
-.scroll-text.visible{opacity:1;transform:translateY(0)}
-.price-card{background:rgba(13,18,30,.8);border:1px solid rgba(255,255,255,.07);border-radius:24px;padding:32px;transition:all .4s;position:relative;overflow:hidden}
-.price-card:hover{transform:translateY(-8px);border-color:rgba(250,204,21,.3);box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.price-card.featured{border-color:rgba(250,204,21,.4);box-shadow:0 0 40px rgba(250,204,21,.08)}
-.team-card{background:rgba(13,18,30,.8);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:24px;transition:all .3s;cursor:pointer;overflow:hidden;position:relative}
-.team-card:hover{transform:translateY(-6px);border-color:rgba(250,204,21,.3)}
-.team-info{position:absolute;inset:0;background:rgba(5,7,13,.95);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .3s;text-align:center}
-.team-card:hover .team-info{opacity:1}
-.fake-dashboard{background:#080b14;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px;font-size:11px}
-.stat-counter{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:.02em;line-height:1}
+/* INTRO */
+#intro-screen{position:fixed;inset:0;z-index:99999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s ease}
+@keyframes introGlow{0%,100%{box-shadow:0 0 50px rgba(250,204,21,.6),0 0 100px rgba(250,204,21,.25)}50%{box-shadow:0 0 80px rgba(250,204,21,.9),0 0 160px rgba(250,204,21,.4)}}
+@keyframes introPulse{0%,100%{text-shadow:0 0 30px rgba(250,204,21,.9),0 0 80px rgba(250,204,21,.4)}50%{text-shadow:0 0 50px rgba(250,204,21,1),0 0 120px rgba(250,204,21,.6)}}
+
 /* APP */
 #app{display:none;height:100vh;flex-direction:row;overflow:hidden}
 /* CERT */
@@ -131,23 +114,34 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
   <h2 class="bebas" style="font-size:36px;letter-spacing:.06em;text-align:center">Bist du noch <span style="color:var(--y)">aktiv?</span></h2>
   <p style="color:var(--muted);font-size:14px;text-align:center">Du warst 20 Minuten inaktiv. Bitte bestätige, dass du noch da bist.</p>
   <div id="afk-timer" style="font-family:'JetBrains Mono',monospace;font-size:48px;font-weight:700;color:var(--y)">3:00</div>
-  <button onclick="confirmAFK()" style="background:var(--y);color:#000;border:none;border-radius:14px;padding:14px 40px;font-weight:700;font-size:16px;cursor:pointer;font-family:'Space Grotesk',sans-serif">✓ Ja, ich bin noch aktiv!</button>
+  <button onclick="confirmAFK()" style="background:var(--y);color:#000;border:none;border-radius:14px;padding:14px 40px;font-weight:700;font-size:16px;cursor:pointer;font-family:'Space Grotesk',sans-serif">Ja, ich bin noch aktiv</button>
   <p style="font-size:11px;color:#ef4444;font-weight:600">Kein Klick → Dienst wird automatisch beendet</p>
 </div>
 
 <!-- ================= INTRO ================= -->
 <div id="intro-screen">
-  <div class="intro-logo" id="intro-logo">
-    <div style="text-align:center">
-      <div style="width:80px;height:80px;background:var(--y);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v5"/><path d="M14 17H2"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/><path d="M14 3v4h5"/></svg>
+  <canvas id="intro-particles" style="position:absolute;inset:0;pointer-events:none;z-index:1"></canvas>
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,rgba(250,204,21,.07) 0%,transparent 65%);pointer-events:none;z-index:2"></div>
+  <div id="intro-content" style="position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;gap:0">
+    <div id="intro-icon" style="opacity:0;transform:scale(.3);transition:opacity 1s ease,transform 1s cubic-bezier(.34,1.56,.64,1);margin-bottom:22px">
+      <div style="width:88px;height:88px;background:var(--y);border-radius:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 50px rgba(250,204,21,.6),0 0 100px rgba(250,204,21,.25),inset 0 2px 0 rgba(255,255,255,.3)">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v5"/><path d="M14 17H2"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/><path d="M14 3v4h5"/></svg>
       </div>
-      <div class="bebas" style="font-size:52px;letter-spacing:.08em;color:#fff">TAXI <span style="color:var(--y)">KÖLN</span></div>
-      <div style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.2em;margin-top:4px">Dashboard Alpha</div>
+    </div>
+    <div id="intro-title" style="opacity:0;transform:translateY(24px);transition:opacity .9s ease,transform .9s ease;text-align:center">
+      <div class="bebas" style="font-size:62px;letter-spacing:.1em;line-height:1;color:#fff;text-shadow:0 0 40px rgba(250,204,21,.2)">TAXI <span style="color:var(--y);text-shadow:0 0 30px rgba(250,204,21,.9),0 0 80px rgba(250,204,21,.4)">KOELN</span></div>
+      <div id="intro-sub" style="font-size:12px;color:rgba(255,255,255,.45);font-weight:600;text-transform:uppercase;letter-spacing:.28em;margin-top:10px;opacity:0;transition:opacity .7s ease">Dein Weg durch Los Santos</div>
+    </div>
+    <div id="intro-loader" style="opacity:0;transition:opacity .6s ease;margin-top:44px;text-align:center;width:300px">
+      <div style="height:2px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-bottom:14px;position:relative">
+        <div id="intro-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#b45309,var(--y),#fef08a);box-shadow:0 0 10px var(--y);border-radius:2px;transition:width .15s linear"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 2px">
+        <div id="intro-msg" style="font-size:9px;color:rgba(255,255,255,.3);font-weight:600;text-transform:uppercase;letter-spacing:.14em">System wird geladen...</div>
+        <div id="intro-pct" class="mono" style="font-size:11px;color:var(--y);font-weight:700">0%</div>
+      </div>
     </div>
   </div>
-  <div class="intro-bar-wrap"><div class="intro-bar-fill" id="intro-bar"></div></div>
-  <div style="position:absolute;bottom:32px;font-size:10px;color:rgba(255,255,255,.2);font-weight:600;text-transform:uppercase;letter-spacing:.15em">Initialisiere System...</div>
 </div>
 
 <!-- ================= LANDING PAGE ================= -->
@@ -177,12 +171,12 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
     <div class="hero-bg-glow" style="width:300px;height:300px;background:radial-gradient(circle,rgba(59,130,246,.06),transparent 70%);bottom:20%;right:10%"></div>
     <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:40px;position:relative;z-index:1">
       <div style="text-align:center;max-width:800px">
-        <div class="badge b-yellow" style="margin-bottom:20px;padding:6px 16px;font-size:10px">🚖 Taxi Köln — Köln NRW RP</div>
-        <h1 class="bebas" style="font-size:clamp(56px,10vw,120px);line-height:.88;letter-spacing:.02em;margin-bottom:20px">Taxi Köln –<br><span style="color:var(--y)">Dein Weg durch<br>Köln</span></h1>
-        <p style="color:var(--muted);font-size:16px;max-width:500px;margin:0 auto 36px;line-height:1.7">Professioneller Fahrdienst in Köln. Zuverlässig, schnell, rund um die Uhr.</p>
+        <div class="badge b-yellow" style="margin-bottom:20px;padding:6px 16px;font-size:10px"> Taxi Köln — Los Santos NRW RP</div>
+        <h1 class="bebas" style="font-size:clamp(56px,10vw,120px);line-height:.88;letter-spacing:.02em;margin-bottom:20px">Taxi Köln –<br><span style="color:var(--y)">Dein Weg durch<br>Los Santos</span></h1>
+        <p style="color:var(--muted);font-size:16px;max-width:500px;margin:0 auto 36px;line-height:1.7">Professioneller Fahrdienst in Los Santos. Zuverlässig, schnell, rund um die Uhr.</p>
         <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-          <button onclick="scrollToSection('preise')" class="btn-y" style="padding:14px 36px;font-size:15px;border-radius:12px">🚕 Fahrt buchen</button>
-          <button onclick="openLoginModal()" style="background:rgba(255,255,255,.06);color:#e2e8f0;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 36px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Space Grotesk',sans-serif" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">⚡ System öffnen</button>
+          <button onclick="scrollToSection('preise')" class="btn-y" style="padding:14px 36px;font-size:15px;border-radius:12px"> Fahrt buchen</button>
+          <button onclick="openLoginModal()" style="background:rgba(255,255,255,.06);color:#e2e8f0;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 36px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Space Grotesk',sans-serif" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='rgba(255,255,255,.06)'"> System öffnen</button>
         </div>
         <!-- LIVE STATUS STRIP -->
         <div style="display:flex;gap:20px;justify-content:center;margin-top:48px;flex-wrap:wrap">
@@ -217,7 +211,7 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
       </div>
       <div class="scroll-text" id="st2" style="margin-bottom:60px;text-align:center;border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:60px">
         <div class="bebas" style="font-size:clamp(36px,6vw,72px);letter-spacing:.04em;margin-bottom:16px">Ein Fahrer macht<br>sich auf <span style="color:var(--y)">den Weg.</span></div>
-        <p style="color:var(--muted);font-size:16px;max-width:500px;margin:0 auto;line-height:1.7">Erfahrene Fahrer kennen die Straßen von Köln. Schnell, sicher, professionell.</p>
+        <p style="color:var(--muted);font-size:16px;max-width:500px;margin:0 auto;line-height:1.7">Erfahrene Fahrer kennen die Straßen von Los Santos. Schnell, sicher, professionell.</p>
       </div>
       <div class="scroll-text" id="st3" style="text-align:center">
         <div class="bebas" style="font-size:clamp(36px,6vw,72px);letter-spacing:.04em;margin-bottom:16px">Du kommst<br><span style="color:var(--y)">sicher an.</span></div>
@@ -270,40 +264,92 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
 
   <!-- PREISE -->
   <section id="preise" style="padding:80px 40px;background:linear-gradient(180deg,#080c18,#05070d)">
-    <div style="max-width:1000px;margin:0 auto">
+    <div style="max-width:1100px;margin:0 auto">
       <div style="font-size:10px;font-weight:700;color:var(--y);text-transform:uppercase;letter-spacing:.2em;text-align:center;margin-bottom:8px">Unser Angebot</div>
-      <h2 class="bebas scroll-text" id="st-preise" style="font-size:clamp(32px,5vw,60px);letter-spacing:.04em;text-align:center;margin-bottom:48px">Preise & <span style="color:var(--y)">Leistungen</span></h2>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+      <h2 class="bebas scroll-text" id="st-preise" style="font-size:clamp(32px,5vw,60px);letter-spacing:.04em;text-align:center;margin-bottom:12px">Preise <span style="color:var(--y)">& Leistungen</span></h2>
+      <p style="text-align:center;color:var(--muted);font-size:13px;margin-bottom:40px">Normale Taxifahrten sind <span style="color:#22c55e;font-weight:700">kostenlos</span>. Preise gelten fuer Limousinen-Service.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:32px">
+        <!-- S-Klasse -->
         <div class="price-card scroll-text" id="pc1">
-          <div class="badge b-gray" style="margin-bottom:16px">Standard</div>
-          <div class="bebas" style="font-size:48px;line-height:1;margin-bottom:8px">$500 <span style="font-size:24px;color:var(--muted)">/ Fahrt</span></div>
-          <p style="color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px">Normale Taxifahrt im Stadtgebiet. Zuverlässig & pünktlich.</p>
-          <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
-            <li style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:#22c55e">✓</span> Stadtgebiet Köln</li>
-            <li style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:#22c55e">✓</span> Bis 5 km inklusive</li>
-            <li style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:var(--muted)">—</span> Kein VIP Service</li>
-          </ul>
+          <div class="badge b-blue" style="margin-bottom:16px">Extended S-Klasse</div>
+          <div class="bebas" style="font-size:42px;line-height:1;margin-bottom:4px">12.000 <span style="font-size:20px;color:var(--muted)">GTA$</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:20px">Einfache Fahrt</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;font-size:12px">
+              <span style="color:var(--muted)">Einfache Fahrt</span><span style="font-weight:700">12.000 $</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;font-size:12px">
+              <span style="color:var(--muted)">Hin & Rueckfahrt</span><span style="font-weight:700">22.000 $</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;font-size:12px">
+              <span style="color:var(--muted)">1 Std. exklusiv</span><span style="font-weight:700">30.000 $</span>
+            </div>
+          </div>
         </div>
+        <!-- Stretch -->
         <div class="price-card featured scroll-text" id="pc2">
           <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--y);color:#000;font-size:9px;font-weight:700;padding:4px 14px;border-radius:0 0 8px 8px;text-transform:uppercase;letter-spacing:.1em">Beliebteste Wahl</div>
-          <div class="badge b-yellow" style="margin-bottom:16px;margin-top:12px">Express</div>
-          <div class="bebas" style="font-size:48px;color:var(--y);line-height:1;margin-bottom:8px">$900 <span style="font-size:24px;color:var(--muted)">/ Fahrt</span></div>
-          <p style="color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px">Schnellstmöglich zum Ziel. Priorität in der Leitstelle.</p>
-          <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
-            <li style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:#22c55e">✓</span> Ganzes Stadtgebiet</li>
-            <li style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:#22c55e">✓</span> Priorität in Warteschlange</li>
-            <li style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:#22c55e">✓</span> Bis 15 km inklusive</li>
-          </ul>
+          <div class="badge b-yellow" style="margin-bottom:16px;margin-top:14px">Stretch Limousine</div>
+          <div class="bebas" style="font-size:42px;color:var(--y);line-height:1;margin-bottom:4px">22.000 <span style="font-size:20px;color:var(--muted)">GTA$</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:20px">Einfache Fahrt</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.04);border-radius:8px;font-size:12px">
+              <span style="color:var(--muted)">Einfache Fahrt</span><span style="font-weight:700;color:var(--y)">22.000 $</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.04);border-radius:8px;font-size:12px">
+              <span style="color:var(--muted)">Hin & Rueckfahrt</span><span style="font-weight:700;color:var(--y)">40.000 $</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.04);border-radius:8px;font-size:12px">
+              <span style="color:var(--muted)">1 Std. exklusiv</span><span style="font-weight:700;color:var(--y)">50.000 $</span>
+            </div>
+          </div>
         </div>
+        <!-- Patriot -->
         <div class="price-card scroll-text" id="pc3">
-          <div class="badge b-purple" style="margin-bottom:16px">VIP</div>
-          <div class="bebas" style="font-size:48px;line-height:1;margin-bottom:8px">$2000 <span style="font-size:24px;color:var(--muted)">/ Fahrt</span></div>
-          <p style="color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px">Exklusiver Chauffeur-Service mit Luxusfahrzeugen.</p>
-          <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
-            <li style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:#22c55e">✓</span> Luxusfahrzeug</li>
-            <li style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:#22c55e">✓</span> Persönlicher Fahrer</li>
-            <li style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:#22c55e">✓</span> Unbegrenzte Strecke</li>
-          </ul>
+          <div class="badge b-purple" style="margin-bottom:16px">Patriot Limousine</div>
+          <div class="bebas" style="font-size:42px;line-height:1;margin-bottom:4px">35.000 <span style="font-size:20px;color:var(--muted)">GTA$</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:20px">Einfache Fahrt</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;font-size:12px">
+              <span style="color:var(--muted)">Einfache Fahrt</span><span style="font-weight:700">35.000 $</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;font-size:12px">
+              <span style="color:var(--muted)">Hin & Rueckfahrt</span><span style="font-weight:700">50.000 $</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;font-size:12px">
+              <span style="color:var(--muted)">1 Std. exklusiv</span><span style="font-weight:700">60.000 $</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Zuschlage -->
+      <div class="glass" style="border-radius:20px;padding:24px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Zuschlage & Besonderheiten</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+          <div style="padding:12px 16px;background:rgba(255,255,255,.03);border-radius:10px">
+            <div style="font-size:10px;font-weight:700;color:var(--y);margin-bottom:4px">Zeitaufschlag</div>
+            <div style="font-size:12px;color:#cbd5e1">Nacht (22–06 Uhr): +20%</div>
+          </div>
+          <div style="padding:12px 16px;background:rgba(255,255,255,.03);border-radius:10px">
+            <div style="font-size:10px;font-weight:700;color:var(--y);margin-bottom:4px">Zwischenstopps</div>
+            <div style="font-size:12px;color:#cbd5e1">Pro Stopp: +2.000 $</div>
+          </div>
+          <div style="padding:12px 16px;background:rgba(255,255,255,.03);border-radius:10px">
+            <div style="font-size:10px;font-weight:700;color:var(--y);margin-bottom:4px">Standzeit</div>
+            <div style="font-size:12px;color:#cbd5e1">Pro 15 Min: +3.000 $</div>
+          </div>
+          <div style="padding:12px 16px;background:rgba(255,255,255,.03);border-radius:10px">
+            <div style="font-size:10px;font-weight:700;color:var(--y);margin-bottom:4px">Spontanbuchung</div>
+            <div style="font-size:12px;color:#cbd5e1">Unter 10 Min: +10%</div>
+          </div>
+          <div style="padding:12px 16px;background:rgba(255,255,255,.03);border-radius:10px">
+            <div style="font-size:10px;font-weight:700;color:var(--y);margin-bottom:4px">Kolonnenfahrt</div>
+            <div style="font-size:12px;color:#cbd5e1">Ab 3 Fzg: -5% je Fahrzeug</div>
+          </div>
+          <div style="padding:12px 16px;background:rgba(255,255,255,.03);border-radius:10px">
+            <div style="font-size:10px;font-weight:700;color:#22c55e;margin-bottom:4px">Taxi Standard</div>
+            <div style="font-size:12px;color:#22c55e;font-weight:600">KOSTENLOS</div>
+          </div>
         </div>
       </div>
     </div>
@@ -345,16 +391,16 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
     <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(250,204,21,.05),transparent 70%);border-radius:50%;pointer-events:none"></div>
     <div style="position:relative;z-index:1">
       <div class="bebas scroll-text" id="st-cta" style="font-size:clamp(40px,7vw,90px);letter-spacing:.04em;margin-bottom:16px">Bereit für deine<br><span style="color:var(--y)">nächste Fahrt?</span></div>
-      <p style="color:var(--muted);font-size:16px;max-width:400px;margin:0 auto 36px;line-height:1.7">Tritt dem Team bei oder buch jetzt deine Fahrt durch Köln.</p>
+      <p style="color:var(--muted);font-size:16px;max-width:400px;margin:0 auto 36px;line-height:1.7">Tritt dem Team bei oder buch jetzt deine Fahrt durch Los Santos.</p>
       <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-        <button onclick="openLoginModal()" class="btn-y" style="padding:14px 36px;font-size:15px;border-radius:12px">🔐 Login</button>
-        <button style="background:rgba(88,101,242,.15);color:#8892f6;border:1px solid rgba(88,101,242,.3);border-radius:12px;padding:14px 36px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif">💬 Discord</button>
+        <button onclick="openLoginModal()" class="btn-y" style="padding:14px 36px;font-size:15px;border-radius:12px"> Login</button>
+        <button onclick="window.open('https://discord.gg/yEZ3euUcGW','_blank')" style="background:rgba(88,101,242,.15);color:#8892f6;border:1px solid rgba(88,101,242,.3);border-radius:12px;padding:14px 36px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;display:inline-flex;align-items:center;gap:8px"><i data-lucide="discord" style="width:16px;height:16px"></i> Discord</button>
       </div>
     </div>
   </section>
 
   <footer style="padding:20px 48px;border-top:1px solid rgba(255,255,255,.05);text-align:center;background:#05070d">
-    <p style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.1em">© 2026 Taxi Köln — Dashboard Alpha — Köln NRW RP</p>
+    <p style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.1em">© 2026 Taxi Köln — Dashboard Alpha — Los Santos NRW RP</p>
   </footer>
 </div>
 
@@ -413,7 +459,11 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
         <div style="padding:0 10px 5px 14px;margin-top:14px"><span style="font-size:9px;font-weight:700;color:rgba(239,68,68,.6);text-transform:uppercase;letter-spacing:.12em">Administration</span></div>
         <div class="nav-item" id="nav-admin" onclick="switchTab('admin')" style="color:#ef4444"><i data-lucide="shield-alert"></i>Admin Panel</div>
         <div class="nav-item" id="nav-seclog" onclick="switchTab('seclog')" style="color:#f97316"><i data-lucide="file-lock"></i>Sicherheitslog</div>
+        <div class="nav-item" id="nav-adminhistory" onclick="switchTab('adminhistory')" style="color:#f97316"><i data-lucide="history"></i>Admin History</div>
       </div>
+      <div style="padding:0 10px 5px 14px;margin-top:14px"><span style="font-size:9px;font-weight:700;color:rgba(168,85,247,.6);text-transform:uppercase;letter-spacing:.12em">Team</span></div>
+      <div class="nav-item" id="nav-sanctions" onclick="switchTab('sanctions')"><i data-lucide="shield-x"></i>Sanktionen</div>
+      <div class="nav-item" id="nav-voting" onclick="switchTab('voting')"><i data-lucide="vote"></i>Abstimmungen</div>
     </nav>
     <div style="padding:10px;border-top:1px solid var(--border)">
       <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:11px;padding:11px;display:flex;align-items:center;gap:9px">
@@ -505,11 +555,13 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
           <div id="task-list" style="display:flex;flex-direction:column;gap:8px"></div>
         </div>
 
+        <!-- Suspicious Warnings -->
+        <div id="suspicious-warnings" style="margin-bottom:4px"></div>
         <!-- Employee of Week + Live Stats -->
         <div style="display:grid;grid-template-columns:220px 1fr 340px;gap:14px;margin-bottom:16px">
           <!-- Employee of Week -->
           <div class="glass" style="border-radius:18px;padding:20px;text-align:center">
-            <div style="font-size:9px;font-weight:700;color:var(--y);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">🏆 Mitarbeiter der Woche</div>
+            <div style="font-size:9px;font-weight:700;color:var(--y);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px"> Mitarbeiter der Woche</div>
             <div id="eotw-avatar" class="avatar" style="background:var(--y);color:#000;width:52px;height:52px;font-size:24px;margin:0 auto 10px">?</div>
             <div style="font-size:13px;font-weight:700" id="eotw-name">–</div>
             <div style="font-size:10px;color:var(--muted);margin-top:2px" id="eotw-rank">–</div>
@@ -521,11 +573,11 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
             <div style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;margin-bottom:14px"><i data-lucide="bar-chart-2" style="width:14px;height:14px;color:var(--y)"></i>Rangliste</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
               <div>
-                <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">🚗 Meiste Fahrten</div>
+                <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px"> Meiste Fahrten</div>
                 <div id="rank-rides" style="display:flex;flex-direction:column;gap:6px"></div>
               </div>
               <div>
-                <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">📏 Meiste KM</div>
+                <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px"> Meiste KM</div>
                 <div id="rank-km" style="display:flex;flex-direction:column;gap:6px"></div>
               </div>
             </div>
@@ -573,7 +625,7 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
               <div id="status-buttons" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px"></div>
               <button id="panic-btn" onclick="togglePanic()" class="panic-btn"><i data-lucide="alert-octagon" style="width:26px;height:26px"></i>PANIC — NOTRUF</button>
               <div id="panic-status-info" style="display:none;margin-top:12px;padding:12px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;text-align:center">
-                <p style="font-size:12px;font-weight:700;color:#ef4444">⚠ PANIC AKTIV</p>
+                <p style="font-size:12px;font-weight:700;color:#ef4444">! PANIC AKTIV</p>
                 <p style="font-size:10px;color:#fca5a5;margin-top:4px">Erneut drücken zum Aufheben</p>
               </div>
             </div>
@@ -635,7 +687,7 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
             </div>
             <div style="display:flex;flex-direction:column;gap:12px">
               <div><label class="lbl">Anfangsort / Startpunkt</label><input type="text" id="sr-start" class="inp" placeholder="z.B. Vinewood Blvd 12"></div>
-              <div><label class="lbl">Zielort</label><input type="text" id="sr-dest" class="inp" placeholder="z.B. Flughafen Köln"></div>
+              <div><label class="lbl">Zielort</label><input type="text" id="sr-dest" class="inp" placeholder="z.B. Flughafen Los Santos"></div>
               <div><label class="lbl">Gefahrene KM</label><input type="number" id="sr-km" class="inp" placeholder="z.B. 8.5" step="0.1" min="0.1"></div>
               <div><label class="lbl">Anmerkung (optional)</label><input type="text" id="sr-note" class="inp" placeholder="z.B. Nachtfahrt, VIP"></div>
               <button onclick="saveSelfRide()" id="sr-btn" class="btn-y" style="width:100%;padding:12px;justify-content:center;font-size:14px;border-radius:11px;margin-top:4px"><i data-lucide="check" style="width:14px;height:14px"></i>FAHRT SPEICHERN</button>
@@ -736,9 +788,9 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
             <div class="glass" style="border-radius:18px;padding:24px">
               <div style="font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px"><i data-lucide="settings" style="width:14px;height:14px;color:#60a5fa"></i>System-Status</div>
               <div style="display:flex;flex-direction:column;gap:7px">
-                <button onclick="setSys('online')" style="background:rgba(34,197,94,.1);color:var(--green);padding:9px;border-radius:9px;font-weight:700;font-size:11px;border:1px solid rgba(34,197,94,.2);cursor:pointer">🟢 Online</button>
-                <button onclick="setSys('warn')" style="background:rgba(250,204,21,.1);color:var(--y);padding:9px;border-radius:9px;font-weight:700;font-size:11px;border:1px solid rgba(250,204,21,.2);cursor:pointer">🟡 Wartung</button>
-                <button onclick="setSys('error')" style="background:rgba(239,68,68,.1);color:var(--red);padding:9px;border-radius:9px;font-weight:700;font-size:11px;border:1px solid rgba(239,68,68,.2);cursor:pointer">🔴 Fehler</button>
+                <button onclick="setSys('online')" style="background:rgba(34,197,94,.1);color:var(--green);padding:9px;border-radius:9px;font-weight:700;font-size:11px;border:1px solid rgba(34,197,94,.2);cursor:pointer">[G] Online</button>
+                <button onclick="setSys('warn')" style="background:rgba(250,204,21,.1);color:var(--y);padding:9px;border-radius:9px;font-weight:700;font-size:11px;border:1px solid rgba(250,204,21,.2);cursor:pointer">[Y] Wartung</button>
+                <button onclick="setSys('error')" style="background:rgba(239,68,68,.1);color:var(--red);padding:9px;border-radius:9px;font-weight:700;font-size:11px;border:1px solid rgba(239,68,68,.2);cursor:pointer">[R] Fehler</button>
               </div>
             </div>
           </div>
@@ -757,6 +809,44 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
             <tbody id="seclog-table"></tbody>
           </table>
         </div>
+      </div>
+
+      <!-- ADMIN HISTORY -->
+      <div id="view-adminhistory" class="tab-view fade-up">
+        <h3 class="bebas" style="font-size:26px;letter-spacing:.04em;margin-bottom:18px;color:#f97316">Admin <span style="color:var(--y)">History</span></h3>
+        <div class="glass" style="border-radius:18px;overflow:hidden">
+          <table class="data-table">
+            <thead><tr><th>Zeit</th><th>Admin</th><th>Aktion</th><th>Ziel</th><th>Details</th></tr></thead>
+            <tbody id="adminhistory-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SANCTIONS -->
+      <div id="view-sanctions" class="tab-view fade-up">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h3 class="bebas" style="font-size:26px;letter-spacing:.04em">Sanktions <span style="color:var(--y)">System</span></h3>
+          <button onclick="openSancModal()" class="btn-y" style="padding:10px 20px"><i data-lucide="plus" style="width:14px;height:14px"></i>Neue Sanktion</button>
+        </div>
+        <!-- Suspicious warnings -->
+        <div id="suspicious-warnings" style="margin-bottom:16px"></div>
+        <!-- Sanctions table -->
+        <div class="glass" style="border-radius:18px;overflow:hidden">
+          <table class="data-table">
+            <thead><tr><th>Mitarbeiter</th><th>Verstoß</th><th>Punkte</th><th>Stufe</th><th>Datum</th><th>Vergabe durch</th><th>Status</th></tr></thead>
+            <tbody id="sanctions-table"></tbody>
+          </table>
+        </div>
+        <div style="margin-top:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px" id="sanction-summary"></div>
+      </div>
+
+      <!-- VOTING -->
+      <div id="view-voting" class="tab-view fade-up">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h3 class="bebas" style="font-size:26px;letter-spacing:.04em">Team <span style="color:var(--y)">Abstimmung</span></h3>
+          <button id="btn-new-vote" onclick="openModal('modal-vote')" class="btn-y" style="padding:10px 20px"><i data-lucide="plus" style="width:14px;height:14px"></i>Abstimmung starten</button>
+        </div>
+        <div id="voting-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px"></div>
       </div>
 
     </div>
@@ -799,7 +889,7 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
   <div style="display:flex;flex-direction:column;gap:11px">
     <div><label class="lbl">Titel</label><input type="text" id="rep-title" class="inp" placeholder="Kurze Beschreibung"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div><label class="lbl">Kategorie</label><select id="rep-cat" class="inp"><option value="bug">🐛 Bug</option><option value="improvement">💡 Verbesserung</option><option value="other">📌 Sonstiges</option></select></div>
+      <div><label class="lbl">Kategorie</label><select id="rep-cat" class="inp"><option value="bug">[Bug] Bug</option><option value="improvement">[Tipp] Verbesserung</option><option value="other">[Info] Sonstiges</option></select></div>
       <div><label class="lbl">Priorität</label><select id="rep-prio" class="inp"><option value="low">Niedrig</option><option value="medium">Mittel</option><option value="high">Hoch</option></select></div>
     </div>
     <div><label class="lbl">Beschreibung</label><textarea id="rep-desc" class="inp" style="height:90px;resize:none;padding:11px" placeholder="Detaillierte Beschreibung..."></textarea></div>
@@ -865,6 +955,71 @@ label.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing
   </div>
 </div></div>
 
+<!-- SANCTION MODAL -->
+<div id="modal-sanction" class="modal-bg"><div class="modal-box" style="max-width:520px">
+  <h3 class="bebas" style="font-size:24px;letter-spacing:.04em;margin-bottom:18px">Neue <span style="color:var(--y)">Sanktion</span></h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+    <div><label class="lbl">Mitarbeiter</label><select id="sanc-person" class="inp"></select></div>
+    <div><label class="lbl">Verstoß Kategorie</label>
+      <select id="sanc-cat" class="inp" onchange="updateSancPoints()">
+        <optgroup label="Leicht (1 Punkt)">
+          <option value="1|Nicht ausgestempelt">Nicht ausgestempelt</option>
+          <option value="1|Keine Dienstkleidung">Keine Dienstkleidung</option>
+          <option value="1|Funk nicht erreichbar">Funk nicht erreichbar</option>
+          <option value="1|Unnötiger Funk">Unnötiger Funk</option>
+          <option value="1|Fahrt ohne GPS">Fahrt ohne GPS</option>
+          <option value="1|Infos nicht gemeldet">Infos nicht gemeldet</option>
+        </optgroup>
+        <optgroup label="Mittel (2 Punkte)">
+          <option value="2|Beleidigung">Beleidigung</option>
+          <option value="2|Streit im Dienst">Streit im Dienst</option>
+        </optgroup>
+        <optgroup label="Schwer (3 Punkte)">
+          <option value="3|Taxi privat genutzt">Taxi privat genutzt</option>
+          <option value="3|Waffen / Drogen">Waffen / Drogen</option>
+          <option value="3|Respektlosigkeit">Respektlosigkeit</option>
+          <option value="3|Lügen">Lügen gegenüber Vorgesetzten</option>
+          <option value="3|Schwerer Unfall">Schwerer Unfall</option>
+        </optgroup>
+      </select>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+    <div style="background:rgba(0,0,0,.3);border-radius:12px;padding:14px">
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Punkte</div>
+      <div id="sanc-pts-display" class="bebas" style="font-size:32px;color:var(--y)">1</div>
+    </div>
+    <div style="background:rgba(0,0,0,.3);border-radius:12px;padding:14px">
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Stufe</div>
+      <div id="sanc-level-display" style="font-size:13px;font-weight:700;color:#22c55e;margin-top:4px">Verwarnung</div>
+    </div>
+  </div>
+  <div><label class="lbl">Kommentar</label><textarea id="sanc-comment" class="inp" style="height:80px;resize:none;padding:11px" placeholder="Optionaler Kommentar..."></textarea></div>
+  <div style="display:flex;gap:10px;margin-top:14px">
+    <button onclick="saveSanction()" class="btn-y" style="flex:1;padding:12px;justify-content:center">SANKTION VERGEBEN</button>
+    <button onclick="closeModal('modal-sanction')" class="btn-ghost" style="padding:12px 20px">Abbrechen</button>
+  </div>
+</div></div>
+
+<!-- VOTE MODAL -->
+<div id="modal-vote" class="modal-bg"><div class="modal-box" style="max-width:480px">
+  <h3 class="bebas" style="font-size:24px;letter-spacing:.04em;margin-bottom:18px">Abstimmung <span style="color:var(--y)">starten</span></h3>
+  <div style="display:flex;flex-direction:column;gap:11px">
+    <div><label class="lbl">Titel der Abstimmung</label><input type="text" id="vote-title" class="inp" placeholder="z.B. Rang von Max Mustermann ändern"></div>
+    <div><label class="lbl">Typ</label>
+      <select id="vote-type" class="inp">
+        <option value="rang">Rang aendern</option>
+        <option value="regel">Regel aendern</option>
+        <option value="sonstiges">Sonstiges</option>
+      </select>
+    </div>
+    <div><label class="lbl">Beschreibung</label><textarea id="vote-desc" class="inp" style="height:80px;resize:none;padding:11px" placeholder="Was soll abgestimmt werden?"></textarea></div>
+    <div><label class="lbl">Abstimmung laeuft bis</label><input type="text" id="vote-deadline" class="inp" placeholder="z.B. 15.04.2026"></div>
+    <button onclick="saveVote()" class="btn-y" style="width:100%;padding:12px;justify-content:center;font-size:14px;border-radius:11px">ABSTIMMUNG STARTEN</button>
+    <button onclick="closeModal('modal-vote')" class="btn-ghost" style="width:100%;padding:10px">Abbrechen</button>
+  </div>
+</div></div>
+
 <div id="print-area" style="display:none"></div>
 
 <script>
@@ -924,6 +1079,10 @@ let certs=JSON.parse(localStorage.getItem('tka2_certs'))||[];
 let secLog=JSON.parse(localStorage.getItem('tka2_seclog'))||[];
 let sysStatus=localStorage.getItem('tka2_sys')||'online';
 let eotwData=JSON.parse(localStorage.getItem('tka2_eotw'))||{name:'',desc:'Noch nicht gesetzt.'};
+let sanctions=JSON.parse(localStorage.getItem('tka2_sanctions'))||[];
+let votes=JSON.parse(localStorage.getItem('tka2_votes'))||[];
+let adminHistory=JSON.parse(localStorage.getItem('tka2_adminhistory'))||[];
+let suspiciousLog=JSON.parse(localStorage.getItem('tka2_suspicious'))||[];
 
 let currentUser=null,isDuty=false,dutyStart=null;
 let lastActivity=Date.now();
@@ -936,85 +1095,116 @@ let currentCertForPDF=null;
 // =================================================================
 window.onload=()=>{
   lucide.createIcons();
-  // Start intro
-  setTimeout(()=>{
-    document.getElementById('intro-logo').classList.add('show');
-    setTimeout(()=>{
-      document.getElementById('intro-bar').style.width='100%';
-      setTimeout(()=>{
-        document.getElementById('intro-screen').style.opacity='0';
-        setTimeout(()=>{
-          document.getElementById('intro-screen').style.display='none';
-          document.getElementById('landing-page').style.display='block';
-          initLanding();
-        },800);
-      },2400);
-    },400);
-  },200);
+  runIntro();
   setInterval(tick,1000);
   tick();
   renderPermCheckboxes();
   setInterval(()=>{
-    document.getElementById('fake-duty').textContent=new Date().toLocaleTimeString('de-DE');
+    const fe=document.getElementById('fake-duty');
+    if(fe)fe.textContent=new Date().toLocaleTimeString('de-DE');
     rotateFakeDash();
   },3000);
   initScrollObserver();
-  animateCounters();
 };
+
+function runIntro(){
+  // Particles
+  const canvas=document.getElementById('intro-particles');
+  if(canvas){
+    const ctx=canvas.getContext('2d');
+    canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+    const pts=Array.from({length:60},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.5+.5,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,a:Math.random()}));
+    function drawPts(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pts.forEach(p=>{
+        p.x+=p.vx;p.y+=p.vy;p.a+=.005;
+        if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;
+        if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(250,204,21,${.2+Math.sin(p.a)*.15})`;ctx.fill();
+      });
+      requestAnimationFrame(drawPts);
+    }
+    drawPts();
+  }
+  const msgs=['System wird geladen...','Verbindung zur Zentrale...','Daten werden vorbereitet...','Authentifizierung...','Dashboard Alpha startet...'];
+  let pct=0;let msgIdx=0;
+  const bar=document.getElementById('intro-bar');
+  const pctEl=document.getElementById('intro-pct');
+  const msgEl=document.getElementById('intro-msg');
+  // Phase 1: icon appears
+  setTimeout(()=>{
+    const ic=document.getElementById('intro-icon');
+    if(ic){ic.style.opacity='1';ic.style.transform='scale(1)';}
+  },300);
+  // Phase 2: title
+  setTimeout(()=>{
+    const t=document.getElementById('intro-title');
+    if(t){t.style.opacity='1';t.style.transform='translateY(0)';}
+    setTimeout(()=>{const s=document.getElementById('intro-sub');if(s)s.style.opacity='1';},500);
+  },1100);
+  // Phase 3: loader appears
+  setTimeout(()=>{
+    const l=document.getElementById('intro-loader');
+    if(l)l.style.opacity='1';
+    // Animate bar
+    const iv=setInterval(()=>{
+      pct=Math.min(pct+(Math.random()*3+1),100);
+      if(bar)bar.style.width=pct+'%';
+      if(pctEl)pctEl.textContent=Math.round(pct)+'%';
+      if(pct>20&&pct<40&&msgIdx===0){msgIdx=1;if(msgEl)msgEl.textContent=msgs[1];}
+      if(pct>50&&msgIdx===1){msgIdx=2;if(msgEl)msgEl.textContent=msgs[2];}
+      if(pct>70&&msgIdx===2){msgIdx=3;if(msgEl)msgEl.textContent=msgs[3];}
+      if(pct>88&&msgIdx===3){msgIdx=4;if(msgEl)msgEl.textContent=msgs[4];}
+      if(pct>=100){clearInterval(iv);endIntro();}
+    },60);
+  },1800);
+}
+
+function endIntro(){
+  const scr=document.getElementById('intro-screen');
+  const lp=document.getElementById('landing-page');
+  setTimeout(()=>{
+    if(scr)scr.style.opacity='0';
+    setTimeout(()=>{
+      if(scr)scr.style.display='none';
+      if(lp){lp.style.display='block';lp.style.opacity='0';lp.style.transition='opacity .6s ease';
+        setTimeout(()=>{lp.style.opacity='1';},50);}
+      initLanding();
+    },900);
+  },400);
+}
 
 function initLanding(){
   renderLandingTeam();
   lucide.createIcons();
   animateCounters();
+  initScrollObserver();
 }
 
 function scrollToSection(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});}
 
-// =================================================================
-//  FAKE DASHBOARD ANIMATION
-// =================================================================
+// FAKE DASHBOARD
 const fakeStatuses=[{text:'Status 1',cls:'b-green'},{text:'Status 3',cls:'b-yellow'},{text:'Status 2',cls:'b-blue'}];
 let fsi=0;
-function rotateFakeDash(){
-  fsi=(fsi+1)%fakeStatuses.length;
-  const el=document.getElementById('fake-status-badge');
-  if(el){el.textContent=fakeStatuses[fsi].text;el.className='badge '+fakeStatuses[fsi].cls;}
-}
+function rotateFakeDash(){fsi=(fsi+1)%fakeStatuses.length;const el=document.getElementById('fake-status-badge');if(el){el.textContent=fakeStatuses[fsi].text;el.className='badge '+fakeStatuses[fsi].cls;}}
 
-// =================================================================
-//  SCROLL OBSERVER
-// =================================================================
 function initScrollObserver(){
-  const obs=new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
-  },{threshold:.15});
+  const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.15});
   document.querySelectorAll('.scroll-text').forEach(el=>obs.observe(el));
 }
 
-// =================================================================
-//  STAT COUNTERS
-// =================================================================
 function animateCounters(){
-  const targets={[{id:'c-rides',target:1523}[0]||'c-rides']:1523,'c-drivers':24,'c-sat':98};
-  Object.entries(targets).forEach(([id,target])=>{
-    const el=document.getElementById(id);
-    if(!el) return;
-    let current=0;
-    const step=Math.ceil(target/60);
-    const iv=setInterval(()=>{
-      current=Math.min(current+step,target);
-      el.textContent=current+(id==='c-sat'?'%':'');
-      if(current>=target) clearInterval(iv);
-    },30);
+  const tgts={'c-rides':1523,'c-drivers':24,'c-sat':98};
+  Object.entries(tgts).forEach(([id,target])=>{
+    const el=document.getElementById(id);if(!el)return;
+    let cur=0;const step=Math.ceil(target/60);
+    const iv=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent=cur+(id==='c-sat'?'%':'');if(cur>=target)clearInterval(iv);},30);
   });
 }
 
-// =================================================================
-//  LANDING TEAM
-// =================================================================
 function renderLandingTeam(){
-  const g=document.getElementById('landing-team-grid');
-  if(!g) return;
+  const g=document.getElementById('landing-team-grid');if(!g)return;
   g.innerHTML=users.slice(0,6).map(u=>`
     <div class="team-card">
       <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:10px 0">
@@ -1026,15 +1216,13 @@ function renderLandingTeam(){
         <div class="avatar" style="background:var(--y);color:#000;width:48px;height:48px;font-size:22px;margin-bottom:10px">${u.name.charAt(0)}</div>
         <div style="font-size:14px;font-weight:700;margin-bottom:4px">${u.name}</div>
         <div style="font-size:11px;color:var(--muted);margin-bottom:10px">${u.rank}</div>
-        <div style="font-size:12px;display:flex;gap:16px"><span>🚗 ${u.rides} Fahr.</span><span>📏 ${u.totalKm} km</span></div>
+        <div style="font-size:12px;display:flex;gap:16px"><span>${u.rides} Fahr.</span><span>${u.totalKm} km</span></div>
       </div>
     </div>
   `).join('');
 }
 
-// =================================================================
-//  TICK
-// =================================================================
+
 function tick(){
   const now=new Date();
   setEl('live-time',now.toLocaleTimeString('de-DE'));
@@ -1312,6 +1500,9 @@ function applySidebarPerms(){
   document.getElementById('qa-accounting').style.display=p.includes('accounting')?'flex':'none';
   const nb=document.getElementById('btn-new-ride');
   if(nb) nb.style.display=p.includes('newride')?'inline-flex':'none';
+  // sanctions and voting always visible
+  const ns=document.getElementById('nav-sanctions'),nv=document.getElementById('nav-voting');
+  if(ns)ns.style.display='flex';if(nv)nv.style.display='flex';
 }
 
 // =================================================================
@@ -1328,7 +1519,10 @@ const TAB_META={
   staff:    ['Dashboard Alpha / Personal',()=>'Personal'],
   zeugnis:  ['Dashboard Alpha / Führungszeugnisse',()=>'Führungszeugnisse'],
   admin:    ['Dashboard Alpha / Admin',()=>'Admin Panel'],
-  seclog:   ['Dashboard Alpha / Sicherheitslog',()=>'Sicherheitslog'],
+  seclog:       ['Dashboard Alpha / Sicherheitslog',()=>'Sicherheitslog'],
+  adminhistory: ['Dashboard Alpha / Admin History',()=>'Admin History'],
+  sanctions:    ['Dashboard Alpha / Sanktionen',()=>'Sanktionen'],
+  voting:       ['Dashboard Alpha / Abstimmungen',()=>'Abstimmungen'],
 };
 function switchTab(tab){
   document.querySelectorAll('.tab-view').forEach(v=>v.classList.remove('active'));
@@ -1347,7 +1541,10 @@ function switchTab(tab){
   if(tab==='admin')      renderAdminTable();
   if(tab==='status')     {renderStatusButtons();renderStatusBoard();updateStatusUI();}
   if(tab==='zeugnis')    renderCerts();
-  if(tab==='seclog')     renderSecLog();
+  if(tab==='seclog')        renderSecLog();
+  if(tab==='adminhistory')  renderAdminHistory();
+  if(tab==='sanctions')     {renderSanctions();renderSanctionSummary();}
+  if(tab==='voting')        renderVoting();
   lucide.createIcons();
 }
 
@@ -1361,6 +1558,7 @@ function updateDashboard(){
   setEl('kpi-today',myDoneToday+selfToday);
   setEl('kpi-total',currentUser.rides||0);
   if(document.getElementById('my-status-kpi')) updateStatusUI();
+  renderSuspiciousWarnings();
 
   // Activity log
   const logEl=document.getElementById('activity-log');
@@ -1388,7 +1586,7 @@ function updateDashboard(){
   const rrEl=document.getElementById('rank-rides');
   if(rrEl) rrEl.innerHTML=ranked.map((u,i)=>`
     <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:rgba(255,255,255,.02);border-radius:8px">
-      <span style="font-size:11px;color:var(--y);font-weight:700;width:14px">${['🥇','🥈','🥉'][i]||i+1}</span>
+      <span style="font-size:11px;color:var(--y);font-weight:700;width:14px">${['#1 ','#2 ','#3 '][i]||i+1}</span>
       <span style="font-size:11px;font-weight:600;flex:1">${u.name.split(' ')[0]}</span>
       <span class="mono" style="font-size:10px;color:var(--muted)">${u.rides||0}</span>
     </div>
@@ -1396,7 +1594,7 @@ function updateDashboard(){
   const rkEl=document.getElementById('rank-km');
   if(rkEl) rkEl.innerHTML=rankedKm.map((u,i)=>`
     <div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:rgba(255,255,255,.02);border-radius:8px">
-      <span style="font-size:11px;color:var(--y);font-weight:700;width:14px">${['🥇','🥈','🥉'][i]||i+1}</span>
+      <span style="font-size:11px;color:var(--y);font-weight:700;width:14px">${['#1 ','#2 ','#3 '][i]||i+1}</span>
       <span style="font-size:11px;font-weight:600;flex:1">${u.name.split(' ')[0]}</span>
       <span class="mono" style="font-size:10px;color:var(--muted)">${u.totalKm||0} km</span>
     </div>
@@ -1422,9 +1620,9 @@ function updateDashboard(){
 //  DAILY TASKS
 // =================================================================
 const TASKS=[
-  {id:'t1',label:'Fahre 5 Kunden',icon:'🚗',target:5,type:'rides'},
-  {id:'t2',label:'Fahre 50 KM',icon:'📏',target:50,type:'km'},
-  {id:'t3',label:'3 Fahrten heute',icon:'✅',target:3,type:'rides_today'},
+  {id:'t1',label:'Fahre 5 Kunden',icon:'',target:5,type:'rides'},
+  {id:'t2',label:'Fahre 50 KM',icon:'',target:50,type:'km'},
+  {id:'t3',label:'3 Fahrten heute',icon:'OK',target:3,type:'rides_today'},
 ];
 function renderTaskList(){
   const el=document.getElementById('task-list');if(!el)return;
@@ -1532,7 +1730,7 @@ function renderMyRides(){
         <div style="font-size:14px;font-weight:700;color:var(--y);margin-top:3px">${r.pickup}</div>
         ${r.note?`<div style="font-size:11px;color:var(--muted);margin-top:5px">Hinweis: ${r.note}</div>`:''}
       </div>
-      <button onclick="openCompleteModal('${r.id}')" class="btn-y" style="width:100%;padding:11px;justify-content:center;font-size:13px;border-radius:10px"><i data-lucide="check-circle" style="width:14px;height:14px"></i>Fahrt abschließen ✓</button>
+      <button onclick="openCompleteModal('${r.id}')" class="btn-y" style="width:100%;padding:11px;justify-content:center;font-size:13px;border-radius:10px"><i data-lucide="check-circle" style="width:14px;height:14px"></i>Fahrt abschließen OK</button>
     </div>
   `).join('');
   doneEl.innerHTML=myDone.length===0?`<tr><td colspan="4" style="padding:20px;text-align:center;font-size:12px;color:var(--muted);font-style:italic">Keine erledigten Fahrten</td></tr>`:
@@ -1574,8 +1772,9 @@ function saveSelfRide(){
   const note=document.getElementById('sr-note').value.trim();
   if(!start||!dest){toast('error','Anfangsort und Zielort eingeben!');return;}
   if(isNaN(km)||km<=0){toast('error','Gültige KM eingeben!');return;}
-  const entry={date:new Date().toLocaleDateString('de-DE'),time:new Date().toLocaleTimeString('de-DE'),route:`${start} → ${dest}`,km,note,type:'selbst',start,dest};
+  const entry={date:new Date().toLocaleDateString('de-DE'),time:new Date().toLocaleTimeString('de-DE'),route:`${start} → ${dest}`,km,note,type:'selbst',start,dest,ts:Date.now()};
   currentUser.history.push(entry);
+  checkSuspiciousBehavior(currentUser);
   currentUser.rides=(currentUser.rides||0)+1;
   currentUser.totalKm=(currentUser.totalKm||0)+km;
   // Cooldown
@@ -1649,7 +1848,7 @@ function saveReport(){
 }
 function renderReports(){
   const g=document.getElementById('report-grid');if(!g)return;
-  const cm={bug:'🐛 Bug',improvement:'💡 Verbesserung',other:'📌 Sonstiges'};
+  const cm={bug:'[Bug] Bug',improvement:'[Tipp] Verbesserung',other:'[Info] Sonstiges'};
   const pm={low:'b-gray',medium:'b-yellow',high:'b-red'};
   const sm={offen:'b-red','in bearbeitung':'b-yellow',behoben:'b-green'};
   g.innerHTML=reports.length===0?`<div class="glass" style="border-radius:18px;padding:28px;text-align:center;color:var(--muted);grid-column:1/-1"><p>Keine Meldungen</p></div>`:
@@ -1765,7 +1964,7 @@ function renderCerts(){
   g.innerHTML=certs.length===0?`<div class="glass" style="border-radius:18px;padding:32px;text-align:center;color:var(--muted);grid-column:1/-1"><i data-lucide="award" style="width:40px;height:40px;margin:0 auto 12px;opacity:.3"></i><p style="font-size:13px;font-weight:600">Noch keine Führungszeugnisse</p></div>`:
   certs.map(c=>`<div class="glass" style="border-radius:16px;padding:20px;transition:all .3s" onmouseover="this.style.borderColor='rgba(250,204,21,.3)'" onmouseout="this.style.borderColor='var(--border)'">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-      <span class="badge b-blue" style="font-size:9px">📄 Zeugnis</span>
+      <span class="badge b-blue" style="font-size:9px"> Zeugnis</span>
       <span class="mono" style="font-size:9px;color:var(--muted)">${c.issuedDate}</span>
     </div>
     <div style="font-size:15px;font-weight:700;margin-bottom:3px">${c.person}</div>
@@ -1917,10 +2116,17 @@ function delUser(name){
 // =================================================================
 //  SECURITY LOG
 // =================================================================
-function addSecLog(category,detail){
+function addSecLog(category,detail,target){
   secLog.unshift({time:new Date().toLocaleString('de-DE'),user:currentUser?.name||'System',category,detail});
   if(secLog.length>200) secLog=secLog.slice(0,200);
   localStorage.setItem('tka2_seclog',JSON.stringify(secLog));
+  // Mirror admin actions to adminHistory
+  const adminCats=['Admin','Sanktion','Zeugnis','Login','Logout','PANIC'];
+  if(adminCats.includes(category)){
+    adminHistory.unshift({time:new Date().toLocaleString('de-DE'),admin:currentUser?.name||'System',action:category,target:target||'–',detail});
+    if(adminHistory.length>500) adminHistory=adminHistory.slice(0,500);
+    localStorage.setItem('tka2_adminhistory',JSON.stringify(adminHistory));
+  }
 }
 function renderSecLog(){
   const t=document.getElementById('seclog-table');if(!t)return;
@@ -1933,6 +2139,266 @@ function renderSecLog(){
     <td style="font-size:12px">${e.detail}</td>
   </tr>`).join('');
 }
+
+
+// =================================================================
+//  ADMIN HISTORY
+// =================================================================
+function renderAdminHistory(){
+  const t=document.getElementById('adminhistory-table');if(!t)return;
+  const catColors={Admin:'b-red',Sanktion:'b-orange',Zeugnis:'b-blue',Login:'b-green',Logout:'b-gray',PANIC:'b-red',Dienst:'b-blue',Status:'b-yellow',Fahrt:'b-purple',Meldung:'b-orange',PDF:'b-green'};
+  t.innerHTML=adminHistory.length===0?`<tr><td colspan="5" style="padding:28px;text-align:center;color:var(--muted);font-style:italic">Keine Admin-Aktionen gespeichert</td></tr>`:
+  adminHistory.map(e=>`<tr>
+    <td class="mono" style="font-size:10px;color:var(--muted)">${e.time}</td>
+    <td style="font-weight:700">${e.admin}</td>
+    <td><span class="badge ${catColors[e.action]||'b-gray'}">${e.action}</span></td>
+    <td style="font-size:12px;color:var(--muted)">${e.target}</td>
+    <td style="font-size:12px">${e.detail}</td>
+  </tr>`).join('');
+}
+
+// =================================================================
+//  SUSPICIOUS BEHAVIOR DETECTION
+// =================================================================
+function checkSuspiciousBehavior(user){
+  const warnings=[];
+  const now=Date.now();
+  const last10min=(user.history||[]).filter(h=>{
+    if(!h.ts) return false;
+    return (now - h.ts)<600000;
+  });
+  if(last10min.length>=5) warnings.push({type:'spam',msg:`${user.name}: 5+ Fahrten in unter 10 Minuten eingetragen`,severity:'high'});
+  const lastRide=(user.history||[]).slice(-1)[0];
+  if(lastRide&&lastRide.km>200) warnings.push({type:'km',msg:`${user.name}: Unrealistische KM-Angabe (${lastRide.km} km)`,severity:'medium'});
+  const todayKm=(user.history||[]).filter(h=>h.date===new Date().toLocaleDateString('de-DE')).reduce((s,h)=>s+(h.km||0),0);
+  if(todayKm>500) warnings.push({type:'daily_km',msg:`${user.name}: ${todayKm} km heute — ungewoehnlich hoch`,severity:'medium'});
+  if(warnings.length>0){
+    warnings.forEach(w=>{
+      suspiciousLog.unshift({time:new Date().toLocaleString('de-DE'),user:user.name,type:w.type,msg:w.msg,severity:w.severity});
+      addLog(`[WARNUNG] ${w.msg}`);
+    });
+    if(suspiciousLog.length>100) suspiciousLog=suspiciousLog.slice(0,100);
+    localStorage.setItem('tka2_suspicious',JSON.stringify(suspiciousLog));
+    renderSuspiciousWarnings();
+  }
+}
+
+function renderSuspiciousWarnings(){
+  const el=document.getElementById('suspicious-warnings');if(!el)return;
+  const recent=suspiciousLog.filter(s=>{
+    const parts=s.time.split(', ');
+    return true; // show all recent
+  }).slice(0,5);
+  el.innerHTML=recent.length===0?'':recent.map(w=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.25);border-radius:12px;margin-bottom:8px">
+      <i data-lucide="alert-triangle" style="width:16px;height:16px;color:#fb923c;flex-shrink:0"></i>
+      <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#fb923c">${w.msg}</div><div class="mono" style="font-size:9px;color:var(--muted);margin-top:2px">${w.time}</div></div>
+      <span class="badge ${w.severity==='high'?'b-red':'b-orange'}">${w.severity}</span>
+    </div>
+  `).join('');
+  lucide.createIcons();
+}
+
+// =================================================================
+//  SANCTION SYSTEM
+// =================================================================
+const SANC_LEVELS=[
+  {min:0,max:0,label:'Keine Sanktion',color:'#22c55e',cls:'b-green'},
+  {min:1,max:2,label:'Verwarnung',color:'#22c55e',cls:'b-green'},
+  {min:3,max:4,label:'Schriftliche Abmahnung',color:'#facc15',cls:'b-yellow'},
+  {min:5,max:6,label:'Letzte Abmahnung',color:'#f97316',cls:'b-orange'},
+  {min:7,max:999,label:'Kuendigung',color:'#ef4444',cls:'b-red'},
+];
+
+function getSancLevel(points){return SANC_LEVELS.find(l=>points>=l.min&&points<=l.max)||SANC_LEVELS[0];}
+
+function getActivePoints(userName){
+  const cutoff=Date.now()-14*24*60*60*1000;
+  return sanctions.filter(s=>s.person===userName&&(s.ts||0)>cutoff).reduce((sum,s)=>sum+s.points,0);
+}
+
+function updateSancPoints(){
+  const sel=document.getElementById('sanc-cat');if(!sel)return;
+  const val=sel.value.split('|');
+  const pts=parseInt(val[0])||1;
+  const el=document.getElementById('sanc-pts-display');
+  const lv=document.getElementById('sanc-level-display');
+  if(el) el.textContent=pts;
+  // Calculate what level this person would be at
+  const person=document.getElementById('sanc-person')?.value;
+  if(person){
+    const existing=getActivePoints(person);
+    const newTotal=existing+pts;
+    const level=getSancLevel(newTotal);
+    if(lv){lv.textContent=level.label;lv.style.color=level.color;}
+  }
+}
+
+function openSancModal(){
+  const sel=document.getElementById('sanc-person');
+  if(sel) sel.innerHTML=users.map(u=>`<option value="${u.name}">${u.name} (${u.rank}) — ${getActivePoints(u.name)} Pkt aktiv</option>`).join('');
+  updateSancPoints();
+  openModal('modal-sanction');
+}
+
+function saveSanction(){
+  const person=document.getElementById('sanc-person').value;
+  const catVal=document.getElementById('sanc-cat').value.split('|');
+  const pts=parseInt(catVal[0]);
+  const reason=catVal[1];
+  const comment=document.getElementById('sanc-comment').value.trim();
+  if(!person){toast('error','Mitarbeiter waehlen!');return;}
+  const existing=getActivePoints(person);
+  const newTotal=existing+pts;
+  const level=getSancLevel(newTotal);
+  const entry={
+    id:'S'+Date.now(),person,reason,points:pts,comment,
+    issuedBy:currentUser.name,
+    date:new Date().toLocaleDateString('de-DE'),
+    ts:Date.now(),
+    total:newTotal,level:level.label,status:'aktiv'
+  };
+  sanctions.unshift(entry);
+  adminHistory.unshift({time:new Date().toLocaleString('de-DE'),admin:currentUser.name,action:'Sanktion',target:person,detail:`${reason} (${pts} Pkt) — Gesamt: ${newTotal} — Stufe: ${level.label}`});
+  localStorage.setItem('tka2_adminhistory',JSON.stringify(adminHistory));
+  addSecLog('Sanktion',`${person}: ${reason} (${pts} Pkt) — ${level.label}`,person);
+  addLog(`Sanktion: ${person} — ${reason} (${pts} Pkt) — Stufe: ${level.label}`);
+  saveData();
+  closeModal('modal-sanction');
+  renderSanctions();
+  renderSanctionSummary();
+  document.getElementById('sanc-comment').value='';
+  Swal.fire({
+    icon: newTotal>=7?'error':newTotal>=5?'warning':'info',
+    title:`Sanktion gespeichert`,
+    html:`<b>${person}</b><br>${reason}<br><br>Punkte gesamt: <b>${newTotal}</b><br>Stufe: <b style="color:${level.color}">${level.label}</b>`,
+    background:'#090d18',color:'#e2e8f0',confirmButtonColor:'#facc15'
+  });
+}
+
+function renderSanctions(){
+  const t=document.getElementById('sanctions-table');if(!t)return;
+  renderSuspiciousWarnings();
+  const now=Date.now();
+  t.innerHTML=sanctions.length===0?`<tr><td colspan="7" style="padding:28px;text-align:center;color:var(--muted);font-style:italic">Keine Sanktionen</td></tr>`:
+  sanctions.map(s=>{
+    const expired=(s.ts||0)<(now-14*24*60*60*1000);
+    const level=getSancLevel(s.total);
+    return `<tr style="${expired?'opacity:.45':''}">
+      <td style="font-weight:700">${s.person}</td>
+      <td style="font-size:12px">${s.reason}</td>
+      <td><span class="badge b-yellow" style="font-size:11px">${s.points} Pkt</span></td>
+      <td><span class="badge ${level.cls}">${level.label}</span></td>
+      <td class="mono" style="font-size:10px;color:var(--muted)">${s.date}</td>
+      <td style="font-size:12px;color:var(--muted)">${s.issuedBy}</td>
+      <td><span class="badge ${expired?'b-gray':'b-green'}">${expired?'verfallen':'aktiv'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderSanctionSummary(){
+  const el=document.getElementById('sanction-summary');if(!el)return;
+  const now=Date.now();
+  const cutoff=now-14*24*60*60*1000;
+  el.innerHTML=users.map(u=>{
+    const pts=sanctions.filter(s=>s.person===u.name&&(s.ts||0)>cutoff).reduce((sum,s)=>sum+s.points,0);
+    const level=getSancLevel(pts);
+    return `<div class="glass" style="border-radius:14px;padding:16px;border-left:3px solid ${level.color}">
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px">${u.name}</div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:8px">${u.rank}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="mono" style="font-size:14px;font-weight:700;color:${level.color}">${pts} Pkt</span>
+        <span class="badge ${level.cls}" style="font-size:9px">${level.label}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// =================================================================
+//  VOTING SYSTEM
+// =================================================================
+function saveVote(){
+  const title=document.getElementById('vote-title').value.trim();
+  const type=document.getElementById('vote-type').value;
+  const desc=document.getElementById('vote-desc').value.trim();
+  const deadline=document.getElementById('vote-deadline').value.trim();
+  if(!title){toast('error','Titel eingeben!');return;}
+  votes.unshift({
+    id:'V'+Date.now(),title,type,desc,deadline,
+    createdBy:currentUser.name,
+    createdAt:new Date().toLocaleString('de-DE'),
+    votes:{ja:[],nein:[],enthalten:[]},
+    status:'offen'
+  });
+  addSecLog('Voting',`Abstimmung gestartet: ${title}`,title);
+  addLog(`Abstimmung gestartet: "${title}" von ${currentUser.name}`);
+  saveData();closeModal('modal-vote');renderVoting();
+  ['vote-title','vote-desc','vote-deadline'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  toast('success','Abstimmung gestartet!');
+}
+
+function castVote(voteId,choice){
+  const v=votes.find(x=>x.id===voteId);if(!v)return;
+  if(v.status!=='offen'){toast('error','Abstimmung ist geschlossen');return;}
+  // Remove existing vote
+  ['ja','nein','enthalten'].forEach(c=>{v.votes[c]=v.votes[c].filter(n=>n!==currentUser.name);});
+  v.votes[choice].push(currentUser.name);
+  addLog(`${currentUser.name} stimmte "${choice}" bei: "${v.title}"`);
+  saveData();renderVoting();toast('success','Stimme abgegeben!');
+}
+
+function closeVote(voteId){
+  const v=votes.find(x=>x.id===voteId);if(!v)return;
+  v.status='geschlossen';
+  addSecLog('Voting',`Abstimmung geschlossen: ${v.title}`,v.title);
+  saveData();renderVoting();
+}
+
+function renderVoting(){
+  const g=document.getElementById('voting-grid');if(!g)return;
+  const typeLabels={rang:'Rang aendern',regel:'Regel aendern',sonstiges:'Sonstiges'};
+  const canCreate=ADMIN_RANKS.includes(currentUser.rank)||hasPerm('admin');
+  const nb=document.getElementById('btn-new-vote');
+  if(nb) nb.style.display=canCreate?'inline-flex':'none';
+  g.innerHTML=votes.length===0?`<div class="glass" style="border-radius:18px;padding:32px;text-align:center;color:var(--muted);grid-column:1/-1"><p style="font-size:13px">Noch keine Abstimmungen</p></div>`:
+  votes.map(v=>{
+    const total=v.votes.ja.length+v.votes.nein.length+v.votes.enthalten.length;
+    const myVote=['ja','nein','enthalten'].find(c=>v.votes[c].includes(currentUser.name));
+    const jaW=total>0?Math.round(v.votes.ja.length/total*100):0;
+    const neinW=total>0?Math.round(v.votes.nein.length/total*100):0;
+    return `<div class="glass" style="border-radius:18px;padding:22px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <div class="badge b-blue" style="margin-bottom:8px">${typeLabels[v.type]||v.type}</div>
+          <div style="font-size:14px;font-weight:700">${v.title}</div>
+        </div>
+        <span class="badge ${v.status==='offen'?'b-green':'b-gray'}">${v.status}</span>
+      </div>
+      ${v.desc?`<p style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:12px">${v.desc}</p>`:''}
+      <div style="margin-bottom:14px">
+        <div style="height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;display:flex;margin-bottom:8px">
+          <div style="width:${jaW}%;background:#22c55e;border-radius:3px 0 0 3px;transition:width .4s"></div>
+          <div style="width:${neinW}%;background:#ef4444;transition:width .4s"></div>
+        </div>
+        <div style="display:flex;gap:12px;font-size:10px;font-weight:700">
+          <span style="color:#22c55e">Ja: ${v.votes.ja.length}</span>
+          <span style="color:#ef4444">Nein: ${v.votes.nein.length}</span>
+          <span style="color:var(--muted)">Enthalten: ${v.votes.enthalten.length}</span>
+        </div>
+      </div>
+      ${v.status==='offen'?`<div style="display:flex;gap:6px;margin-bottom:10px">
+        <button onclick="castVote('${v.id}','ja')" style="flex:1;padding:8px;background:${myVote==='ja'?'rgba(34,197,94,.3)':'rgba(34,197,94,.1)'};border:1px solid rgba(34,197,94,.3);border-radius:8px;color:#22c55e;font-weight:700;font-size:12px;cursor:pointer">Ja</button>
+        <button onclick="castVote('${v.id}','nein')" style="flex:1;padding:8px;background:${myVote==='nein'?'rgba(239,68,68,.3)':'rgba(239,68,68,.1)'};border:1px solid rgba(239,68,68,.3);border-radius:8px;color:#ef4444;font-weight:700;font-size:12px;cursor:pointer">Nein</button>
+        <button onclick="castVote('${v.id}','enthalten')" style="flex:1;padding:8px;background:${myVote==='enthalten'?'rgba(100,116,139,.3)':'rgba(100,116,139,.1)'};border:1px solid rgba(100,116,139,.3);border-radius:8px;color:#94a3b8;font-weight:700;font-size:12px;cursor:pointer">Enthalten</button>
+      </div>`:''}
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:10px;margin-top:6px">
+        <span style="font-size:10px;color:var(--muted)">${v.createdBy} · ${v.createdAt}</span>
+        ${canCreate&&v.status==='offen'?`<button onclick="closeVote('${v.id}')" style="padding:4px 10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:7px;color:#ef4444;font-size:10px;font-weight:700;cursor:pointer">Schliessen</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
 
 // =================================================================
 //  ANNOUNCEMENTS + CHAT
@@ -1966,16 +2432,7 @@ function renderChat(){
 // =================================================================
 //  UTILS
 // =================================================================
-function addLog(text){
-  globalLogs.push({
-    time:new Date().toLocaleTimeString('de-DE'),
-    text
-  });
-  if(globalLogs.length>120)globalLogs=globalLogs.slice(-120);
-  saveData();
-  updateDashboard();
-}
-
+function addLog(text){globalLogs.push({time:new Date().toLocaleTimeString('de-DE'),text});if(globalLogs.length>120)globalLogs=globalLogs.slice(-120);saveData();updateDashboard();}
 function saveData(){
   localStorage.setItem('tka2_users',JSON.stringify(users));
   localStorage.setItem('tka2_rides',JSON.stringify(rides));
@@ -1986,157 +2443,16 @@ function saveData(){
   localStorage.setItem('tka2_certs',JSON.stringify(certs));
   localStorage.setItem('tka2_sys',sysStatus);
   localStorage.setItem('tka2_eotw',JSON.stringify(eotwData));
+  localStorage.setItem('tka2_sanctions',JSON.stringify(sanctions));
+  localStorage.setItem('tka2_votes',JSON.stringify(votes));
+  localStorage.setItem('tka2_adminhistory',JSON.stringify(adminHistory));
+  localStorage.setItem('tka2_suspicious',JSON.stringify(suspiciousLog));
 }
-
-function setEl(id,v){
-  const e=document.getElementById(id);
-  if(e)e.textContent=v;
-}
-
-function val(id){
-  return document.getElementById(id)?.value||'';
-}
-
-function openModal(id){
-  document.getElementById(id)?.classList.add('open');
-}
-
-function closeModal(id){
-  document.getElementById(id)?.classList.remove('open');
-}
-
-function toast(icon,title){
-  Swal.fire({
-    toast:true,
-    position:'top-end',
-    icon,
-    title,
-    showConfirmButton:false,
-    timer:2800,
-    timerProgressBar:true,
-    background:'#090d18',
-    color:'#e2e8f0'
-  });
-}
-
-/* ================= ADMIN HISTORY ================= */
-let adminHistory = [];
-
-function logAdminAction(action, admin){
-  const entry = {
-    action,
-    admin,
-    time: new Date().toLocaleString()
-  };
-  adminHistory.push(entry);
-  console.log("Admin Log:", entry);
-}
-
-/* ================= VERDÄCHTIGES SYSTEM ================= */
-function checkSuspicious(user){
-  if(user.fahrten > 20){
-    toast('warning','Verdächtig viele Fahrten!');
-    logAdminAction("Verdacht: Fahrten Spam", "SYSTEM");
-  }
-  if(user.km > 1000){
-    toast('warning','Unrealistische KM!');
-    logAdminAction("Verdacht: KM unrealistisch", "SYSTEM");
-  }
-}
-
-/* ================= VOTING SYSTEM ================= */
-let votings = [];
-
-function createVoting(title){
-  votings.push({
-    title,
-    votesYes:0,
-    votesNo:0
-  });
-}
-
-function vote(index, type){
-  if(type === 'yes') votings[index].votesYes++;
-  else votings[index].votesNo++;
-}
-
-/* ================= SANKTIONSSYSTEM ================= */
-let sanctions = [];
-
-function addSanction(name, reason, points){
-  const entry = {
-    name,
-    reason,
-    points,
-    date: new Date().toLocaleDateString(),
-    status: "Aktiv"
-  };
-  sanctions.push(entry);
-
-  logAdminAction("Sanktion vergeben: "+reason, "Admin");
-}
-
-/* Punkte Logik */
-function calculatePunishment(points){
-  if(points <= 2) return "Verwarnung";
-  if(points <= 4) return "Abmahnung";
-  if(points <= 6) return "Letzte Abmahnung";
-  return "Kündigung";
-}
-
-/* ================= LIVE DASHBOARD (FIXED) ================= */
-function updateLiveStats(){
-  const driver = document.getElementById("live-driver-count");
-  const wait = document.getElementById("live-wait");
-
-  if(driver) driver.innerText = Math.floor(Math.random()*10);
-  if(wait) wait.innerText = Math.floor(Math.random()*10);
-}
-
-setInterval(updateLiveStats, 5000);
-
-/* ================= INTRO UPGRADE ================= */
-window.addEventListener("load", ()=>{
-  const intro = document.getElementById("intro-screen");
-  const logo = document.getElementById("intro-logo");
-  const bar = document.getElementById("intro-bar");
-
-  if(!intro) return;
-
-  setTimeout(()=>logo?.classList.add("show"), 500);
-  setTimeout(()=>{ if(bar) bar.style.width = "100%"; }, 1000);
-
-  setTimeout(()=>{
-    intro.style.opacity = "0";
-
-    setTimeout(()=>{
-      intro.style.display = "none";
-      const landing = document.getElementById("landing-page");
-      if(landing) landing.style.display = "block";
-    },800);
-
-  },4000);
-});
-
-/* ================= LIVE COUNTER ================= */
-function animateCounter(id, target){
-  let i=0;
-
-  const el = document.getElementById(id);
-  if(!el) return;
-
-  const interval = setInterval(()=>{
-    i+=Math.ceil(target/50);
-
-    if(i>=target){
-      i=target;
-      clearInterval(interval);
-    }
-
-    el.innerText = i;
-  },30);
-}
-
+function setEl(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function val(id){return document.getElementById(id)?.value||'';}
+function openModal(id){document.getElementById(id)?.classList.add('open');}
+function closeModal(id){document.getElementById(id)?.classList.remove('open');}
+function toast(icon,title){Swal.fire({toast:true,position:'top-end',icon,title,showConfirmButton:false,timer:2800,timerProgressBar:true,background:'#090d18',color:'#e2e8f0'});}
 </script>
 </body>
 </html>
