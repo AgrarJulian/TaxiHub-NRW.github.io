@@ -279,6 +279,23 @@ body.notif-large .notif-toast{min-width:400px;padding:24px;border-radius:20px}
 .toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:all .3s;box-shadow:0 2px 4px rgba(0,0,0,.3)}
 .toggle-switch.on::after{left:23px}
 
+/* FLOATING TEAM CHAT */
+#float-chat-btn{position:fixed;bottom:24px;right:24px;z-index:9900;width:54px;height:54px;border-radius:50%;background:var(--y);color:#000;border:none;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 20px rgba(250,204,21,.3);transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+#float-chat-btn:hover{transform:scale(1.1)}
+#float-chat-btn.has-unread::after{content:attr(data-count);position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;border-radius:50%;width:20px;height:20px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #060810}
+#float-chat-panel{position:fixed;bottom:90px;right:24px;z-index:9899;width:340px;background:#090d18;border:1px solid rgba(250,204,21,.15);border-radius:20px;box-shadow:0 16px 48px rgba(0,0,0,.7),0 0 30px rgba(250,204,21,.06);transform:translateY(20px) scale(.95);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1);display:flex;flex-direction:column;overflow:hidden;max-height:520px}
+#float-chat-panel.open{transform:translateY(0) scale(1);opacity:1;pointer-events:all}
+#float-chat-header{padding:14px 16px;background:rgba(250,204,21,.06);border-bottom:1px solid rgba(250,204,21,.1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+#float-chat-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:200px;max-height:360px}
+#float-chat-messages::-webkit-scrollbar{width:4px}
+#float-chat-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}
+#float-chat-input-row{padding:10px 12px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;flex-shrink:0}
+.fchat-msg{padding:8px 12px;border-radius:12px;font-size:12px;max-width:90%;word-break:break-word}
+.fchat-msg.own{background:rgba(250,204,21,.12);border:1px solid rgba(250,204,21,.15);align-self:flex-end;border-radius:12px 12px 4px 12px}
+.fchat-msg.other{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);align-self:flex-start;border-radius:12px 12px 12px 4px}
+.fchat-name{font-size:9px;font-weight:700;color:var(--y);margin-bottom:3px}
+.fchat-time{font-size:9px;color:var(--muted);margin-top:3px;text-align:right}
+
 /* PARALLAX */
 .parallax-bg{transform:translateZ(0);transition:transform .1s linear}
 
@@ -1623,6 +1640,31 @@ body.notif-large .notif-toast{min-width:400px;padding:24px;border-radius:20px}
     <button onclick="closeModal('modal-profile-edit')" class="btn-ghost" style="width:100%;padding:10px">Abbrechen</button>
   </div>
 </div></div>
+
+<!-- FLOATING TEAM CHAT BUTTON + PANEL -->
+<button id="float-chat-btn" onclick="toggleFloatChat()" data-count="0" title="Team Chat öffnen">💬</button>
+<div id="float-chat-panel">
+  <div id="float-chat-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:18px">💬</span>
+      <div>
+        <div style="font-size:13px;font-weight:700">Team Chat</div>
+        <div id="fchat-online" style="font-size:10px;color:var(--muted)">— Mitglieder online</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button onclick="switchTab('generalchat');toggleFloatChat(false)" style="padding:5px 10px;background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.2);border-radius:8px;color:var(--y);font-size:10px;font-weight:700;cursor:pointer">Vollbild</button>
+      <button onclick="toggleFloatChat(false)" style="width:26px;height:26px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--muted);font-size:16px;cursor:pointer;line-height:1">×</button>
+    </div>
+  </div>
+  <div id="float-chat-messages">
+    <div style="text-align:center;color:var(--muted);font-size:12px;padding:20px">Lade Nachrichten…</div>
+  </div>
+  <div id="float-chat-input-row">
+    <input id="float-chat-input" type="text" placeholder="Nachricht…" class="inp" style="flex:1;padding:8px 12px;font-size:12px;border-radius:10px" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendFloatMsg();}">
+    <button onclick="sendFloatMsg()" style="width:36px;height:36px;background:var(--y);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">➤</button>
+  </div>
+</div>
 
 <!-- CHICKEN -->
 <div id="chicken-wrap">
@@ -3592,23 +3634,76 @@ function closeModal(id){document.getElementById(id)?.classList.remove('open');}
 function toast(icon,title){Swal.fire({toast:true,position:'top-end',icon,title,showConfirmButton:false,timer:2800,timerProgressBar:true,background:'#090d18',color:'#e2e8f0'});}
 
 // =================================================================
-//  MISSING FUNCTION STUBS (pre-existing fixes)
+//  MISSING FUNCTION FIXES
 // =================================================================
+// renderSuspiciousWarnings - was referenced but never defined
 if(typeof renderSuspiciousWarnings==='undefined'){
   window.renderSuspiciousWarnings=function(){};
 }
+// renderAdminHistory - was referenced but never defined
 if(typeof renderAdminHistory==='undefined'){
   window.renderAdminHistory=function(){
     const el=document.getElementById('adminhistory-body');
     if(el) el.innerHTML='<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Keine Einträge</td></tr>';
   };
 }
+// toggleAnnDrop - was referenced but never defined
 if(typeof toggleAnnDrop==='undefined'){
   window.toggleAnnDrop=function(){
     const el=document.getElementById('ann-dropdown');
     if(el) el.style.display=el.style.display==='block'?'none':'block';
   };
 }
+// addLog - widely used but not defined; writes to a shared activity log
+if(typeof addLog==='undefined'){
+  window.addLog=function(msg){
+    if(!msg) return;
+    let log=[];
+    try{log=JSON.parse(localStorage.getItem('tka2_actlog')||'[]');}catch(e){}
+    log.unshift({msg,time:new Date().toLocaleTimeString('de-DE'),user:currentUser?currentUser.name:'System'});
+    if(log.length>200) log=log.slice(0,200);
+    localStorage.setItem('tka2_actlog',JSON.stringify(log));
+  };
+}
+// renderChat - was called in updateDashboard but removed; now renders floating chat badge
+if(typeof renderChat==='undefined'){
+  window.renderChat=function(){
+    renderFloatChatBadge();
+  };
+}
+// renderVoting - Abstimmungen tab render
+if(typeof renderVoting==='undefined'){
+  window.renderVoting=function(){
+    const el=document.getElementById('voting-grid');
+    if(!el) return;
+    let votes=[];
+    try{votes=JSON.parse(localStorage.getItem('tka2_votes')||'[]');}catch(e){}
+    el.innerHTML=votes.length===0
+      ?`<div style="padding:28px;text-align:center;color:var(--muted);font-size:13px">Keine Abstimmungen vorhanden</div>`
+      :votes.map(v=>`
+        <div style="padding:16px 18px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;margin-bottom:10px">
+          <div style="font-weight:700;margin-bottom:6px">${v.title}</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px">${v.desc||''}</div>
+          <div style="display:flex;gap:8px">
+            <button onclick="castVote('${v.id}','ja')" style="flex:1;padding:8px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:8px;color:#4ade80;font-size:11px;font-weight:700;cursor:pointer">✓ Ja (${(v.ja||[]).length})</button>
+            <button onclick="castVote('${v.id}','nein')" style="flex:1;padding:8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:8px;color:#f87171;font-size:11px;font-weight:700;cursor:pointer">✗ Nein (${(v.nein||[]).length})</button>
+          </div>
+        </div>`).join('');
+  };
+}
+window.castVote=function(id,choice){
+  let votes=[];
+  try{votes=JSON.parse(localStorage.getItem('tka2_votes')||'[]');}catch(e){}
+  const v=votes.find(x=>x.id===id);
+  if(!v) return;
+  v.ja=v.ja||[];v.nein=v.nein||[];
+  v.ja=v.ja.filter(n=>n!==currentUser.name);
+  v.nein=v.nein.filter(n=>n!==currentUser.name);
+  v[choice].push(currentUser.name);
+  localStorage.setItem('tka2_votes',JSON.stringify(votes));
+  renderVoting();
+  toast('success','Stimme abgegeben!');
+};
 
 // =================================================================
 //  TAB META + SWITCH EXTENSIONS
@@ -4075,16 +4170,113 @@ switchTab=function(tab){
 };
 
 // =================================================================
+//  FLOATING TEAM CHAT
+// =================================================================
+let floatChatOpen=false;
+let floatChatLastRead=0;
+
+function toggleFloatChat(forceState){
+  floatChatOpen=(forceState!==undefined)?forceState:!floatChatOpen;
+  const panel=document.getElementById('float-chat-panel');
+  const btn=document.getElementById('float-chat-btn');
+  if(panel) panel.classList.toggle('open',floatChatOpen);
+  if(floatChatOpen){
+    floatChatLastRead=gcMessages.length;
+    if(btn){btn.classList.remove('has-unread');btn.setAttribute('data-count','0');}
+    renderFloatChat();
+    setTimeout(()=>{
+      const msgs=document.getElementById('float-chat-messages');
+      if(msgs) msgs.scrollTop=msgs.scrollHeight;
+    },50);
+    const inp=document.getElementById('float-chat-input');
+    if(inp) setTimeout(()=>inp.focus(),200);
+  }
+}
+
+function renderFloatChat(){
+  const el=document.getElementById('float-chat-messages');
+  if(!el) return;
+  const msgs=gcMessages.slice(-50); // show last 50
+  if(msgs.length===0){
+    el.innerHTML='<div style="text-align:center;color:var(--muted);font-size:12px;padding:20px">Noch keine Nachrichten. Starte das Gespräch!</div>';
+    return;
+  }
+  el.innerHTML=msgs.map(m=>{
+    const isOwn=m.sender===currentUser.name;
+    const isSystem=m.type==='system';
+    if(isSystem){
+      return `<div style="text-align:center;font-size:10px;color:var(--muted);padding:4px 0">${m.text}</div>`;
+    }
+    return `<div class="fchat-msg ${isOwn?'own':'other'}">
+      ${!isOwn?`<div class="fchat-name">${m.sender||'?'}</div>`:''}
+      <div>${m.text||''}</div>
+      <div class="fchat-time">${m.time||''}</div>
+    </div>`;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+function sendFloatMsg(){
+  const inp=document.getElementById('float-chat-input');
+  if(!inp) return;
+  const text=inp.value.trim();
+  if(!text) return;
+  const msg={id:'m'+Date.now(),sender:currentUser.name,rank:currentUser.rank,text,time:new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),type:'text'};
+  gcMessages.push(msg);
+  if(gcMessages.length>500) gcMessages=gcMessages.slice(-500);
+  localStorage.setItem('tka2_gc',JSON.stringify(gcMessages));
+  inp.value='';
+  floatChatLastRead=gcMessages.length;
+  renderFloatChat();
+  // Also update the full GC tab if open
+  if(document.getElementById('view-generalchat')?.classList.contains('active')) renderGC();
+  playNotifSound('newride');
+}
+
+function renderFloatChatBadge(){
+  const btn=document.getElementById('float-chat-btn');
+  if(!btn||floatChatOpen) return;
+  const unread=gcMessages.length-floatChatLastRead;
+  if(unread>0){
+    btn.classList.add('has-unread');
+    btn.setAttribute('data-count',unread>9?'9+':String(unread));
+  } else {
+    btn.classList.remove('has-unread');
+    btn.setAttribute('data-count','0');
+  }
+  // Update online count
+  const onlineEl=document.getElementById('fchat-online');
+  if(onlineEl){
+    const onlineCount=users.filter(u=>u.eStatus!==null).length;
+    onlineEl.textContent=`${onlineCount} Mitglied${onlineCount!==1?'er':''} online`;
+  }
+  // Re-render if panel is open
+  if(floatChatOpen) renderFloatChat();
+}
+
+// =================================================================
 //  INIT NEW SYSTEMS ON LOGIN
 // =================================================================
 const _origInitApp=initApp;
 initApp=function(){
   _origInitApp();
   loadSettings();
+  // Show floating chat button
+  const btn=document.getElementById('float-chat-btn');
+  if(btn) btn.style.display='flex';
+  floatChatLastRead=gcMessages.length; // mark all as read on login
+  renderFloatChatBadge();
   // Show duty reminder after a short delay when first logging in
   setTimeout(showDutyReminder,800);
-  // Random notifications after login to demo system
-  setTimeout(()=>showNotif('info','🎮 Dashboard Ready','Willkommen im Taxi Köln System!'),2500);
+  // Welcome notification
+  setTimeout(()=>showNotif('info','🎮 Dashboard Ready','Willkommen im Taxi Köln System! 🚕'),2200);
+};
+
+// Hook renderGC to also update float chat badge when chat tab is used
+const _origRenderGC=renderGC;
+renderGC=function(){
+  _origRenderGC();
+  renderFloatChatBadge();
 };
 
 // Also trigger duty reminder when starting duty (Dienst starten button)
