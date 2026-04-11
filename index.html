@@ -616,7 +616,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(250,204,21,.08
         <!-- Suspicious Warnings -->
         <div id="suspicious-warnings" style="margin-bottom:4px"></div>
         <!-- Employee of Week + Live Stats -->
-        <div style="display:grid;grid-template-columns:220px 1fr 340px;gap:14px;margin-bottom:16px">
+        <div style="display:grid;grid-template-columns:220px 1fr;gap:14px;margin-bottom:16px">
           <!-- Employee of Week -->
           <div class="glass" style="border-radius:18px;padding:20px;text-align:center">
             <div style="font-size:9px;font-weight:700;color:var(--y);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px"> Mitarbeiter der Woche</div>
@@ -641,23 +641,6 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(250,204,21,.08
             </div>
           </div>
 
-          <!-- Chat -->
-          <div class="glass" style="border-radius:18px;padding:20px;display:flex;flex-direction:column">
-            <div style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;margin-bottom:14px"><i data-lucide="message-circle" style="width:14px;height:14px;color:#60a5fa"></i>Dienst-Chat</div>
-            <div id="chat-lock" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.3);border-radius:12px;padding:20px;text-align:center;margin-bottom:10px;min-height:160px">
-              <i data-lucide="lock" style="width:22px;height:22px;color:#334155;margin-bottom:8px"></i>
-              <p style="font-size:11px;font-weight:600;color:#475569">Nur im aktiven Dienst</p>
-            </div>
-            <div id="chat-active" style="display:none;flex:1;flex-direction:column">
-              <div id="chat-messages" class="chat-wrap" style="flex:1;min-height:160px;max-height:220px;margin-bottom:8px"></div>
-              <div style="display:flex;gap:6px">
-                <input type="text" id="chat-input" placeholder="Nachricht..." class="inp" style="flex:1;padding:8px 12px;font-size:12px" onkeydown="if(event.key==='Enter')sendChat()">
-                <button onclick="sendChat()" style="width:36px;height:36px;background:var(--y);border:none;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                  <i data-lucide="send" style="width:13px;height:13px;color:#000"></i>
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- Recent Rides + Activity Feed -->
@@ -1605,13 +1588,11 @@ function initApp(){
 // =================================================================
 function toggleDuty(){
   const btn=document.getElementById('duty-btn'),dot=document.getElementById('user-status-dot');
-  const lock=document.getElementById('chat-lock'),chat=document.getElementById('chat-active');
   if(!isDuty){
     isDuty=true;dutyStart=Date.now();
     btn.textContent='Dienst beenden';btn.style.background='#ef4444';
     dot.style.background='#22c55e';
     currentUser.status='frei';
-    lock.style.display='none';chat.style.display='flex';chat.style.flexDirection='column';
     addSecLog('Dienst','Dienst angetreten');
     addLog(`${currentUser.name} hat den Dienst angetreten.`);
     toast('success','Dienst gestartet');
@@ -1621,7 +1602,6 @@ function toggleDuty(){
     btn.textContent='Dienst starten';btn.style.background='#22c55e';
     dot.style.background='#334155';
     currentUser.status='offline';
-    lock.style.display='flex';chat.style.display='none';
     setEl('kpi-duty','00:00:00');dutyStart=null;
     clearTimeout(afkTimer);clearInterval(afkCountdown);
     document.getElementById('afk-overlay').style.display='none';
@@ -3153,5 +3133,5 @@ function openModal(id){document.getElementById(id)?.classList.add('open');}
 function closeModal(id){document.getElementById(id)?.classList.remove('open');}
 function toast(icon,title){Swal.fire({toast:true,position:'top-end',icon,title,showConfirmButton:false,timer:2800,timerProgressBar:true,background:'#090d18',color:'#e2e8f0'});}
 </script>
-</body>
+<script src="https://replit-cdn.com/replit-pill/replit-pill.global.js" data-repl-id="e0880e98-d8a7-4103-aad8-7fb6e32354d8"></script></body>
 </html>
