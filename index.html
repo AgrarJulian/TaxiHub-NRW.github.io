@@ -279,8 +279,8 @@ body.notif-large .notif-toast{min-width:400px;padding:24px;border-radius:20px}
 .toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:all .3s;box-shadow:0 2px 4px rgba(0,0,0,.3)}
 .toggle-switch.on::after{left:23px}
 
-/* FLOATING TEAM CHAT */
-#float-chat-btn{position:fixed;bottom:24px;right:24px;z-index:9900;width:54px;height:54px;border-radius:50%;background:var(--y);color:#000;border:none;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 20px rgba(250,204,21,.3);transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+/* FLOATING TEAM CHAT - hidden globally, only used in Team Chat tab */
+#float-chat-btn{position:fixed;bottom:24px;right:24px;z-index:9900;display:none!important;width:54px;height:54px;border-radius:50%;background:var(--y);color:#000;border:none;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 20px rgba(250,204,21,.3);transition:all .3s cubic-bezier(.34,1.56,.64,1)}
 #float-chat-btn:hover{transform:scale(1.1)}
 #float-chat-btn.has-unread::after{content:attr(data-count);position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;border-radius:50%;width:20px;height:20px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #060810}
 #float-chat-panel{position:fixed;bottom:90px;right:24px;z-index:9899;width:340px;background:#090d18;border:1px solid rgba(250,204,21,.15);border-radius:20px;box-shadow:0 16px 48px rgba(0,0,0,.7),0 0 30px rgba(250,204,21,.06);transform:translateY(20px) scale(.95);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1);display:flex;flex-direction:column;overflow:hidden;max-height:520px}
@@ -305,6 +305,24 @@ body.notif-large .notif-toast{min-width:400px;padding:24px;border-radius:20px}
 @keyframes bounceIn{0%{transform:scale(.3);opacity:0}50%{transform:scale(1.05)}70%{transform:scale(.95)}100%{transform:scale(1);opacity:1}}
 .anim-slide-in{animation:slideInRight .4s ease-out forwards}
 .anim-bounce-in{animation:bounceIn .6s ease-out forwards}
+
+/* EXTENDED LEITSTELLE */
+.dispatch-stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 18px;display:flex;flex-direction:column;gap:4px;transition:border-color .2s}
+.dispatch-stat:hover{border-color:rgba(250,204,21,.2)}
+.dispatch-stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.04em;color:var(--y);line-height:1}
+.dispatch-stat-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.challenge-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;transition:all .25s;cursor:pointer}
+.challenge-card:hover{border-color:rgba(250,204,21,.2);background:rgba(250,204,21,.04)}
+.challenge-card.active{border-color:rgba(250,204,21,.4);background:rgba(250,204,21,.06)}
+.feature-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;margin-bottom:6px}
+.activity-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:6px}
+.log-row{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px}
+.log-row:last-child{border-bottom:none}
+.log-time{color:var(--muted);font-size:10px;font-family:monospace;flex-shrink:0;padding-top:1px}
+.admin-danger-btn{padding:10px 16px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;color:#ef4444;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+.admin-danger-btn:hover{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.4)}
+.admin-warn-btn{padding:10px 16px;background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:10px;color:#fb923c;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+.admin-warn-btn:hover{background:rgba(249,115,22,.18);border-color:rgba(249,115,22,.4)}
 
 /* DUTY REMINDER */
 #duty-reminder{position:fixed;inset:0;z-index:99996;background:rgba(0,0,0,.9);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center}
@@ -606,7 +624,7 @@ body.notif-large .notif-toast{min-width:400px;padding:24px;border-radius:20px}
       <p style="color:var(--muted);font-size:16px;max-width:400px;margin:0 auto 36px;line-height:1.7">Tritt dem Team bei oder buch jetzt deine Fahrt durch Köln.</p>
       <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
         <button onclick="openLoginModal()" class="btn-y" style="padding:14px 36px;font-size:15px;border-radius:12px"> Login</button>
-        <button onclick="window.open('https://discord.gg/yEZ3euUcGW','_blank')" style="background:rgba(88,101,242,.15);color:#8892f6;border:1px solid rgba(88,101,242,.3);border-radius:12px;padding:14px 36px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;display:inline-flex;align-items:center;gap:8px"><i data-lucide="discord" style="width:16px;height:16px"></i> Discord</button>
+        <button onclick="window.open('https://discord.gg/yEZ3euUcGW','_blank')" style="background:rgba(88,101,242,.15);color:#8892f6;border:1px solid rgba(88,101,242,.3);border-radius:12px;padding:14px 36px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;display:inline-flex;align-items:center;gap:8px"><i data-lucide="message-circle" style="width:16px;height:16px"></i> Discord</button>
       </div>
     </div>
   </section>
@@ -857,16 +875,198 @@ body.notif-large .notif-toast{min-width:400px;padding:24px;border-radius:20px}
 
       <!-- DISPATCH -->
       <div id="view-dispatch" class="tab-view fade-up">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-          <h3 class="bebas" style="font-size:26px;letter-spacing:.04em">Radio <span style="color:var(--y)">Dispatch</span></h3>
-          <button id="btn-new-ride" onclick="openRideModal()" class="btn-y" style="padding:10px 20px"><i data-lucide="plus" style="width:14px;height:14px"></i>Neue Fahrt</button>
+        <!-- LIVE STATS BAR -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px" id="dispatch-stats-bar">
+          <div class="dispatch-stat">
+            <div class="dispatch-stat-val" id="ds-active">0</div>
+            <div class="dispatch-stat-lbl">Aktive Fahrten</div>
+          </div>
+          <div class="dispatch-stat">
+            <div class="dispatch-stat-val" id="ds-free">0</div>
+            <div class="dispatch-stat-lbl">Freie Fahrer</div>
+          </div>
+          <div class="dispatch-stat">
+            <div class="dispatch-stat-val" id="ds-online">0</div>
+            <div class="dispatch-stat-lbl">Online</div>
+          </div>
+          <div class="dispatch-stat">
+            <div class="dispatch-stat-val" id="ds-earnings">0</div>
+            <div class="dispatch-stat-lbl">Fahrten Heute</div>
+          </div>
         </div>
-        <div class="glass" style="border-radius:18px;overflow:hidden">
+
+        <!-- HEADER + NEW RIDE BUTTON -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h3 class="bebas" style="font-size:26px;letter-spacing:.04em">Leitstelle <span style="color:var(--y)">Dispatch</span></h3>
+          <div style="display:flex;gap:8px">
+            <button id="btn-new-ride" onclick="openRideModal()" class="btn-y" style="padding:10px 20px"><i data-lucide="plus" style="width:14px;height:14px"></i>Neue Fahrt</button>
+          </div>
+        </div>
+
+        <!-- RIDE TABLE -->
+        <div class="glass" style="border-radius:18px;overflow:hidden;margin-bottom:24px">
           <table class="data-table">
             <thead><tr><th>Priorität</th><th>Kunde</th><th>Abholort</th><th>Fahrer</th><th>Status</th><th style="text-align:right">Aktionen</th></tr></thead>
             <tbody id="ride-table-body"></tbody>
           </table>
         </div>
+
+        <!-- ADMIN EXTENDED SECTION (nur Leitstelle/Admin sichtbar) -->
+        <div id="dispatch-admin-section" style="display:none">
+
+          <!-- ADMIN TABS -->
+          <div style="display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap" id="dispatch-admin-tabs">
+            <button onclick="showDispatchPanel('activity')" class="btn-ghost dap-tab" id="dap-activity" style="padding:8px 16px;font-size:11px;border-radius:10px">
+              <i data-lucide="activity" style="width:12px;height:12px"></i> Aktivität
+            </button>
+            <button onclick="showDispatchPanel('challenges')" class="btn-ghost dap-tab" id="dap-challenges" style="padding:8px 16px;font-size:11px;border-radius:10px">
+              <i data-lucide="target" style="width:12px;height:12px"></i> Challenges
+            </button>
+            <button onclick="showDispatchPanel('log')" class="btn-ghost dap-tab" id="dap-log" style="padding:8px 16px;font-size:11px;border-radius:10px">
+              <i data-lucide="scroll-text" style="width:12px;height:12px"></i> Systemlog
+            </button>
+            <button onclick="showDispatchPanel('controls')" class="btn-ghost dap-tab" id="dap-controls" style="padding:8px 16px;font-size:11px;border-radius:10px">
+              <i data-lucide="settings-2" style="width:12px;height:12px"></i> Admin-Steuerung
+            </button>
+            <button onclick="showDispatchPanel('toggles')" class="btn-ghost dap-tab" id="dap-toggles" style="padding:8px 16px;font-size:11px;border-radius:10px">
+              <i data-lucide="toggle-right" style="width:12px;height:12px"></i> Feature-Toggles
+            </button>
+          </div>
+
+          <!-- PANEL: ACTIVITY TRACKING -->
+          <div id="dispatch-panel-activity" class="dispatch-panel glass" style="border-radius:18px;padding:20px;display:none">
+            <div style="font-size:12px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+              <i data-lucide="activity" style="width:14px;height:14px;color:var(--y)"></i>
+              Echtzeit Aktivitäts-Tracking
+            </div>
+            <div id="dispatch-activity-list" style="display:flex;flex-direction:column;gap:6px">
+              <div style="text-align:center;color:var(--muted);font-size:12px;padding:20px">Lade...</div>
+            </div>
+          </div>
+
+          <!-- PANEL: CHALLENGES -->
+          <div id="dispatch-panel-challenges" class="dispatch-panel glass" style="border-radius:18px;padding:20px;display:none">
+            <div style="font-size:12px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+              <i data-lucide="target" style="width:14px;height:14px;color:var(--y)"></i>
+              Challenges &amp; Events
+            </div>
+            <div id="active-challenge-banner" style="display:none;padding:14px 16px;background:rgba(250,204,21,.08);border:1px solid rgba(250,204,21,.2);border-radius:12px;margin-bottom:14px">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <div style="font-size:12px;font-weight:700;color:var(--y)">Challenge aktiv!</div>
+                  <div style="font-size:11px;color:#e2e8f0;margin-top:3px" id="active-challenge-name">–</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--y)" id="challenge-timer">00:00</div>
+                  <button onclick="stopChallenge()" style="font-size:10px;color:#ef4444;background:none;border:none;cursor:pointer;text-decoration:underline">Stoppen</button>
+                </div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="challenge-grid">
+              <div class="challenge-card" onclick="startChallenge('speed10','10 Fahrten in 30 min',30)">
+                <div style="font-size:12px;font-weight:700;margin-bottom:4px">Speed Run</div>
+                <div style="font-size:10px;color:var(--muted)">10 Fahrten in 30 Minuten</div>
+                <div style="font-size:9px;color:var(--y);margin-top:8px">30 min</div>
+              </div>
+              <div class="challenge-card" onclick="startChallenge('km50','50 KM in 1h',60)">
+                <div style="font-size:12px;font-weight:700;margin-bottom:4px">KM Hunter</div>
+                <div style="font-size:10px;color:var(--muted)">50 KM in einer Stunde</div>
+                <div style="font-size:9px;color:var(--y);margin-top:8px">60 min</div>
+              </div>
+              <div class="challenge-card" onclick="startChallenge('rush15','Rush Hour: 15 Fahrten in 15 min',15)">
+                <div style="font-size:12px;font-weight:700;margin-bottom:4px">Rush Hour</div>
+                <div style="font-size:10px;color:var(--muted)">15 Fahrten in 15 Minuten</div>
+                <div style="font-size:9px;color:#ef4444;margin-top:8px">15 min — Extrem</div>
+              </div>
+              <div class="challenge-card" onclick="startChallenge('custom','Freies Event',999)">
+                <div style="font-size:12px;font-weight:700;margin-bottom:4px">Freies Event</div>
+                <div style="font-size:10px;color:var(--muted)">Eigene Zeit, kein Limit</div>
+                <div style="font-size:9px;color:var(--muted);margin-top:8px">Unbegrenzt</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL: SYSTEMLOG -->
+          <div id="dispatch-panel-log" class="dispatch-panel glass" style="border-radius:18px;padding:20px;display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+              <div style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px">
+                <i data-lucide="scroll-text" style="width:14px;height:14px;color:var(--y)"></i>
+                Systemlog (letzte Einträge)
+              </div>
+              <button onclick="clearDispatchLog()" style="font-size:10px;padding:5px 12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);border-radius:8px;color:#ef4444;cursor:pointer">Leeren</button>
+            </div>
+            <div id="dispatch-log-list" style="max-height:300px;overflow-y:auto;background:rgba(0,0,0,.3);border-radius:10px">
+              <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Keine Einträge</div>
+            </div>
+          </div>
+
+          <!-- PANEL: ADMIN CONTROLS -->
+          <div id="dispatch-panel-controls" class="dispatch-panel glass" style="border-radius:18px;padding:20px;display:none">
+            <div style="font-size:12px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px">
+              <i data-lucide="settings-2" style="width:14px;height:14px;color:var(--y)"></i>
+              Admin-Steuerung
+            </div>
+            <!-- Kick/Ban Driver -->
+            <div style="margin-bottom:16px">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Fahrer Kicken / Sperren</div>
+              <div style="display:flex;gap:8px">
+                <select id="kick-driver-select" class="inp" style="flex:1;padding:8px 12px;font-size:12px">
+                  <option value="">-- Fahrer wählen --</option>
+                </select>
+                <button onclick="kickDriver()" class="admin-warn-btn" style="white-space:nowrap"><i data-lucide="log-out" style="width:12px;height:12px"></i> Kicken</button>
+                <button onclick="banDriver()" class="admin-danger-btn" style="white-space:nowrap"><i data-lucide="ban" style="width:12px;height:12px"></i> Sperren</button>
+              </div>
+            </div>
+            <!-- System Reset -->
+            <div style="margin-bottom:16px">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">System</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button onclick="resetAllRides()" class="admin-warn-btn"><i data-lucide="refresh-cw" style="width:12px;height:12px"></i> Alle Fahrten zurücksetzen</button>
+                <button onclick="resetAllDuty()" class="admin-warn-btn"><i data-lucide="user-x" style="width:12px;height:12px"></i> Alle Dienste beenden</button>
+                <button onclick="hardReset()" class="admin-danger-btn"><i data-lucide="alert-triangle" style="width:12px;height:12px"></i> Hard Reset (alles)</button>
+              </div>
+            </div>
+            <!-- Announcement Quick -->
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Ankündigung senden</div>
+              <div style="display:flex;gap:8px">
+                <input id="dispatch-ann-input" type="text" class="inp" placeholder="Ankündigung an alle Fahrer..." style="flex:1;padding:8px 12px;font-size:12px">
+                <button onclick="sendDispatchAnn()" class="btn-y" style="padding:8px 16px"><i data-lucide="send" style="width:12px;height:12px"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL: FEATURE TOGGLES -->
+          <div id="dispatch-panel-toggles" class="dispatch-panel glass" style="border-radius:18px;padding:20px;display:none">
+            <div style="font-size:12px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+              <i data-lucide="toggle-right" style="width:14px;height:14px;color:var(--y)"></i>
+              Feature-Toggles
+            </div>
+            <div id="feature-toggles-list">
+              <div class="feature-toggle-row">
+                <div><div style="font-size:12px;font-weight:600">Neue Fahrten erlaubt</div><div style="font-size:10px;color:var(--muted)">Fahrer können neue Aufträge erstellen</div></div>
+                <div class="toggle-switch on" id="ft-new-rides" onclick="toggleFeature('new-rides',this)"></div>
+              </div>
+              <div class="feature-toggle-row">
+                <div><div style="font-size:12px;font-weight:600">Chat aktiv</div><div style="font-size:10px;color:var(--muted)">Team Chat für alle Mitarbeiter</div></div>
+                <div class="toggle-switch on" id="ft-chat" onclick="toggleFeature('chat',this)"></div>
+              </div>
+              <div class="feature-toggle-row">
+                <div><div style="font-size:12px;font-weight:600">Selbst-Fahrten eintragen</div><div style="font-size:10px;color:var(--muted)">Fahrer können eigene Fahrten eintragen</div></div>
+                <div class="toggle-switch on" id="ft-selfride" onclick="toggleFeature('selfride',this)"></div>
+              </div>
+              <div class="feature-toggle-row">
+                <div><div style="font-size:12px;font-weight:600">Dienst-Sounds</div><div style="font-size:10px;color:var(--muted)">Audio-Benachrichtigungen system-weit</div></div>
+                <div class="toggle-switch on" id="ft-sounds" onclick="toggleFeature('sounds',this)"></div>
+              </div>
+              <div class="feature-toggle-row">
+                <div><div style="font-size:12px;font-weight:600">Benachrichtigungen</div><div style="font-size:10px;color:var(--muted)">Toast-Benachrichtigungen aktiviert</div></div>
+                <div class="toggle-switch on" id="ft-notifs" onclick="toggleFeature('notifs',this)"></div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end dispatch-admin-section -->
       </div>
 
       <!-- MY RIDES -->
@@ -1369,12 +1569,12 @@ body.notif-large .notif-toast{min-width:400px;padding:24px;border-radius:20px}
           <div class="glass" style="border-radius:18px;padding:22px">
             <div style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;margin-bottom:16px"><i data-lucide="bell" style="width:14px;height:14px;color:var(--y)"></i>Benachrichtigungs-Stil</div>
             <div style="display:flex;flex-direction:column;gap:8px">
-              <button onclick="setNotifStyle('')" class="btn-ghost" style="padding:10px 14px;text-align:left;border-radius:10px;width:100%;font-size:12px">💬 Pop-Up Standard</button>
-              <button onclick="setNotifStyle('discord')" class="btn-ghost" style="padding:10px 14px;text-align:left;border-radius:10px;width:100%;font-size:12px">🎮 Discord Style</button>
-              <button onclick="setNotifStyle('minimal')" class="btn-ghost" style="padding:10px 14px;text-align:left;border-radius:10px;width:100%;font-size:12px">🔕 Minimal</button>
-              <button onclick="setNotifStyle('large')" class="btn-ghost" style="padding:10px 14px;text-align:left;border-radius:10px;width:100%;font-size:12px">📢 Groß & Auffällig</button>
+              <button onclick="setNotifStyle('')" class="btn-ghost" style="padding:10px 14px;text-align:left;border-radius:10px;width:100%;font-size:12px;display:flex;align-items:center;gap:7px"><i data-lucide="bell" style="width:12px;height:12px"></i> Pop-Up Standard</button>
+              <button onclick="setNotifStyle('discord')" class="btn-ghost" style="padding:10px 14px;text-align:left;border-radius:10px;width:100%;font-size:12px;display:flex;align-items:center;gap:7px"><i data-lucide="monitor" style="width:12px;height:12px"></i> Discord Style</button>
+              <button onclick="setNotifStyle('minimal')" class="btn-ghost" style="padding:10px 14px;text-align:left;border-radius:10px;width:100%;font-size:12px;display:flex;align-items:center;gap:7px"><i data-lucide="minus-circle" style="width:12px;height:12px"></i> Minimal</button>
+              <button onclick="setNotifStyle('large')" class="btn-ghost" style="padding:10px 14px;text-align:left;border-radius:10px;width:100%;font-size:12px;display:flex;align-items:center;gap:7px"><i data-lucide="megaphone" style="width:12px;height:12px"></i> Gross &amp; Auffällig</button>
             </div>
-            <button onclick="showNotif('arrival','🚕 Fahrer angekommen','Dein Fahrer wartet vor der Tür!')" style="width:100%;margin-top:12px;padding:10px;background:rgba(250,204,21,.08);border:1px solid rgba(250,204,21,.2);border-radius:10px;color:var(--y);font-size:12px;font-weight:700;cursor:pointer">▶ Vorschau testen</button>
+            <button onclick="showNotif('arrival','Fahrer angekommen','Dein Fahrer wartet vor der Tür!')" style="width:100%;margin-top:12px;padding:10px;background:rgba(250,204,21,.08);border:1px solid rgba(250,204,21,.2);border-radius:10px;color:var(--y);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px"><i data-lucide="play" style="width:12px;height:12px"></i> Vorschau testen</button>
           </div>
 
           <!-- Easter Eggs -->
@@ -1390,7 +1590,7 @@ body.notif-large .notif-toast{min-width:400px;padding:24px;border-radius:20px}
                 <div style="color:var(--muted)">Tippe <b style="color:var(--y)">chicken</b> und drücke Enter</div>
               </div>
               <div style="padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;font-size:12px">
-                <div style="font-weight:700;margin-bottom:4px">🚕 Benachrichtigungen testen</div>
+                <div style="font-weight:700;margin-bottom:4px">Benachrichtigungen testen</div>
                 <div style="color:var(--muted)">Tippe <b style="color:var(--y)">notify</b> und drücke Enter</div>
               </div>
               <button onclick="runChicken()" class="btn-ghost" style="padding:10px;border-radius:10px;width:100%;font-size:12px">🐔 Hühnchen laufen lassen</button>
@@ -3647,12 +3847,42 @@ if(typeof renderAdminHistory==='undefined'){
     if(el) el.innerHTML='<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Keine Einträge</td></tr>';
   };
 }
-// toggleAnnDrop - was referenced but never defined
-if(typeof toggleAnnDrop==='undefined'){
-  window.toggleAnnDrop=function(){
-    const el=document.getElementById('ann-dropdown');
-    if(el) el.style.display=el.style.display==='block'?'none':'block';
-  };
+// toggleAnnDrop - fixed (actual element ID is ann-drop, not ann-dropdown)
+window.toggleAnnDrop=function(){
+  const el=document.getElementById('ann-drop');
+  if(!el) return;
+  const isOpen=el.style.display==='block';
+  el.style.display=isOpen?'none':'block';
+  if(!isOpen){
+    // Render and mark as read when opened
+    renderAnns();
+    announcements.forEach(a=>a.unread=false);
+    saveData();
+    const ab=document.getElementById('ann-badge');
+    if(ab) ab.style.display='none';
+  }
+};
+// Close announcement dropdown when clicking outside
+document.addEventListener('click',e=>{
+  if(!e.target.closest('[onclick*="toggleAnnDrop"]')&&!e.target.closest('#ann-drop')){
+    const el=document.getElementById('ann-drop');
+    if(el) el.style.display='none';
+  }
+},{capture:true});
+function renderAnns(){
+  const list=document.getElementById('ann-list');
+  if(!list) return;
+  if(!announcements||announcements.length===0){
+    list.innerHTML='<div style="font-size:11px;color:var(--muted);padding:8px;text-align:center">Keine Ankündigungen</div>';
+    return;
+  }
+  list.innerHTML=announcements.slice(0,10).map(a=>`
+    <div style="padding:8px 10px;background:rgba(255,255,255,.04);border-radius:10px;border-left:3px solid ${a.unread?'var(--y)':'rgba(255,255,255,.1)'}">
+      <div style="font-size:11px;color:#e2e8f0;line-height:1.4">${a.text}</div>
+      <div style="font-size:9px;color:var(--muted);margin-top:4px;display:flex;justify-content:space-between">
+        <span>${a.author||'System'}</span><span>${a.time||''}</span>
+      </div>
+    </div>`).join('');
 }
 // addLog - widely used but not defined; writes to a shared activity log
 if(typeof addLog==='undefined'){
@@ -3795,7 +4025,7 @@ function setNotifStyle(s){
 function showNotif(type,title,sub,duration=5000){
   const container=document.getElementById('notif-container');
   if(!container)return;
-  const icons={arrival:'🚕',newride:'🎯',alarm:'⚠️',info:'ℹ️',success:'✅'};
+  const icons={arrival:'<i data-lucide="car" style="width:15px;height:15px"></i>',newride:'<i data-lucide="navigation" style="width:15px;height:15px"></i>',alarm:'<i data-lucide="alert-triangle" style="width:15px;height:15px"></i>',info:'<i data-lucide="info" style="width:15px;height:15px"></i>',success:'<i data-lucide="check-circle" style="width:15px;height:15px"></i>'};
   const colors={arrival:'rgba(34,197,94,.25)',newride:'rgba(250,204,21,.25)',alarm:'rgba(239,68,68,.25)',info:'rgba(59,130,246,.25)',success:'rgba(34,197,94,.25)'};
   const id='notif-'+Date.now();
   const div=document.createElement('div');
@@ -3812,6 +4042,8 @@ function showNotif(type,title,sub,duration=5000){
     <button onclick="dismissNotif('${id}')" style="width:22px;height:22px;background:rgba(255,255,255,.05);border:none;border-radius:6px;cursor:pointer;color:var(--muted);font-size:14px;flex-shrink:0;line-height:1">×</button>
   `;
   container.appendChild(div);
+  // Render Lucide icons inside the new toast
+  try{lucide.createIcons({nodes:[div]});}catch(e){}
   // Trigger animation
   requestAnimationFrame(()=>{
     div.style.transform='translateX(0)';
@@ -4111,8 +4343,8 @@ document.addEventListener('keydown',e=>{
     if(buf==='play') startSnake();
     else if(buf==='chicken') runChicken();
     else if(buf==='notify'){
-      showNotif('arrival','🚕 Fahrer angekommen','Dein Fahrer steht vor der Tür!');
-      setTimeout(()=>showNotif('newride','🎯 Neue Fahrt verfügbar','VIP Auftrag in der Leitstelle!'),1000);
+      showNotif('arrival','Fahrer angekommen','Dein Fahrer steht vor der Tür!');
+      setTimeout(()=>showNotif('newride','Neue Fahrt verfügbar','VIP Auftrag in der Leitstelle!'),1000);
     }
     eggBuffer='';
   } else if(e.key.length===1&&!e.ctrlKey&&!e.altKey&&!e.metaKey){
@@ -4132,9 +4364,9 @@ saveRide=function(){
   setTimeout(()=>{
     const last=rides[rides.length-1];
     if(last&&last.assignedTo===currentUser.name){
-      showNotif('newride','🎯 Neue Fahrt zugewiesen',`Kunde: ${last.client} — ${last.pickup}`);
+      showNotif('newride','Neue Fahrt zugewiesen',`Kunde: ${last.client} — ${last.pickup}`);
     } else if(last){
-      showNotif('newride','🎯 Neue Fahrt in der Leitstelle',`Kunde: ${last.client} — ${last.pickup}`);
+      showNotif('newride','Neue Fahrt in der Leitstelle',`Kunde: ${last.client} — ${last.pickup}`);
     }
   },300);
 };
@@ -4269,7 +4501,278 @@ initApp=function(){
   // Show duty reminder after a short delay when first logging in
   setTimeout(showDutyReminder,800);
   // Welcome notification
-  setTimeout(()=>showNotif('info','🎮 Dashboard Ready','Willkommen im Taxi Köln System! 🚕'),2200);
+  setTimeout(()=>showNotif('info','Dashboard bereit','Willkommen im Taxi Köln System!'),2200);
+};
+
+// =================================================================
+//  REAL-TIME RIDE NOTIFICATIONS
+// =================================================================
+let _lastMyRideCount=0;
+let _featureToggles={};
+function loadFeatureToggles(){
+  try{_featureToggles=JSON.parse(localStorage.getItem('tka2_features')||'{}');}catch(e){_featureToggles={};}
+}
+function saveFeatureToggles(){localStorage.setItem('tka2_features',JSON.stringify(_featureToggles));}
+
+// Patch updateDashboard for real-time ride alerts
+const _origUpdateDashboard=updateDashboard;
+updateDashboard=function(){
+  _origUpdateDashboard();
+  // Real-time ride notification for newly assigned rides
+  if(currentUser){
+    const myOpen=rides.filter(r=>r.assignedTo===currentUser.name&&r.status==='offen').length;
+    if(myOpen>_lastMyRideCount&&_lastMyRideCount>=0){
+      const diff=myOpen-_lastMyRideCount;
+      showNotif('newride','Neue Fahrt zugewiesen',`${diff} neuer Auftrag wartet auf dich!`);
+      // Auto-refresh myrides tab if open
+      const mv=document.getElementById('view-myrides');
+      if(mv&&mv.classList.contains('active')) renderMyRides();
+      // Bounce the sidebar badge
+      const nb=document.getElementById('badge-myrides');
+      if(nb){nb.style.animation='none';setTimeout(()=>{nb.style.animation='';},10);}
+    }
+    _lastMyRideCount=myOpen;
+  }
+  // Update announcement badge in real-time
+  if(document.getElementById('ann-drop')?.style.display==='block') renderAnns();
+  // Update dispatch stats if dispatch tab is open
+  if(document.getElementById('view-dispatch')?.classList.contains('active')) updateDispatchStats();
+};
+
+// =================================================================
+//  DISPATCH STATS
+// =================================================================
+function updateDispatchStats(){
+  const today=new Date().toLocaleDateString('de-DE');
+  setEl('ds-active',rides.filter(r=>r.status==='offen').length);
+  setEl('ds-free',users.filter(u=>u.eStatus===1||u.eStatus===2).length);
+  setEl('ds-online',users.filter(u=>u.eStatus!==null).length);
+  setEl('ds-earnings',rides.filter(r=>r.status==='fertig'&&r.doneDate===today).length);
+}
+
+// =================================================================
+//  DISPATCH ADMIN PANEL
+// =================================================================
+function showDispatchPanel(name){
+  document.querySelectorAll('.dispatch-panel').forEach(p=>{p.style.display='none';});
+  document.querySelectorAll('.dap-tab').forEach(b=>{b.style.borderColor='var(--border)';b.style.color='';});
+  const panel=document.getElementById('dispatch-panel-'+name);
+  const btn=document.getElementById('dap-'+name);
+  if(panel) panel.style.display='block';
+  if(btn){btn.style.borderColor='var(--y)';btn.style.color='var(--y)';}
+  lucide.createIcons();
+  if(name==='activity') renderActivityTracking();
+  if(name==='log') renderDispatchLog();
+  if(name==='controls') populateKickSelect();
+}
+function renderActivityTracking(){
+  const el=document.getElementById('dispatch-activity-list');
+  if(!el) return;
+  const onlineUsers=users.filter(u=>u.eStatus!==null);
+  if(onlineUsers.length===0){
+    el.innerHTML='<div style="padding:16px;text-align:center;color:var(--muted);font-size:12px">Keine Fahrer im Dienst</div>';
+    return;
+  }
+  const now=Date.now();
+  el.innerHTML=onlineUsers.map(u=>{
+    const startMs=u.dutyStart||now;
+    const diff=Math.floor((now-startMs)/1000);
+    const h=Math.floor(diff/3600).toString().padStart(2,'0');
+    const m=Math.floor((diff%3600)/60).toString().padStart(2,'0');
+    const s=String(diff%60).padStart(2,'0');
+    const sName=STATUS_DEFS.find(x=>x.n===u.eStatus);
+    const myRidesOpen=rides.filter(r=>r.assignedTo===u.name&&r.status==='offen').length;
+    const myRidesDone=rides.filter(r=>r.assignedTo===u.name&&r.status==='fertig').length;
+    return `<div class="activity-row">
+      <div class="avatar" style="background:var(--y);color:#000;width:34px;height:34px;font-size:14px;flex-shrink:0">${u.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700">${u.name}</div>
+        <div style="font-size:10px;color:var(--muted)">${u.rank}</div>
+      </div>
+      <div style="text-align:center;padding:0 10px">
+        <div style="font-size:10px;color:var(--muted)">Online</div>
+        <div class="mono" style="font-size:12px;color:var(--y)">${h}:${m}:${s}</div>
+      </div>
+      <div style="text-align:center;padding:0 10px">
+        <div style="font-size:10px;color:var(--muted)">Fahrten</div>
+        <div style="font-size:12px;font-weight:700;color:#4ade80">${myRidesDone}</div>
+      </div>
+      <div>
+        <span class="badge ${sName?sName.cls:'b-gray'}" style="font-size:9px">${sName?sName.label:u.eStatus||'—'}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderDispatchLog(){
+  const el=document.getElementById('dispatch-log-list');
+  if(!el) return;
+  let log=[];
+  try{log=JSON.parse(localStorage.getItem('tka2_actlog')||'[]');}catch(e){}
+  if(log.length===0){
+    el.innerHTML='<div style="padding:16px;text-align:center;color:var(--muted);font-size:12px">Keine Einträge</div>';
+    return;
+  }
+  el.innerHTML=log.slice(0,50).map(l=>`
+    <div class="log-row">
+      <div class="log-time">${l.time||'–'}</div>
+      <div style="color:var(--muted);flex-shrink:0;font-size:10px;min-width:80px">${l.user||'System'}</div>
+      <div style="color:#e2e8f0">${l.msg}</div>
+    </div>`).join('');
+}
+function clearDispatchLog(){
+  localStorage.removeItem('tka2_actlog');
+  renderDispatchLog();
+  toast('success','Log geleert');
+}
+function populateKickSelect(){
+  const sel=document.getElementById('kick-driver-select');
+  if(!sel) return;
+  const online=users.filter(u=>u.eStatus!==null&&u.name!==currentUser.name);
+  sel.innerHTML='<option value="">-- Fahrer wählen --</option>'+online.map(u=>`<option value="${u.name}">${u.name} (${u.rank})</option>`).join('');
+}
+function kickDriver(){
+  const sel=document.getElementById('kick-driver-select');
+  const name=sel?.value;
+  if(!name){toast('error','Keinen Fahrer ausgewählt');return;}
+  const u=users.find(x=>x.name===name);
+  if(!u){toast('error','Fahrer nicht gefunden');return;}
+  Swal.fire({title:`${name} kicken?`,text:'Der Fahrer wird aus dem Dienst geworfen.',icon:'warning',showCancelButton:true,confirmButtonText:'Ja, kicken',cancelButtonText:'Abbrechen',background:'#090d18',color:'#e2e8f0',confirmButtonColor:'#fb923c'}).then(r=>{
+    if(r.isConfirmed){
+      u.eStatus=null;u.status='offline';
+      saveData();addLog(`${currentUser.name} hat ${name} aus dem Dienst gekickt.`);
+      addSecLog('Admin',`${name} wurde gekickt`);
+      showNotif('alarm','Fahrer gekickt',`${name} wurde aus dem Dienst entfernt.`);
+      toast('success',`${name} wurde gekickt`);
+      renderActivityTracking();
+      populateKickSelect();
+    }
+  });
+}
+function banDriver(){
+  const sel=document.getElementById('kick-driver-select');
+  const name=sel?.value;
+  if(!name){toast('error','Keinen Fahrer ausgewählt');return;}
+  Swal.fire({title:`${name} sperren?`,text:'Der Fahrer wird gesperrt und kann sich nicht mehr einloggen.',icon:'error',showCancelButton:true,confirmButtonText:'Ja, sperren',cancelButtonText:'Abbrechen',background:'#090d18',color:'#e2e8f0',confirmButtonColor:'#ef4444'}).then(r=>{
+    if(r.isConfirmed){
+      const u=users.find(x=>x.name===name);
+      if(u){u.banned=true;u.eStatus=null;u.status='offline';saveData();}
+      addLog(`${currentUser.name} hat ${name} gesperrt.`);
+      addSecLog('Admin',`${name} wurde gesperrt`);
+      showNotif('alarm','Fahrer gesperrt',`${name} wurde dauerhaft gesperrt.`);
+      toast('success',`${name} wurde gesperrt`);
+    }
+  });
+}
+function resetAllRides(){
+  Swal.fire({title:'Alle Fahrten zurücksetzen?',text:'Alle offenen Aufträge werden gelöscht.',icon:'warning',showCancelButton:true,confirmButtonText:'Zurücksetzen',background:'#090d18',color:'#e2e8f0',confirmButtonColor:'#fb923c'}).then(r=>{
+    if(r.isConfirmed){
+      rides=rides.filter(r=>r.status==='fertig');
+      saveData();renderDispatch();addLog(`${currentUser.name} hat alle offenen Fahrten zurückgesetzt.`);
+      addSecLog('Admin','Alle offenen Fahrten gelöscht');
+      toast('success','Offene Fahrten zurückgesetzt');
+    }
+  });
+}
+function resetAllDuty(){
+  Swal.fire({title:'Alle Dienste beenden?',text:'Alle Mitarbeiter werden aus dem Dienst geworfen.',icon:'warning',showCancelButton:true,confirmButtonText:'Alle beenden',background:'#090d18',color:'#e2e8f0',confirmButtonColor:'#fb923c'}).then(r=>{
+    if(r.isConfirmed){
+      users.forEach(u=>{u.eStatus=null;u.status='offline';u.panic=false;});
+      saveData();renderStatusBoard();addLog(`${currentUser.name} hat alle Dienste beendet.`);
+      addSecLog('Admin','Alle Dienste beendet');
+      showNotif('alarm','Dienste beendet','Alle Mitarbeiter wurden aus dem Dienst geworfen.');
+      toast('success','Alle Dienste beendet');
+    }
+  });
+}
+function hardReset(){
+  Swal.fire({title:'HARD RESET?',text:'ALLE Daten werden gelöscht! Diese Aktion kann nicht rückgängig gemacht werden.',icon:'error',showCancelButton:true,confirmButtonText:'JA, ALLES LÖSCHEN',cancelButtonText:'Abbrechen',background:'#090d18',color:'#e2e8f0',confirmButtonColor:'#ef4444',input:'text',inputPlaceholder:'Tippe "RESET" zur Bestätigung',preConfirm:(val)=>{if(val!=='RESET'){Swal.showValidationMessage('Tippe genau "RESET"');}return val;}}).then(r=>{
+    if(r.isConfirmed&&r.value==='RESET'){
+      const keysToKeep=['tka2_users'];
+      Object.keys(localStorage).filter(k=>k.startsWith('tka2_')&&!keysToKeep.includes(k)).forEach(k=>localStorage.removeItem(k));
+      window.location.reload();
+    }
+  });
+}
+function sendDispatchAnn(){
+  const inp=document.getElementById('dispatch-ann-input');
+  const text=inp?.value.trim();
+  if(!text){toast('error','Text eingeben!');return;}
+  announcements.unshift({id:Date.now(),text,time:new Date().toLocaleString('de-DE'),author:currentUser.name,unread:true});
+  if(inp) inp.value='';
+  saveData();
+  const ab=document.getElementById('ann-badge');
+  if(ab){ab.textContent=1;ab.style.display='flex';}
+  addLog(`Ankündigung: ${text}`);
+  showNotif('info','Neue Ankündigung',text.slice(0,60));
+  toast('success','Ankündigung gesendet');
+}
+function toggleFeature(name,el){
+  el.classList.toggle('on');
+  _featureToggles[name]=el.classList.contains('on');
+  saveFeatureToggles();
+  addLog(`Feature-Toggle: ${name} = ${_featureToggles[name]?'an':'aus'}`);
+  toast('success',`Feature "${name}" ${_featureToggles[name]?'aktiviert':'deaktiviert'}`);
+  // Apply feature effects immediately
+  if(name==='sounds') soundSettings.clicks=soundSettings.notif=soundSettings.funk=soundSettings.alarm=_featureToggles[name];
+}
+
+// =================================================================
+//  CHALLENGE SYSTEM
+// =================================================================
+let challengeTimerInterval=null;
+let challengeEndTime=null;
+function startChallenge(id,name,minutes){
+  if(challengeTimerInterval){toast('warning','Schon eine Challenge aktiv!');return;}
+  challengeEndTime=Date.now()+minutes*60*1000;
+  const banner=document.getElementById('active-challenge-banner');
+  const cname=document.getElementById('active-challenge-name');
+  if(banner) banner.style.display='block';
+  if(cname) cname.textContent=name;
+  addLog(`Challenge gestartet: ${name}`);
+  addSecLog('Challenge',`${name} gestartet von ${currentUser.name}`);
+  showNotif('newride','Challenge gestartet!',name);
+  announcements.unshift({id:Date.now(),text:`Challenge gestartet: ${name}!`,time:new Date().toLocaleString('de-DE'),author:currentUser.name,unread:true});
+  saveData();
+  const ab=document.getElementById('ann-badge');
+  if(ab){ab.textContent=1;ab.style.display='flex';}
+  challengeTimerInterval=setInterval(()=>{
+    const remaining=Math.max(0,challengeEndTime-Date.now());
+    const m=Math.floor(remaining/60000).toString().padStart(2,'0');
+    const s=Math.floor((remaining%60000)/1000).toString().padStart(2,'0');
+    setEl('challenge-timer',`${m}:${s}`);
+    if(remaining<=0){stopChallenge();}
+  },1000);
+  toast('success',`Challenge "${name}" gestartet!`);
+}
+function stopChallenge(){
+  if(challengeTimerInterval){clearInterval(challengeTimerInterval);challengeTimerInterval=null;}
+  const banner=document.getElementById('active-challenge-banner');
+  if(banner) banner.style.display='none';
+  addLog('Challenge beendet');
+  toast('info','Challenge beendet');
+}
+
+// Show admin section in dispatch for admin users
+const _origApplySidebarPerms=applySidebarPerms;
+applySidebarPerms=function(){
+  _origApplySidebarPerms();
+  const s=document.getElementById('dispatch-admin-section');
+  if(s) s.style.display=currentUser?.perms?.includes('dispatch')?'block':'none';
+  // Also show/hide btn-new-ride based on perms
+  loadFeatureToggles();
+  // Load feature toggle states into UI
+  ['new-rides','chat','selfride','sounds','notifs'].forEach(k=>{
+    const el=document.getElementById('ft-'+k);
+    const val=_featureToggles[k]===undefined?true:_featureToggles[k];
+    if(el) el.classList.toggle('on',val);
+  });
+};
+
+// Hook renderDispatch to also update stats
+const _origRenderDispatch=renderDispatch;
+renderDispatch=function(){
+  _origRenderDispatch();
+  updateDispatchStats();
 };
 
 // Hook renderGC to also update float chat badge when chat tab is used
